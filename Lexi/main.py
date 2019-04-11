@@ -31,7 +31,8 @@ whitespace = ['\n', '\r', '\t', ' ', '\v', '\f']
 digit = [str(i) for i in range(10)]
 alphabet = [chr(i) for i in range(65, 91)] + [chr(i) for i in range(97, 123)]
 keywords = ['if', 'else', 'void', 'int', 'while', 'break', 'continue', 'switch', 'default', 'case', 'return', 'int']
-
+comments = ['/' , '*']
+all_letters = symbols + whitespace + digit + alphabet + keywords + comments
 
 def get_string():
     global start_ind, end_ind, code
@@ -54,9 +55,8 @@ def get_char():
 def num():
     global end_ind
     while current_char is not None:
-
         if current_char not in digit:
-            if current_char in symbols or current_char in whitespace:
+            if current_char in symbols or current_char in whitespace or current_char in all_letters:
                 return True, get_string(), 'NUM'
             else:
                 return False, get_string() + current_char, 'invalid input'
@@ -94,7 +94,6 @@ def id():
     while current_char is not None:
 
         if (current_char not in digit) and (current_char not in alphabet):
-
             if current_char in symbols or current_char in whitespace:
                 if get_string() in keywords:
                     return True, get_string(), 'KEYWORD'
