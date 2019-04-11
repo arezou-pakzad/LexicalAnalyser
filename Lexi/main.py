@@ -1,10 +1,10 @@
 input_file = open("input.txt", 'r')
 code = input_file.read()
 
-output_file = open("scanner.txt", 'a')
+output_file = open("scanner.txt", 'w+')
 first_output = True
 
-error_file = open("lexical_errors.txt", 'a')
+error_file = open("lexical_errors.txt", 'w+')
 first_error = True
 
 start_ind = 0
