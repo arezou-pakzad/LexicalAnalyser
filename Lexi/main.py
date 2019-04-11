@@ -1,12 +1,11 @@
-# TODO define lines, print on file, while,
-import sys
-
 input_file = open("input.txt", 'r')
 code = input_file.read()
 
 output_file = open("scanner.txt", 'a')
+first_output = True
 
 error_file = open("lexical_errors.txt", 'a')
+first_error = True
 
 start_ind = 0
 end_ind = 0
@@ -15,6 +14,7 @@ current_char = ''
 next_char = ''
 line_num = 1
 line_changed = True
+error_line_changed = True
 
 TOKEN_INITIAL = 0
 TOKEN_NUM = 1
@@ -52,7 +52,6 @@ def get_char():
 
 
 def num():
-    # print('num')
     global end_ind
     while current_char is not None:
 
@@ -67,7 +66,6 @@ def num():
 
 
 def symbol():
-    # print('symbol')
     global end_ind
     if current_char == '=':
         if next_char == '=':
@@ -76,17 +74,17 @@ def symbol():
 
     get_char()
     end_ind = ind
-    # print('get_string in symbols', get_string(), start_ind, '  ', end_ind)
     return True, get_string(), 'SYMBOl'
 
 
 def skip_whitespace():
-    global line_num, line_changed
+    global line_num, line_changed, error_line_changed
     global end_ind
     while current_char in whitespace:
         if current_char == '\n':
             line_num += 1
             line_changed = True
+            error_line_changed = True
         get_char()
         end_ind = ind
 
@@ -111,14 +109,11 @@ def id():
 
 
 def comment():
-    # print('comment')
     global end_ind
     if next_char == '/':
-        # print('this is a comment')
         get_char()
         end_ind = ind
         while current_char is not '\n' and current_char is not None:
-            # print(current_char, 'is not the end of comment')
             get_char()
             end_ind = ind
 
@@ -164,6 +159,11 @@ def get_next_token():
             state = TOKEN_COMMENT
             is_token, token_string, token_type = comment()
 
+        else:
+            is_token = False
+            token_type = 'invalid input'
+            token_string = current_char
+
         if is_token and state != TOKEN_COMMENT:
             print_token(token_type, token_string)
         elif not is_token:
@@ -175,29 +175,33 @@ def get_next_token():
 
 
 def print_token(token_type, token_string):
-    global output_file, line_changed
-    if line_changed and line_num != 1:
+    global output_file, line_changed, first_output
+    if line_changed and not first_output:
         print()
+        output_file.write('\n')
     if line_changed:
         print(str(line_num) + '. (' + token_type + ', ' + token_string + ')', end='')
+        output_file.write(str(line_num) + '. (' + token_type + ', ' + token_string + ')')
         line_changed = False
     else:
         print(' (' + token_type + ', ' + token_string + ')', end='')
-
-    # output_file.write(str(line_num) + '. (' + token_type + ', ' + token_string + ')\n')
+        output_file.write(' (' + token_type + ', ' + token_string + ')')
+    first_output = False
 
 
 def print_error(token_type, token_string):
-    global error_file, line_changed
-    if line_changed and line_num != 1:
+    global error_file, error_line_changed, first_error
+    if error_line_changed and not first_error:
         print()
-    if line_changed:
+        error_file.write('\n')
+    if error_line_changed:
         print(str(line_num) + '. (' + token_string + ', ' + token_type + ')', end='')
-        # line_changed = False
+        error_file.write(str(line_num) + '. (' + token_string + ', ' + token_type + ')')
+        error_line_changed = False
     else:
         print(' (' + token_string + ', ' + token_type + ')', end='')
-
-    # error_file.write(str(line_num) + '. (' + token_string + ', ' + token_type + ')')
+        error_file.write(' (' + token_string + ', ' + token_type + ')')
+    first_error = False
 
 
 get_next_token()
