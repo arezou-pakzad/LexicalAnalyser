@@ -312,7 +312,7 @@ Y.set_transition_dictionary(Y_dictionary, final_state=13, initial_state=11)
 
 
 def function(non_terminal, token_type, token):
-
+    print('function: ' , non_terminal.name)
     s = non_terminal.initial_state
     while s != non_terminal.final_state:
         flag = False
@@ -343,6 +343,9 @@ def function(non_terminal, token_type, token):
             print('Epsilon')
             s = non_terminal.transition_dictionary[(s, 'EPSILON')]
         print()
+        if s == non_terminal.final_state:
+            print(non_terminal.name , ' finished')
+            break
         token_type, token = get_token_one_by_one()
         if token_type == 'SYMBOl':
             token_type = token
