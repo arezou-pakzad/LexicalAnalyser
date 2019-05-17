@@ -290,7 +290,7 @@ T_dictionary = {
     (3, '('): 4,
     (4, E): 5,
     (5, ')'): 6,
-    (3, 'int'): 7,
+    (3, 'NUM'): 7,
     (7, Y): 6
 }
 T.set_transition_dictionary(T_dictionary, final_state=6, initial_state=3)
@@ -312,6 +312,7 @@ Y.set_transition_dictionary(Y_dictionary, final_state=13, initial_state=11)
 
 
 def function(non_terminal, token_type, token):
+
     s = non_terminal.initial_state
     while s != non_terminal.final_state:
         flag = False
@@ -319,10 +320,12 @@ def function(non_terminal, token_type, token):
         for key, value in non_terminal.transition_dictionary.items():
             if key[0] == s:
                 this_state[key] = value
-        print(this_state)
-        print(token_type)
-        if (s, token_type) in this_state:
+        print('this state:' ,this_state)
+        print('current state and token type: ' , (s, token_type))
+        if (s, token_type) in this_state: #.items added
+            print('found the terminal edge')
             s = non_terminal.transition_dictionary[(s, token_type)]
+            print('next state: ' , s)
         elif len(this_state) > 0:
             for key, value in this_state.items():
                 if isinstance(key[1], Non_terminal) and (token_type in key[1].first_set or
@@ -336,16 +339,23 @@ def function(non_terminal, token_type, token):
                         # TODO: error handling
                         return False
                     break
-        if not flag and (s, 'EPSILON') in this_state.keys():
+        if not flag and (s, 'EPSILON') in this_state.keys(): #what is this?
+            print('Epsilon')
             s = non_terminal.transition_dictionary[(s, 'EPSILON')]
         print()
         token_type, token = get_token_one_by_one()
+        if token_type == 'SYMBOl':
+            token_type = token
+        elif token_type == '':
+            token_type = '$'
+        print(token_type, '   ' , token)
 
     return True
 
 
-# print(get_token_one_by_one())
 t_type, t_string = get_token_one_by_one()
+if t_type == 'SYMBOl':
+    t_type = t_string
 print(t_type, t_string)
 function(E, t_type, t_string)
 
