@@ -139,6 +139,7 @@ def comment():
 def get_token_one_by_one():
     global state, end_ind, start_ind
     get_char()
+    token_string = token_type = ''
     if current_char is not None:
         skip_whitespace()
         start_ind = ind
