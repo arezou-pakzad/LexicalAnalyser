@@ -1,5 +1,6 @@
 from lexical_analyser import get_token_one_by_one
 
+
 class Non_terminal:
     def __init__(self, name, first_set, follow_set):
         self.name = name
@@ -7,14 +8,43 @@ class Non_terminal:
         self.follow_set = follow_set
         self.transition_dictionary = dict()
         self.final_state = 0
+        self.first_state = 0
 
-    def set_transition_dictionary(self, transition_dictionary, final_state):
+    def set_transition_dictionary(self, transition_dictionary, final_state, first_state):
         self.transition_dictionary = transition_dictionary
         self.final_state = final_state
+        self.first_state = first_state
 
 
+E = Non_terminal(name='E', first_set=['int', '('], follow_set=[')', '$'])
+T = Non_terminal(name='T', first_set=['int', '('], follow_set=['+', ')', '$'])
+X = Non_terminal(name='X', first_set=['+', 'EPSILON'], follow_set=['$', ')'])
+Y = Non_terminal(name='Y', first_set=['*', 'EPSILON'], follow_set=['+', ')', '$'])
 
-#first sets
+
+def function(non_terminal, token):
+    state = non_terminal.first_state
+
+    while True:
+        flag = False
+        this_state = {key: value for key, value in non_terminal.transition_dictionary if key[0] == state}
+        if (state, token) in this_state:
+            state = non_terminal.transition_dictionary[(state, token)]
+        elif len(this_state) > 0:
+            for key, value in this_state:
+                if type(key[1]) == Non_terminal and (token in key[1].first_set or
+                                                     ('EPSILON' in key[1].first_set and token in key[1].follow_set)):
+                    function(key[1], token)
+                    state = value
+                    flag = True
+                    break
+                    # TODO: error handling
+        if not flag and (state, 'EPSILON') in this_state:
+            state = non_terminal.transition_dictionary[(state, 'EPSILON')]
+
+        token = get_token_one_by_one()
+
+# first sets
 # program	int, void
 # declaration-list	int, void
 # declaraion-list	EPSILON
@@ -58,9 +88,7 @@ class Non_terminal:
 # H	,, EPSILON
 
 
-
-
-#follow sets
+# follow sets
 # program	-|
 # declaration-list	EOF, EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM
 # declaraion-list
@@ -102,5 +130,3 @@ class Non_terminal:
 # args	)
 # arg-list	)
 # H	)
-
-

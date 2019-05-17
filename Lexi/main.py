@@ -31,8 +31,9 @@ whitespace = ['\n', '\r', '\t', ' ', '\v', '\f']
 digit = [str(i) for i in range(10)]
 alphabet = [chr(i) for i in range(65, 91)] + [chr(i) for i in range(97, 123)]
 keywords = ['if', 'else', 'void', 'int', 'while', 'break', 'continue', 'switch', 'default', 'case', 'return', 'int']
-comments = ['/' , '*']
+comments = ['/', '*']
 all_letters = symbols + whitespace + digit + alphabet + keywords + comments
+
 
 def get_string():
     global start_ind, end_ind, code

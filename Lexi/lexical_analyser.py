@@ -31,8 +31,9 @@ whitespace = ['\n', '\r', '\t', ' ', '\v', '\f']
 digit = [str(i) for i in range(10)]
 alphabet = [chr(i) for i in range(65, 91)] + [chr(i) for i in range(97, 123)]
 keywords = ['if', 'else', 'void', 'int', 'while', 'break', 'continue', 'switch', 'default', 'case', 'return', 'int']
-comments = ['/' , '*']
+comments = ['/', '*']
 all_letters = symbols + whitespace + digit + alphabet + keywords + comments
+
 
 def get_string():
     global start_ind, end_ind, code
@@ -134,6 +135,7 @@ def comment():
     get_char()
     return False, get_string() + current_char, 'invald input'
 
+
 def get_token_one_by_one():
     global state, end_ind, start_ind
     get_char()
@@ -166,14 +168,9 @@ def get_token_one_by_one():
             get_char()
             print_error(token_type, token_string)
 
-
         start_ind = ind
         state = TOKEN_INITIAL
     return token_type, token_string
-
-
-
-
 
 
 def get_next_token():
@@ -215,7 +212,6 @@ def get_next_token():
 
 
 def print_token(token_type, token_string):
-
     global output_file, line_changed, first_output
 
     if line_changed and not first_output:
@@ -246,8 +242,6 @@ def print_error(token_type, token_string):
         # print(' (' + token_string + ', ' + token_type + ')', end='')
         error_file.write(' (' + token_string + ', ' + token_type + ')')
     first_error = False
-
-
 
 # output_file.close()
 # error_file.close()
