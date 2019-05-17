@@ -36,6 +36,9 @@ comments = ['/', '*']
 all_letters = symbols + whitespace + digit + alphabet + keywords + comments
 
 
+current_token_type = current_token_string = ''
+
+
 def get_string():
     global start_ind, end_ind, code
     return code[start_ind:end_ind]  # TODO- end_int + 1 ????
@@ -246,20 +249,6 @@ def print_error(token_type, token_string):
     first_error = False
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class Non_terminal:
     def __init__(self, name, first_set, follow_set):
         self.name = name
@@ -311,8 +300,19 @@ Y_dictionary = {
 Y.set_transition_dictionary(Y_dictionary, final_state=13, initial_state=11)
 
 
-def function(non_terminal, token_type, token):
-    print('function: ' , non_terminal.name)
+def get_new_token():
+    global current_token_type, current_token_string
+    current_token_type, current_token_string = get_token_one_by_one()
+    if current_token_type == 'SYMBOl':
+        current_token_type = current_token_string
+    elif current_token_type == '':
+        current_token_type = '$'
+    print(current_token_type, '     ', current_token_string)
+
+
+def function(non_terminal):
+    global current_token_type, current_token_string
+    print('function: ', non_terminal.name)
     s = non_terminal.initial_state
     while s != non_terminal.final_state:
         flag = False
@@ -320,48 +320,44 @@ def function(non_terminal, token_type, token):
         for key, value in non_terminal.transition_dictionary.items():
             if key[0] == s:
                 this_state[key] = value
-        print('this state:' ,this_state)
-        print('current state and token type: ' , (s, token_type))
-        if (s, token_type) in this_state: #.items added
+        print('this state:', this_state)
+        print('current state and token type: ', (s, current_token_type))
+        if (s, current_token_type) in this_state:  # .items added
             print('found the terminal edge')
-            s = non_terminal.transition_dictionary[(s, token_type)]
-            print('next state: ' , s)
+            s = non_terminal.transition_dictionary[(s, current_token_type)]
+            print('next state: ', s)
+            print()
+            get_new_token()
+            if s == non_terminal.final_state:
+                print(non_terminal.name, ' finished')
+
         elif len(this_state) > 0:
             for key, value in this_state.items():
-                if isinstance(key[1], Non_terminal) and (token_type in key[1].first_set or
-                                                     ('EPSILON' in key[1].first_set and token_type in key[1].follow_set)):
+                if isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set or
+                                                         ('EPSILON' in key[1].first_set and current_token_type in key[
+                                                             1].follow_set)):
                     print('inside')
                     print((key[0], key[1].name), value)
-                    res = function(key[1], token_type, token)
+                    res = function(key[1])
                     s = value
                     flag = True
                     if not res:
                         # TODO: error handling
                         return False
                     break
-        if not flag and (s, 'EPSILON') in this_state.keys(): #what is this?
+        if not flag and (s, 'EPSILON') in this_state.keys():  # what is this?
             print('Epsilon')
+            flag = False
             s = non_terminal.transition_dictionary[(s, 'EPSILON')]
-        print()
-        if s == non_terminal.final_state:
-            print(non_terminal.name , ' finished')
-            break
-        token_type, token = get_token_one_by_one()
-        if token_type == 'SYMBOl':
-            token_type = token
-        elif token_type == '':
-            token_type = '$'
-        print(token_type, '   ' , token)
+            print()
+            if s == non_terminal.final_state:
+                print(non_terminal.name, ' finished')
 
     return True
 
 
-t_type, t_string = get_token_one_by_one()
-if t_type == 'SYMBOl':
-    t_type = t_string
-print(t_type, t_string)
-function(E, t_type, t_string)
-
+get_new_token()
+function(E)
 
 # first sets
 # program	int, void
