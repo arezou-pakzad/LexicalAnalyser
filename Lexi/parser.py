@@ -8,6 +8,9 @@ first_output = True
 error_file = open("lexical_errors.txt", 'w+')
 first_error = True
 
+parser_file_dir = 'parser.txt'
+parser_file = open(parser_file_dir, 'w+')
+
 start_ind = 0
 end_ind = 0
 ind = -1
@@ -299,6 +302,11 @@ Y_dictionary = {
 }
 Y.set_transition_dictionary(Y_dictionary, final_state=13, initial_state=11)
 
+def write_to_parser_file(height, leaf):
+    for i in range(height):
+        parser_file.write('| ')
+    parser_file.write(leaf + '\n')
+
 
 def get_new_token():
     global current_token_type, current_token_string
@@ -310,9 +318,10 @@ def get_new_token():
     print(current_token_type, '     ', current_token_string)
 
 
-def function(non_terminal):
+def function(non_terminal, height):
     global current_token_type, current_token_string
     print('function: ', non_terminal.name)
+    write_to_parser_file(height= height, leaf= non_terminal.name)
     s = non_terminal.initial_state
     while s != non_terminal.final_state:
         flag = False
@@ -326,6 +335,7 @@ def function(non_terminal):
             print('found the terminal edge')
             s = non_terminal.transition_dictionary[(s, current_token_type)]
             print('next state: ', s)
+            write_to_parser_file(height + 1, current_token_type)
             print()
             get_new_token()
             if s == non_terminal.final_state:
@@ -338,7 +348,7 @@ def function(non_terminal):
                                                              1].follow_set)):
                     print('inside')
                     print((key[0], key[1].name), value)
-                    res = function(key[1])
+                    res = function(key[1], height + 1)
                     s = value
                     flag = True
                     if not res:
@@ -348,6 +358,7 @@ def function(non_terminal):
         if not flag and (s, 'EPSILON') in this_state.keys():  # what is this?
             print('Epsilon')
             flag = False
+            write_to_parser_file(height + 1, 'EPSILON')
             s = non_terminal.transition_dictionary[(s, 'EPSILON')]
             print()
             if s == non_terminal.final_state:
@@ -357,7 +368,7 @@ def function(non_terminal):
 
 
 get_new_token()
-function(E)
+function(E, height=0)
 
 # first sets
 # program	int, void

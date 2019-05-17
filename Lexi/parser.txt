@@ -1,0 +1,14 @@
+E
+| T
+| | NUM
+| | Y
+| | | EPSILON
+| X
+| | +
+| | E
+| | | T
+| | | | NUM
+| | | | Y
+| | | | | EPSILON
+| | | X
+| | | | EPSILON
