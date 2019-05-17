@@ -7,12 +7,48 @@ class Non_terminal:
         self.follow_set = follow_set
         self.transition_dictionary = dict()
         self.final_state = 0
+        self.initial_state = 0
 
-    def set_transition_dictionary(self, transition_dictionary, final_state):
+    def set_transition_dictionary(self, transition_dictionary, final_state, initial_state):
         self.transition_dictionary = transition_dictionary
         self.final_state = final_state
+        self.initial_state = initial_state
 
 
+E = Non_terminal(name= 'E' , first_set= ['int' , '('], follow_set= [')' , '$'])
+T = Non_terminal(name= 'T' , first_set= ['int' , '('], follow_set= ['+' , ')' , '$'])
+X = Non_terminal(name= 'X' , first_set= ['+' , 'EPSILON'], follow_set= ['$', ')'])
+Y = Non_terminal(name = 'Y' , first_set= ['*' , 'EPSILON'] , follow_set=['+' , ')' , '$'])
+
+E_dictionary = {
+    (0, T): 1,
+    (1 , X) : 2
+}
+E.set_transition_dictionary(E_dictionary, final_state = 2, initial_state= 0)
+
+T_dictionary = {
+    (3, '(') : 4,
+    (4, E) : 5,
+    (5, ')') : 6,
+    (3, 'int') : 7,
+    (7, Y) : 6
+}
+T.set_transition_dictionary(T_dictionary, final_state= 6, initial_state= 3)
+
+X_dictionary = {
+    (8, '+') : 9,
+    (9, E) : 10,
+    (8, 'EPSILON') : 10
+}
+
+X.set_transition_dictionary(X_dictionary, final_state= 10, initial_state=8)
+
+Y_dictionary = {
+    (11, '*') : 12,
+    (12 , T) : 13,
+    (11, 'EPSILON') : 13
+}
+Y.set_transition_dictionary(Y_dictionary, final_state=13 , initial_state=11)
 
 #first sets
 # program	int, void
