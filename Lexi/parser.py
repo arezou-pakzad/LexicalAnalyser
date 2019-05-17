@@ -1,5 +1,19 @@
 from lexical_analyser import get_token_one_by_one
 
+class Non_terminal:
+    def __init__(self, name, first_set, follow_set):
+        self.name = name
+        self.first_set = first_set
+        self.follow_set = follow_set
+        self.transition_dictionary = dict()
+        self.final_state = 0
+
+    def set_transition_dictionary(self, transition_dictionary, final_state):
+        self.transition_dictionary = transition_dictionary
+        self.final_state = final_state
+
+
+
 #first sets
 # program	int, void
 # declaration-list	int, void
