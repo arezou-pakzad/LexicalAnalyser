@@ -1,5 +1,6 @@
 from lexical_analyser import get_token_one_by_one
 
+
 class Non_terminal:
     def __init__(self, name, first_set, follow_set):
         self.name = name
@@ -15,40 +16,40 @@ class Non_terminal:
         self.initial_state = initial_state
 
 
-E = Non_terminal(name= 'E' , first_set= ['int' , '('], follow_set= [')' , '$'])
-T = Non_terminal(name= 'T' , first_set= ['int' , '('], follow_set= ['+' , ')' , '$'])
-X = Non_terminal(name= 'X' , first_set= ['+' , 'EPSILON'], follow_set= ['$', ')'])
-Y = Non_terminal(name = 'Y' , first_set= ['*' , 'EPSILON'] , follow_set=['+' , ')' , '$'])
+E = Non_terminal(name='E', first_set=['int', '('], follow_set=[')', '$'])
+T = Non_terminal(name='T', first_set=['int', '('], follow_set=['+', ')', '$'])
+X = Non_terminal(name='X', first_set=['+', 'EPSILON'], follow_set=['$', ')'])
+Y = Non_terminal(name='Y', first_set=['*', 'EPSILON'], follow_set=['+', ')', '$'])
 
 E_dictionary = {
     (0, T): 1,
-    (1 , X) : 2
+    (1, X): 2
 }
-E.set_transition_dictionary(E_dictionary, final_state = 2, initial_state= 0)
+E.set_transition_dictionary(E_dictionary, final_state=2, initial_state=0)
 
 T_dictionary = {
-    (3, '(') : 4,
-    (4, E) : 5,
-    (5, ')') : 6,
-    (3, 'int') : 7,
-    (7, Y) : 6
+    (3, '('): 4,
+    (4, E): 5,
+    (5, ')'): 6,
+    (3, 'int'): 7,
+    (7, Y): 6
 }
-T.set_transition_dictionary(T_dictionary, final_state= 6, initial_state= 3)
+T.set_transition_dictionary(T_dictionary, final_state=6, initial_state=3)
 
 X_dictionary = {
-    (8, '+') : 9,
-    (9, E) : 10,
-    (8, 'EPSILON') : 10
+    (8, '+'): 9,
+    (9, E): 10,
+    (8, 'EPSILON'): 10
 }
 
-X.set_transition_dictionary(X_dictionary, final_state= 10, initial_state=8)
+X.set_transition_dictionary(X_dictionary, final_state=10, initial_state=8)
 
 Y_dictionary = {
-    (11, '*') : 12,
-    (12 , T) : 13,
-    (11, 'EPSILON') : 13
+    (11, '*'): 12,
+    (12, T): 13,
+    (11, 'EPSILON'): 13
 }
-Y.set_transition_dictionary(Y_dictionary, final_state=13 , initial_state=11)
+Y.set_transition_dictionary(Y_dictionary, final_state=13, initial_state=11)
 
 
 def function(non_terminal, token):
@@ -72,7 +73,7 @@ def function(non_terminal, token):
 
         token = get_token_one_by_one()
 
-#first sets
+# first sets
 # program	int, void
 # declaration-list	int, void
 # declaraion-list	EPSILON
@@ -116,9 +117,7 @@ def function(non_terminal, token):
 # H	,, EPSILON
 
 
-
-
-#follow sets
+# follow sets
 # program	-|
 # declaration-list	EOF, EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM
 # declaraion-list
@@ -160,5 +159,3 @@ def function(non_terminal, token):
 # args	)
 # arg-list	)
 # H	)
-
-
