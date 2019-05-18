@@ -38,6 +38,7 @@ keywords = ['if', 'else', 'void', 'int', 'while', 'break', 'continue', 'switch',
 comments = ['/', '*']
 all_letters = symbols + whitespace + digit + alphabet + keywords + comments
 
+
 current_token_type = current_token_string = ''
 
 
@@ -57,6 +58,7 @@ def get_char():
 
     current_char = None
     return EOF
+
 
 
 def num():
@@ -441,88 +443,49 @@ get_new_token()
 parser.running = True
 parser(E, height=0)
 
-# first Sets
-# program EOF, int, void
-# declaration-list ε, int, void
-# declaration int, void
-# var-declaration int, void
-# A ;, [
-# type-specifier int, void
-# fun-declaration int, void
-# params void, int
-# param-list int, void
-# param int, void
-# B [, ε
-# compound-stmt {
-# statement-list ε, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM
-# statement {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM
-# expression-stmt continue, break, ;, ID, +, -, (, NUM
-# selection-stmt if
-# iteration-stmt while
-# return-stmt return
-# C ;, ID, +, -, (, NUM
-# switch-stmt switch
-# case-stmts
-# case-stmst ε
-# case-stmt case
-# default-stmt default, ε
-# expression ID, +, -, (, NUM
-# var ID
-# D [, ε
-# simple-expression +, -, (, ID, NUM
-# E ε, <, ==
-# relop <, ==
-# additive-expression +, -, (, ID, NUM
-# F ε, +, -
-# addop +, -
-# term +, -, (, ID, NUM
-# G *, ε
-# signed-factor +, -, (, ID, NUM
-# factor (, ID, NUM
-# call ID
-# args ε, ID, +, -, (, NUM
-# arg-list ID, +, -, (, NUM
-# H ,, ε
+program = Non_terminal(name = 'program' , first_set= ['EPSILON' , 'int' , 'void'], follow_set= [])
+declaration_list = Non_terminal(name = 'declaration_list' , first_set=['int', 'void'], follow_set= ['$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(','NUM', '}'])
+declaration = Non_terminal(name= 'declaration' , first_set= ['int' , 'void'],
+                           follow_set= ['int', 'void', 'EOF', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'])
+var_declaration = Non_terminal(name= 'var_declaration' , first_set= ['int' , 'void'],
+                               follow_set= ['int', 'void', 'EOF', '{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                            'switch', 'ID', '+', '-', '(', 'NUM', '}'])
 
-# follow sets
-# program
-# declaration-list EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }
-# declaration int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }
-# var-declaration int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }
-# A int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }
-# type-specifier ID
-# fun-declaration int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }
-# params )
-# param-list )
-# param ,, )
-# B ,, )
-# compound-stmt int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
-# statement-list }
-# statement {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
-# expression-stmt {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
-# selection-stmt {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
-# iteration-stmt {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
-# return-stmt {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
-# C {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
-# switch-stmt {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
-# case-stmts default, }
-# case-stmst
-# case-stmt
-# default-stmt }
-# expression ;, ), ], ,
-# var =, *, +, -, <, ==, ;, ), ], ,
-# D =, *, +, -, <, ==, ;, ), ], ,
-# simple-expression ;, ), ], ,
-# E ;, ), ], ,
-# relop +, -, (, ID, NUM
-# additive-expression <, ==, ;, ), ], ,
-# F <, ==, ;, ), ], ,
-# addop +, -, (, ID, NUM
-# term +, -, <, ==, ;, ), ], ,
-# G +, -, <, ==, ;, ), ], ,
-# signed-factor *, +, -, <, ==, ;, ), ], ,
-# factor *, +, -, <, ==, ;, ), ], ,
-# call *, +, -, <, ==, ;, ), ], ,
-# args )
-# arg-list )
-# H )
+A = Non_terminal(name = 'A' , first_set= [';' , '['], follow_set=['int', 'void', 'EOF', '{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                            'switch', 'ID', '+', '-', '(', 'NUM', '}'] )
+
+type_specifier = Non_terminal(name = 'type_specifier' , first_set=['int' , 'void'] ,
+                              follow_set=['ID'])
+fun_declaration = Non_terminal(name = 'fun_declaration' , first_set=['int' , 'void'],
+                               follow_set=['int', 'void', 'EOF', '{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                           'switch', 'ID', '+', '-', '(', 'NUM', '}']
+                               )
+params = Non_terminal(name= 'params' , first_set=['int' , 'void'], follow_set=[')'])
+param_list = Non_terminal(name = 'param_list' , first_set= ['int' , 'void'] , follow_set= [')'])
+param = Non_terminal(name = 'param' , first_set= ['int' , 'void'], follow_set= [',' , ')'])
+B = Non_terminal(name = 'B', first_set= ['[' , 'EPSILON'], follow_set=[',' , ')'])
+compound_stmt = Non_terminal(name = 'compound_stmt' , first_set= ['{'],
+                             follow_set= ['int', 'void', 'EOF', '{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                          'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else'])
+statement_list = Non_terminal(name= 'statement_list' , first_set=['EPSILON', '{', 'continue',
+        'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM'],
+                              follow_set= ['}'])
+statement = Non_terminal(name = 'statement' ,
+                         first_set= ['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM'],
+                         follow_set= ['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else'])
+expression_stmt = Non_terminal(name = 'expression_stmt' , first_set= ['continue', 'break', ';', 'ID', '+', '-', '(', 'NUM'],
+                               follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                           'switch', 'ID','+', '-', '(', 'NUM', '}', 'else'])
+selection_stmt = Non_terminal(name = 'selection_stmt' , first_set=['if'] ,
+                              follow_set = ['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'
+                                  , 'else'])
+
+iteration_stmt = Non_terminal(name='iteration_stmt' , first_set= ['while'], follow_set= ['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'
+                                  , 'else'])
+
+return_stmt = Non_terminal(name = 'return_stmt' , first_set=['return'], follow_set= ['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'
+                                  , 'else'])
+
+C = Non_terminal(name='C' , first_set=[';' , 'ID' , '+' , '-', '(' , 'NUM'] ,
+                 follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else'])
+
