@@ -60,6 +60,7 @@ def get_char():
     return EOF
 
 
+
 def num():
     global end_ind
     while current_char is not None:
@@ -145,9 +146,11 @@ def comment():
 
 def get_token_one_by_one():
     global state, end_ind, start_ind
-    get_char()
+    # get_char()
+    error_flag = False
     token_string = token_type = ''
-    if current_char is not None:
+    while current_char is not None and not error_flag:
+        error_flag = False
         skip_whitespace()
         start_ind = ind
         if current_char in digit:
@@ -170,10 +173,15 @@ def get_token_one_by_one():
             token_type = 'invalid input'
             token_string = current_char
 
+        print('token string:          ' , token_string, '   index:' , start_ind)
         if is_token and state != TOKEN_COMMENT:
             print_token(token_type, token_string)
+            start_ind = ind
+            state = TOKEN_INITIAL
+            return token_type, token_string
         elif not is_token:
             get_char()
+            error_flag = True
             print_error(token_type, token_string)
 
         start_ind = ind
@@ -318,12 +326,14 @@ def get_new_token():
     print(current_token_type, '     ', current_token_string)
 
 
-def function(non_terminal, height):
+def parser(non_terminal, height):
     global current_token_type, current_token_string
+
     print('function: ', non_terminal.name)
+    error_flag = False
     write_to_parser_file(height= height, leaf= non_terminal.name)
     s = non_terminal.initial_state
-    while s != non_terminal.final_state:
+    while s != non_terminal.final_state and parser.running:
         flag = False
         this_state = {}
         for key, value in non_terminal.transition_dictionary.items():
@@ -331,6 +341,20 @@ def function(non_terminal, height):
                 this_state[key] = value
         print('this state:', this_state)
         print('current state and token type: ', (s, current_token_type))
+        print('len this state: ', len(this_state))
+        if len(this_state) == 1 :
+            terminal_edge = list(this_state.keys())[0][1]
+            if isinstance(terminal_edge, str) and terminal_edge != current_token_type:
+                if current_token_type != '$':
+                    #TODO error #LINE_NUM : Syntax Error! Missing #TERMINAL_NAME
+                    print('error #LINE_NUM : Syntax Error! Missing #TERMINAL_NAME')
+                    print('state: ' , s , ' terminal edge: ' , terminal_edge, ' token:' , current_token_type)
+
+                else:
+                    print('LINE_NUM : Syntax Error! Malformed Input')
+                    # TODO LINE_NUM : Syntax Error! Malformed Input
+                    parser.running = False
+
         if (s, current_token_type) in this_state:  # .items added
             print('found the terminal edge')
             s = non_terminal.transition_dictionary[(s, current_token_type)]
@@ -340,15 +364,26 @@ def function(non_terminal, height):
             get_new_token()
             if s == non_terminal.final_state:
                 print(non_terminal.name, ' finished')
+            flag = True
 
         elif len(this_state) > 0:
             for key, value in this_state.items():
+                print(isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set))
                 if isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set or
-                                                         ('EPSILON' in key[1].first_set and current_token_type in key[
+                                                         (('EPSILON' in key[1].first_set or error_flag) and current_token_type in key[
                                                              1].follow_set)):
+                    if error_flag and 'EPSILON' not in key[1].first_set and current_token_type not in key[1].first_set:
+                        print('Syntax Error! Missing #NON_TERMINAL_DESCRIPTION')
+                        #TODO #LINE_NUM : Syntax Error! Missing #NON_TERMINAL_DESCRIPTION
+                        s = value
+                        error_flag = False
+                        flag = True
+                        break
+
+
                     print('inside')
                     print((key[0], key[1].name), value)
-                    res = function(key[1], height + 1)
+                    res = parser(key[1], height + 1)
                     s = value
                     flag = True
                     if not res:
@@ -357,18 +392,28 @@ def function(non_terminal, height):
                     break
         if not flag and (s, 'EPSILON') in this_state.keys():  # what is this?
             print('Epsilon')
-            flag = False
+            flag = True
             write_to_parser_file(height + 1, 'EPSILON')
             s = non_terminal.transition_dictionary[(s, 'EPSILON')]
             print()
             if s == non_terminal.final_state:
                 print(non_terminal.name, ' finished')
+        if not flag:
+            #TODO write error
+            get_new_token()
+            if current_token_type == '$':
+                print('Syntax Error! Unexpected EndOfFile')
+                #TODO #LINE_NUM : Syntax Error! Unexpected EndOfFile
+                parser.running = False
+
+            error_flag = True
 
     return True
 
-
+get_char()
 get_new_token()
-function(E, height=0)
+parser.running = True
+parser(E, height=0)
 
 # first sets
 # program	int, void
