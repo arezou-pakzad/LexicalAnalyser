@@ -275,41 +275,6 @@ class Non_terminal:
         self.initial_state = initial_state
 
 
-E = Non_terminal(name='E', first_set=['NUM', '('], follow_set=[')', '$'])
-T = Non_terminal(name='T', first_set=['NUM', '('], follow_set=['+', ')', '$'])
-X = Non_terminal(name='X', first_set=['+', 'EPSILON'], follow_set=['$', ')'])
-Y = Non_terminal(name='Y', first_set=['*', 'EPSILON'], follow_set=['+', ')', '$'])
-
-E_dictionary = {
-    (0, T): 1,
-    (1, X): 2
-}
-E.set_transition_dictionary(E_dictionary, final_state=2, initial_state=0)
-
-T_dictionary = {
-    (3, '('): 4,
-    (4, E): 5,
-    (5, ')'): 6,
-    (3, 'NUM'): 7,
-    (7, Y): 6
-}
-T.set_transition_dictionary(T_dictionary, final_state=6, initial_state=3)
-
-X_dictionary = {
-    (8, '+'): 9,
-    (9, E): 10,
-    (8, 'EPSILON'): 10
-}
-
-X.set_transition_dictionary(X_dictionary, final_state=10, initial_state=8)
-
-Y_dictionary = {
-    (11, '*'): 12,
-    (12, T): 13,
-    (11, 'EPSILON'): 13
-}
-Y.set_transition_dictionary(Y_dictionary, final_state=13, initial_state=11)
-
 def write_to_parser_file(height, leaf):
     for i in range(height):
         parser_file.write('| ')
@@ -410,94 +375,188 @@ def parser(non_terminal, height):
 
     return True
 
+
+E = Non_terminal(name='E', first_set=['NUM', '('], follow_set=[')', '$'])
+T = Non_terminal(name='T', first_set=['NUM', '('], follow_set=['+', ')', '$'])
+X = Non_terminal(name='X', first_set=['+', 'EPSILON'], follow_set=['$', ')'])
+Y = Non_terminal(name='Y', first_set=['*', 'EPSILON'], follow_set=['+', ')', '$'])
+
+
+
+
+E_dictionary = {
+    (0, T): 1,
+    (1, X): 2
+}
+E.set_transition_dictionary(E_dictionary, final_state=2, initial_state=0)
+
+T_dictionary = {
+    (3, '('): 4,
+    (4, E): 5,
+    (5, ')'): 6,
+    (3, 'NUM'): 7,
+    (7, Y): 6
+}
+T.set_transition_dictionary(T_dictionary, final_state=6, initial_state=3)
+
+X_dictionary = {
+    (8, '+'): 9,
+    (9, E): 10,
+    (8, 'EPSILON'): 10
+}
+
+X.set_transition_dictionary(X_dictionary, final_state=10, initial_state=8)
+
+Y_dictionary = {
+    (11, '*'): 12,
+    (12, T): 13,
+    (11, 'EPSILON'): 13
+}
+Y.set_transition_dictionary(Y_dictionary, final_state=13, initial_state=11)
+
+
+
+
 get_char()
 get_new_token()
 parser.running = True
 parser(E, height=0)
 
-# first sets
-# program	int, void
-# declaration-list	int, void
-# declaraion-list	EPSILON
+
+#	firs Sets
+# program	EOF, int, void
+program = Non_terminal(name = 'program' , first_set= ['EPSILON' , 'int' , 'void'], follow_set= [])
+declaration_list = Non_terminal(name = 'declaration_list' , first_set=['int', 'void'], follow_set= ['$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(','NUM', '}'])
+declaration = Non_terminal(name= 'declaration' , first_set= ['int' , 'void'],
+                           follow_set= ['int', 'void', 'EOF', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'])
+var_declaration = Non_terminal(name= 'var_declaration' , first_set= ['int' , 'void'],
+                               follow_set= ['int', 'void', 'EOF', '{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                            'switch', 'ID', '+', '-', '(', 'NUM', '}'])
+
+A = Non_terminal(name = 'A' , first_set= [';' , '['], follow_set=['int', 'void', 'EOF', '{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                            'switch', 'ID', '+', '-', '(', 'NUM', '}'] )
+
+type_specifier = Non_terminal(name = 'type_specifier' , first_set=['int' , 'void'] ,
+                              follow_set=['ID'])
+fun_declaration = Non_terminal(name = 'fun_declaration' , first_set=['int' , 'void'],
+                               follow_set=['int', 'void', 'EOF', '{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                           'switch', 'ID', '+', '-', '(', 'NUM', '}']
+                               )
+params = Non_terminal(name= 'params' , first_set=['int' , 'void'], follow_set=[')'])
+param_list = Non_terminal(name = 'param_list' , first_set= ['int' , 'void'] , follow_set= [')'])
+param = Non_terminal(name = 'param' , first_set= ['int' , 'void'], follow_set= [',' , ')'])
+B = Non_terminal(name = 'B', first_set= ['[' , 'EPSILON'], follow_set=[',' , ')'])
+compound_stmt = Non_terminal(name = 'compound_stmt' , first_set= ['{'],
+                             follow_set= ['int', 'void', 'EOF', '{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                          'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else'])
+statement_list = Non_terminal(name= 'statement_list' , first_set=['EPSILON', '{', 'continue',
+        'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM'],
+                              follow_set= ['}'])
+statement = Non_terminal(name = 'statement' ,
+                         first_set= ['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM'],
+                         follow_set= ['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else'])
+expression_stmt = Non_terminal(name = 'expression_stmt' , first_set= ['continue', 'break', ';', 'ID', '+', '-', '(', 'NUM'],
+                               follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                           'switch', 'ID','+', '-', '(', 'NUM', '}', 'else'])
+selection_stmt = Non_terminal(name = 'selection_stmt' , first_set=['if'] ,
+                              follow_set = ['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'
+                                  , 'else'])
+
+iteration_stmt = Non_terminal(name='iteration_stmt' , first_set= ['while'], follow_set= ['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'
+                                  , 'else'])
+
+return_stmt = Non_terminal(name = 'return_stmt' , first_set=['return'], follow_set= ['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'
+                                  , 'else'])
+
+C = Non_terminal(name='C' , first_set=[';' , 'ID' , '+' , '-', '(' , 'NUM'] ,
+                 follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else'])
+
+
+# declaration-list	ε, int, void
 # declaration	int, void
 # var-declaration	int, void
-# A	[, ;
+# A	;, [
 # type-specifier	int, void
 # fun-declaration	int, void
 # params	void, int
 # param-list	int, void
 # param	int, void
-# B	[, EPSILON
+# B	[, ε
 # compound-stmt	{
-# statement-list	EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM
+# statement-list	ε, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM
 # statement	{, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM
 # expression-stmt	continue, break, ;, ID, +, -, (, NUM
 # selection-stmt	if
 # iteration-stmt	while
 # return-stmt	return
 # C	;, ID, +, -, (, NUM
+
+
+
 # switch-stmt	switch
-# case-stmts	EPSILON
+# case-stmts
+# case-stmst	ε
 # case-stmt	case
-# default-stmt	default, EPSILON
+# default-stmt	default, ε
 # expression	ID, +, -, (, NUM
 # var	ID
-# D	[, EPSILON
+# D	[, ε
 # simple-expression	+, -, (, ID, NUM
-# E	EPSILON, <, ==
+# E	ε, <, ==
 # relop	<, ==
 # additive-expression	+, -, (, ID, NUM
-# F	EPSILON, +, -
+# F	ε, +, -
 # addop	+, -
 # term	+, -, (, ID, NUM
-# G	*, EPSILON
+# G	*, ε
 # signed-factor	+, -, (, ID, NUM
 # factor	(, ID, NUM
 # call	ID
-# args	EPSILON, ID, +, -, (, NUM
+# args	ε, ID, +, -, (, NUM
 # arg-list	ID, +, -, (, NUM
-# H	,, EPSILON
-
+# H	,, ε
 
 # follow sets
-# program	-|
-# declaration-list	EOF, EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM
-# declaraion-list
-# declaration	int, void
-# var-declaration	int, void
-# A	int, void
+# program
+# declaration-list	EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }
+# declaration	     int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }
+# var-declaration	 int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }
+# A	                int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }
 # type-specifier	ID
-# fun-declaration	int, void
+# fun-declaration	int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }
 # params	)
 # param-list	)
 # param	,, )
 # B	,, )
-# compound-stmt	int, void, EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, else
+# compound-stmt	int, void, EOF, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
 # statement-list	}
-# statement	EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, else
-# expression-stmt	EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, else
-# selection-stmt	EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, else
-# iteration-stmt	EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, else
-# return-stmt	EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, else
-# C	EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, else
-# switch-stmt	EPSILON, {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, else
-# case-stmts	default, EPSILON
+# statement	{, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
+# expression-stmt	{, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
+# selection-stmt	{, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
+# iteration-stmt	{, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
+# return-stmt	    {, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
+# C	{, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
+
+
+# switch-stmt	{, continue, break, ;, if, while, return, switch, ID, +, -, (, NUM, }, else
+# case-stmts	default, }
+# case-stmst
 # case-stmt
 # default-stmt	}
-# expression	;, ), ], ,, EPSILON
-# var	=, *, EPSILON
-# D	=, *, EPSILON
-# simple-expression	;, ), ], ,, EPSILON
-# E	;, ), ], ,, EPSILON
+# expression	;, ), ], ,
+# var	=, *, +, -, <, ==, ;, ), ], ,
+# D	=, *, +, -, <, ==, ;, ), ], ,
+# simple-expression	;, ), ], ,
+# E	;, ), ], ,
 # relop	+, -, (, ID, NUM
-# additive-expression	EPSILON, <, ==, ;, ), ], ,
-# F	EPSILON, <, ==, ;, ), ], ,
+# additive-expression	<, ==, ;, ), ], ,
+# F	<, ==, ;, ), ], ,
 # addop	+, -, (, ID, NUM
-# term	EPSILON, +, -
-# G	EPSILON, +, -
-# signed-factor	*, EPSILON
-# factor	*, EPSILON
-# call	*, EPSILON
+# term	+, -, <, ==, ;, ), ], ,
+# G	+, -, <, ==, ;, ), ], ,
+# signed-factor	*, +, -, <, ==, ;, ), ], ,
+# factor	*, +, -, <, ==, ;, ), ], ,
+# call	*, +, -, <, ==, ;, ), ], ,
 # args	)
 # arg-list	)
 # H	)
