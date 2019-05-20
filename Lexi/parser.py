@@ -323,6 +323,8 @@ def get_new_token():
         current_token_type = current_token_string
     elif current_token_type == '':
         current_token_type = '$'
+    elif current_token_type == 'KEYWORD':
+        current_token_type = current_token_string
     print(current_token_type, '     ', current_token_string)
 
 
@@ -411,19 +413,23 @@ def parser(non_terminal, height):
     return True
 
 
-# get_char()
-# get_new_token()
-# parser.running = True
-# parser(E, height=0)
+
 
 program = Non_terminal(name='program', first_set=['EPSILON', 'int', 'void'], follow_set=[])
-declaration_list = Non_terminal(name='declaration_list', first_set=['int', 'void'],
+declaration_list = Non_terminal(name='declaration_list', first_set=['int', 'void', 'EPSILON'],
                                 follow_set=['$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID',
                                             '+', '-', '(', 'NUM', '}'])
 declaration = Non_terminal(name='declaration', first_set=['int', 'void'],
                            follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
                                        'switch', 'ID', '+', '-', '(', 'NUM', '}'])
-var_declaration = Non_terminal(name='var_declaration', first_set=['int', 'void'],
+
+I = Non_terminal(name = 'I' , first_set= ['*', 'EPSILON', '(', ';', '[' ],
+                 follow_set= ['int', 'void', 'EOF', '+', '-', '<', '==', ';', ')', '{'
+                     , 'continue', 'break', 'if', 'while', 'return', 'switch', 'ID', '(', 'NUM', '}', ']', ','])
+
+
+
+var_declaration = Non_terminal(name='var_declaration', first_set=[';', '['],
                                follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
                                            'switch', 'ID', '+', '-', '(', 'NUM', '}'])
 
@@ -433,7 +439,7 @@ A = Non_terminal(name='A', first_set=[';', '['],
 
 type_specifier = Non_terminal(name='type_specifier', first_set=['int', 'void'],
                               follow_set=['ID'])
-fun_declaration = Non_terminal(name='fun_declaration', first_set=['int', 'void'],
+fun_declaration = Non_terminal(name='fun_declaration', first_set=['('],
                                follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
                                            'switch', 'ID', '+', '-', '(', 'NUM', '}']
                                )
@@ -482,7 +488,6 @@ case_stmts = Non_terminal(name='case-stmts', first_set=['EPSILON', 'case'], foll
 case_stmt = Non_terminal(name='case-stmt', first_set=['case'], follow_set=['case', 'default', '}'])
 default_stmt = Non_terminal(name='default-stmt', first_set=['default', 'EPSILON'], follow_set=['}'])
 expression = Non_terminal(name='expression', first_set=['ID', '+', '-', '(', 'NUM'], follow_set=[';', ')', ']', ','])
-var = Non_terminal(name='var', first_set=['ID'], follow_set=['=', '*', '+', '-', '<', '==', ';', ')', ']', ','])
 D = Non_terminal(name='D', first_set=['[', 'EPSILON'], follow_set=['=', '*', '+', '-', '<', '==', ';', ')', ']', ','])
 simple_expression = Non_terminal(name='simple-expression', first_set=['+', '-', '(', 'ID', 'NUM'],
                                  follow_set=[';', ')', ']', ','])
@@ -499,7 +504,13 @@ signed_factor = Non_terminal(name='signed-factor', first_set=['+', '-', '(', 'ID
                              follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
 factor = Non_terminal(name='factor', first_set=['(', 'ID', 'NUM'],
                       follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
-call = Non_terminal(name='call', first_set=['ID'], follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
+J = Non_terminal(name = 'J', first_set= ['[', 'ε', '('], follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
+
+var = Non_terminal(name='var', first_set=['[' , 'EPSILON'],
+                   follow_set=['=', '*', '+', '-', '<', '==', ';', ')', ']', ','])
+
+call = Non_terminal(name='call', first_set=['('], follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
+
 args = Non_terminal(name='args', first_set=['EPSILON', 'ID', '+', '-', '(', 'NUM'], follow_set=[')'])
 arg_list = Non_terminal(name='arg-list', first_set=['ID', '+', '-', '(', 'NUM'], follow_set=[')'])
 H = Non_terminal(name='H', first_set=[',', 'EPSILON'], follow_set=[')'])
@@ -516,22 +527,30 @@ declaration_list_dictionary = {
 declaration_list.set_transition_dictionary(declaration_list_dictionary, 0, 2)
 
 declaration_dictionary = {
-    (0, var_declaration) : 1,
-    (0, fun_declaration) : 1
-}
-declaration.set_transition_dictionary(declaration_dictionary, 0 , 1)
-var_declaration_dictionary = {
     (0, type_specifier) : 1,
     (1, 'ID') : 2,
-    (2, A) : 3
+    (2, I) : 3
 }
-var_declaration.set_transition_dictionary(var_declaration_dictionary, 0 , 3)
+declaration.set_transition_dictionary(declaration_dictionary, 0 , 3)
+
+I_dictionary = {
+    (0, var_declaration) : 1,
+    (0, fun_declaration) : 1
+
+}
+
+I.set_transition_dictionary(I_dictionary, initial_state=  0 , final_state= 1)
+var_declaration_dictionary = {
+    (0, A) : 1
+}
+var_declaration.set_transition_dictionary(var_declaration_dictionary, 0 , 1)
 
 A_dictionary = {
     (0, ';') : 1,
     (0, '[') : 2,
     (2, 'NUM') : 3,
-    (3, ']') : 1
+    (3, ']') : 4,
+    (4, ';') : 1
 }
 A.set_transition_dictionary(A_dictionary, 0, 1)
 
@@ -543,14 +562,12 @@ type_specifier.set_transition_dictionary(type_specifier_dictionary, 0 , 1)
 
 
 fun_declaration_dictionary = {
-    (0, type_specifier) : 1,
-    (1, 'ID') : 2,
-    (2, '(') : 3,
-    (3, params) : 4,
-    (4, ')') : 5,
-    (5, compound_stmt) : 6
+    (0, '(') : 1,
+    (1, params) : 2,
+    (2, ')') : 3,
+    (3, compound_stmt) : 4
 }
-fun_declaration.set_transition_dictionary(fun_declaration_dictionary, 0 , 6)
+fun_declaration.set_transition_dictionary(fun_declaration_dictionary, 0 , 4)
 
 params_dictionary = {
     (0, param_list) : 1,
@@ -580,6 +597,15 @@ B_dictionary = {
 }
 
 B.set_transition_dictionary(B_dictionary, 0, 2)
+
+
+
+J_dictionary = {
+    (0, var) : 1,
+    (0, call) : 1
+}
+J.set_transition_dictionary(J_dictionary, 0 , 1)
+
 
 compound_stmt_dictionary = {
     (0 , '{' ) : 1,
@@ -681,18 +707,13 @@ default_stmt_dictionary = {
 default_stmt.set_transition_dictionary(default_stmt_dictionary, 0 , 3)
 
 expression_dictionary = {
-    (0, var) : 1,
-    (1, '=') : 2,
-    (2, expression) : 3,
-    (0, simple_expression) : 3
-}
-expression.set_transition_dictionary(expression_dictionary, 0 , 3)
-
-var_dictionary = {
     (0, 'ID') : 1,
-    (1, D) : 2
+    (1, D) : 2,
+    (2, '=') : 3,
+    (3, expression) : 4,
+    (0, simple_expression) : 4
 }
-var.set_transition_dictionary(var_dictionary, 0 , 2)
+expression.set_transition_dictionary(expression_dictionary, 0 , 4)
 
 
 D_dictionary = {
@@ -725,7 +746,7 @@ relop.set_transition_dictionary(relop_dictionary, 0, 1)
 
 additive_expression_dictionary = {
     (0, term) : 1,
-    (term, F) : 2
+    (1, F) : 2
 }
 additive_expression.set_transition_dictionary(additive_expression_dictionary, 0 , 2)
 
@@ -754,7 +775,7 @@ term.set_transition_dictionary(term_dictionary, 0, 2)
 G_dictionary = {
     (0, '*') : 1,
     (1, term) : 2,
-    (0, 'EPSLION') : 2
+    (0, 'EPSILON') : 2
 }
 G.set_transition_dictionary(G_dictionary, 0 , 2)
 
@@ -767,24 +788,27 @@ signed_factor_dictionary = {
 }
 signed_factor.set_transition_dictionary(signed_factor_dictionary, 0, 1)
 
+var_dictionary = {
+    (0, D) : 1
+}
+var.set_transition_dictionary(var_dictionary, 0, 1)
+
 factor_dictionary = {
     (0, '(') : 1,
     (1, expression) : 2,
     (2, ')') : 3,
-    (0, var) : 3,
-    (0, call) : 3,
+    (0, 'ID') : 4,
+    (4, J) : 3,
     (0, 'NUM') : 3
 }
 factor.set_transition_dictionary(factor_dictionary, 0 , 3)
 
-
 call_dictionary = {
-    (0, 'ID') : 1,
-    (1 , '(') : 2,
-    (2, args) : 3,
-    (3, ')') : 4
+    (0 , '(') : 1,
+    (1, args) : 2,
+    (2, ')') : 3
 }
-call.set_transition_dictionary(call_dictionary, 0 , 4)
+call.set_transition_dictionary(call_dictionary, 0 , 3)
 
 args_dictionary = {
     (0, arg_list) : 1,
@@ -809,7 +833,10 @@ H.set_transition_dictionary(H_dictionary, 0 , 2)
 
 
 
-
+get_char()
+get_new_token()
+parser.running = True
+parser(program, height=0)
 
 
 
