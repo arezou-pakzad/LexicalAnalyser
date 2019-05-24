@@ -376,58 +376,86 @@ def parser(non_terminal, height):
 
     return True
 
+switch_stmt = Non_terminal(name = 'switch_stmt', first_set=['switch'],
+                           follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}',
+                                'else', 'case', 'default'])
+case_stmts_1 = Non_terminal(name = 'case_stmts_1', first_set=['EPSILON', 'case'], follow_set=['default', '}'])
+case_stmt = Non_terminal(name = 'case_stmt', first_set=['case'], follow_set=['case', 'default', '}'])
+default_stmt = Non_terminal(name = 'default_stmt', first_set=['default', 'EPSILON'], follow_set=['}'])
+expression = Non_terminal(name='expression', first_set=['+', '-', 'ID'], follow_set=[';', ')', ']', ','])
 
-# First sets
-# #	Sets
-# program	EOF, int, void
-# declaration_list	ε, int, void
-# declaration_list_prime	ε, int, void
-# declaration	int, void
-# V1	prime., (
-# var_declaration	int, void
-# prime	;, [
-# type_specifier	int, void
-# fun_declaration	int, void
-# params	void
-# param_list1	ε, ID
-# param_list	int, void
-# param_list_prime	,, ε
-# param	int, void
-# prime1	[, ε
-# compound_stmt	{
-# statement_list	ε, {, continue, break, ;, if, while, return, switch, +, -, ID
-# statement_list_prime	ε, {, continue, break, ;, if, while, return, switch, +, -, ID
-# statement	{, continue, break, ;, if, while, return, switch, +, -, ID
-# expression_stmt	continue, break, ;, +, -, ID
-# selection_stmt	if
-# iteration_stmt	while
-# return_stmt	return
-# prime2	;, +, -, ID
-# switch_stmt	switch
-# case_stmts_prime	ε, case
-# case_stmt	case
-# default_stmt	default, ε
-# expression	+, -, ID
-# Var4	[, =, (, ID, NUM
-# var	ID
-# Var3	[, ε
-# simple_expression	+, -, (, ID, NUM
-# Var2	ε, <, ==
-# relop	<, ==
-# additive_expression	+, -, (, ID, NUM
-# additive_expression_prime	ε, +, -
-# addop	+, -
-# term	+, -, (, ID, NUM
-# term_prime	*, ε
-# signed_factor	+, -, (, ID, NUM
-# factor	(, ID, NUM
-# Var1	ε, [, (
-# call	ID
-# args	ε, +, -, ID
-# arg_list	+, -, ID
-# arg_list_prime	,, ε
+Var4 = Non_terminal(name = 'Var4', follow_set=[';', ')', ']', ','], first_set=  ['[', '=', '(', 'ID', 'NUM'])
+var = Non_terminal(name = 'Var', first_set=['ID'], follow_set=[])
+Var3 = Non_terminal(name = 'Var3', first_set=['[','EPSILON'], follow_set=['='])
+simple_expression = Non_terminal(name = 'simple_expression', first_set=['+', '-', '(', 'ID', 'NUM'], follow_set=[])
+Var2= Non_terminal(name = 'Var2', first_set=['EPSILON', '<', '=='], follow_set=[';', ')', ']',','])
+relop = Non_terminal(name ='relop', first_set = ['<', '=='], follow_set=['+', '-', '(', 'ID', 'NUM'])
+additive_expression = Non_terminal(name = 'additive_expression', first_set=['+', '-', '(', 'ID', 'NUM'],
+                                   follow_set=['<', '==', ';', ')', ']', ','])
+additive_expression_1 = Non_terminal(name = 'additive_expression_1', first_set=['EPSILON', '+', '-'], follow_set=['<', '==', ';', ')', ']', ','])
+addop = Non_terminal(name = 'addop', first_set=['+', '-'], follow_set=['+', '-', '(', 'ID', 'NUM'])
+term = Non_terminal(name ='term', first_set=['+', '-', '(', 'ID', 'NUM'], follow_set=['+', '-', '<', '==', ';', ')', ']', ','])
+term_1 = Non_terminal(name ='term_prime', first_set=['*', 'EPSILON'], follow_set=['+', '-', '<', '==', ';', ')', ']', ','])
+signed_factor = Non_terminal(name = 'signed_factor', first_set=['+', '-', '(', 'ID', 'NUM'], follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
+factor = Non_terminal(name = 'factor', first_set=['(', 'ID', 'NUM'], follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
+Var1 = Non_terminal(name = 'Var1', first_set=['EPSILON', '[', '('], follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
+call = Non_terminal(name = 'call', first_set=['ID'], follow_set=[])
+args = Non_terminal(name = 'args', first_set=['EPSILON, +, -, ID'], follow_set=[')'])
+arg_list = Non_terminal(name = 'arg_list', first_set = ['+', '-', 'ID'], follow_set=[')'])
+arg_list_1 = Non_terminal(name = 'arg_list_1', first_set=[',', 'EPSILON'], follow_set=[')'])
 
 
+switch_stmt_dictionary = {(0, 'switch') : 1, (1, '(') : 2, (2, expression) : 3, (3, ')') : 4,
+                          (4, '{') : 5, (5 , case_stmts_1) : 6 , (6 , default_stmt) : 7, (7, '}') : 8}
+switch_stmt.set_transition_dictionary(switch_stmt_dictionary, 0 ,8)
+
+
+case_stmts_1_dictionary = {(0, case_stmt) : 1, (1, case_stmts_1) : 2 , (0, 'EPSILON') : 2}
+case_stmts_1.set_transition_dictionary(case_stmts_1_dictionary)
+case_stmt_dictionary = {(0, 'case') : 1, (1, 'NUM') : 2, (2, ':') : 3, (3, statement_list) : 4}
+case_stmt.set_transition_dictionary(case_stmt_dictionary, 0, 4)
+default_stmt_dictinoary = {(0, 'default') : 1, (1, ':') : 2, (2, statement_list) : 3, (0, 'EPSILON') : 1}
+default_stmt.set_transition_dictionary(default_stmt_dictinoary, 0 , 3)
+expression_dictionary = {(0,'+') : 1, (1, factor) : 2, (2, term_1) : 3, (3, additive_expression_1) : 4, (4, Var2) : 5,
+                         (0, '-') : 6, (6, factor) : 2, (0, 'ID') : 7, (7, Var4) : 5}
+expression.set_transition_dictionary(expression_dictionary)
+Var4_dictionary = {(0, Var3) : 1, (1, '=') : 2 , (2, expression) : 3,
+                   (0,factor) : 4, (4, term_1) : 5 , (5 , additive_expression_1) : 6, (6 ,Var2) : 3}
+Var4.set_transition_dictionary(Var4_dictionary, 0, 3)
+var_dictionary = {(0, 'ID') : 1, (1, Var3) : 2}
+var.set_transition_dictionary(var_dictionary,0, 2)
+Var3_dictionary = {(0, '[') : 1, (1, expression) : 2, (2, ']') : 3, (0, 'EPSILON') : 3}
+Var3.set_transition_dictionary(Var3_dictionary, 0, 3)
+simple_expression_dictionary = {(0, additive_expression) : 1, (1, Var2) : 2}
+simple_expression.set_transition_dictionary(simple_expression_dictionary, 0, 2)
+Var2_dictionary = {(0, relop) : 1, (1, additive_expression) : 2 , (0, 'EPSILON') : 2}
+Var2.set_transition_dictionary(Var2_dictionary, 0, 2)
+relop_dictionary = {(0, '<') : 1, (1, '==') : 2}
+relop.set_transition_dictionary(relop_dictionary, 0, 2)
+additive_expression_dictionary = {(0, term) : 1, (1, additive_expression_1) : 2}
+additive_expression.set_transition_dictionary(additive_expression_dictionary, 0 , 2)
+additive_expression_1_dictionary = {(0, addop) : 1, (1, term) : 2, (2, additive_expression_1) : 3, (0, 'EPSILON') : 3}
+additive_expression_1.set_transition_dictionary(additive_expression_1_dictionary, 0, 3)
+addop_dictionary = {(0, '+') : 1, (1, '-') : 2}
+addop.set_transition_dictionary(addop_dictionary, 0, 2)
+term_dictionary = {(0, signed_factor) : 1, (1, term_1) : 2}
+term.set_transition_dictionary(term_dictionary, 0, 2)
+term_1_dictionary = {(0, '*') : 1 ,(1, signed_factor) : 2, (2, term_1) : 3, (0, 'EPSILON') : 3}
+term_1.set_transition_dictionary(term_1_dictionary, 0, 3)
+signed_factor_dictionary = {(0, factor) : 1 ,(0, '+') : 2, (2, factor) : 1, (0, '-') : 3, (3, factor) : 1}
+signed_factor.set_transition_dictionary(signed_factor_dictionary, 0, 1)
+factor_dictionary = {(0, '(') : 1, (1, expression) : 2, (2, ')') : 3, (0, 'ID') : 4, (4, Var1) : 3, (0, 'NUM') : 3}
+factor.set_transition_dictionary(factor_dictionary, 0, 3)
+Var1_dictionary = {(0, 'EPSILON') : 1, (0, '[') : 2, (2, expression) : 3, (3, ']') : 1, (0, '(') : 4 , (4, args) : 5 , (5 , ')') : 1}
+Var1.set_transition_dictionary(Var1_dictionary, 0, 1)
+call_dictionary = {(0, 'ID') : 1, (1, '(') : 2, (2, args) : 3, (3, ')') : 4}
+call.set_transition_dictionary(call_dictionary, 0, 4)
+args_dictionary = {(0, arg_list) : 1, (0, 'EPSILON') : 1}
+args.set_transition_dictionary(args_dictionary, 0, 1)
+arg_list_dictionary = {(0, expression) : 1, (1, arg_list_1) : 2}
+arg_list.set_transition_dictionary(arg_list_dictionary, 0, 2)
+arg_list_1_dictionary = {(0, ',') : 1, (1, expression) : 2, (2, arg_list_1) : 3, (0, 'EPSILON') : 3}
+arg_list_1.set_transition_dictionary(arg_list_1_dictionary, 0, 3)
 
 
 
@@ -435,59 +463,6 @@ def parser(non_terminal, height):
 
 
 
-
-
-
-
-# Follow sets
-# #	Sets
-# program	-|
-# declaration_list	EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# declaration_list_prime	EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# declaration	int, void, EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# V1
-# var_declaration
-# prime
-# type_specifier	b, ID
-# fun_declaration
-# params	)
-# param_list1	)
-# param_list
-# param_list_prime	)
-# param	,, )
-# prime1	,, )
-# compound_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# statement_list	}, case, default
-# statement_list_prime	}, case, default
-# statement	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# expression_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# selection_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# iteration_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# return_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# prime2	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# switch_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# case_stmts_prime	default, }
-# case_stmt	case, default, }
-# default_stmt	}
-# expression	;, ), ], ,
-# Var4	;, ), ], ,
-# var
-# Var3	=
-# simple_expression
-# Var2	;, ), ], ,
-# relop	+, -, (, ID, NUM
-# additive_expression	<, ==, ;, ), ], ,
-# additive_expression_prime	<, ==, ;, ), ], ,
-# addop	+, -, (, ID, NUM
-# term	+, -, <, ==, ;, ), ], ,
-# term_prime	+, -, <, ==, ;, ), ], ,
-# signed_factor	*, +, -, <, ==, ;, ), ], ,
-# factor	*, +, -, <, ==, ;, ), ], ,
-# Var1	*, +, -, <, ==, ;, ), ], ,
-# call
-# args	)
-# arg_list	)
-# arg_list_prime	)
 
 
 
