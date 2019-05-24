@@ -350,6 +350,7 @@ def parser(non_terminal, height):
                     # TODO error #LINE_NUM : Syntax Error! Missing #TERMINAL_NAME
                     print('error #LINE_NUM : Syntax Error! Missing #TERMINAL_NAME')
                     print('state: ', s, ' terminal edge: ', terminal_edge, ' token:', current_token_type)
+                    current_token_type = terminal_edge
 
                 else:
                     print('LINE_NUM : Syntax Error! Malformed Input')
