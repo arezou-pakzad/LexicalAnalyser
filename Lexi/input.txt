@@ -1,10 +1,15 @@
 void main (void) {
-    switch (a) {
+    b = b + 1;
+    switch (a){
         case 2:
-            b = b + 1;
-        case 3:
-            b = b + 2;
-        case default:
-            b = b - -2;
+            b = b - 1
+        default:
+            b = a;
+    }
+
+    if (a == 1) {
+        b = a;
+    } else {
+        b = b + 1;
     }
 }

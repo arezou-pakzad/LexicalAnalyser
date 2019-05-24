@@ -4,8 +4,8 @@ code = input_file.read()
 output_file = open("scanner.txt", 'w+')
 first_output = True
 
-error_file = open("lexical_errors.txt", 'w+')
-first_error = True
+lexical_error_file = open("lexical_errors.txt", 'w+')
+first_lexical_error = True
 
 start_ind = 0
 end_ind = 0
@@ -190,7 +190,7 @@ def print_token(token_type, token_string):
 
 
 def print_error(token_type, token_string):
-    global error_file, error_line_changed, first_error
+    global lexical_error_file, error_line_changed, first_lexical_error
     if error_line_changed and not first_error:
         print()
         error_file.write('\n')
@@ -206,5 +206,5 @@ def print_error(token_type, token_string):
 
 get_next_token()
 output_file.close()
-error_file.close()
+lexical_error_file.close()
 input_file.close()
