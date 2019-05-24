@@ -638,7 +638,7 @@ type_specifier_dictionary = {
     (0, 'int'): 1,
     (0, 'void'): 1
 }
-type_specifier.set_transition_dictionary(type_specifier, 0, 1)
+type_specifier.set_transition_dictionary(type_specifier_dictionary, 0, 1)
 
 fun_declaration_dictionary = {
     (0, type_specifier): 1,
