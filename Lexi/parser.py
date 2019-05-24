@@ -376,501 +376,489 @@ def parser(non_terminal, height):
     return True
 
 
-program = Non_terminal(name='program', first_set=['$', 'int', 'void'], follow_set=[])
-declaration_list = Non_terminal(name='declaration_list', first_set=['EPSILON', 'int', 'void'],
-                                follow_set=['$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+',
-                                            '-', 'ID', '}'])
-
-declaration_list_1 = Non_terminal(name='declaration_list_1', first_set=['EPSILON', 'int', 'void'],
-                                  follow_set=['$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch',
-                                              '+', '-', 'ID', '}'])
-
-declaration = Non_terminal(name='declaration', first_set=['int', 'void'],
-                           follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
-                                       'switch', '+', '-', 'ID', '}'])
-
-V1 = Non_terminal(name='V1', first_set=['(', ';', '['],
-                  follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+',
-                              '-', 'ID', '}'])
-
-var_declaration = Non_terminal(name='var_declaration', first_set=['int', 'void'], follow_set=[])
-
-prime = Non_terminal(name='prime', first_set=[';', '['],
-                     follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch',
-                                 '+', '-', 'ID', '}'])
-
-type_specifier = Non_terminal(name='type_specifier', first_set=['int', 'void'], follow_set=['ID'])
-
-fun_declaration = Non_terminal(name='fun_declaration', first_set=['int', 'void'], follow_set=[])
-
-params = Non_terminal(name='params', first_set=['void'], follow_set=[')'])
-
-param_list1 = Non_terminal(name='param_list1', first_set=['EPSILON', 'ID'], follow_set=[')'])
-
-param_list = Non_terminal(name='param_list', first_set=['int', 'void'], follow_set=[])
-
-param_list_1 = Non_terminal(name='param_list_1', first_set=[',', 'EPSILON'], follow_set=[')'])
-
-param = Non_terminal(name='param', first_set=['int', 'void'], follow_set=[',', ')'])
-
-prime1 = Non_terminal(name='prime1', first_set=['[', 'EPSILON'], follow_set=[',', ')'])
-
-compound_stmt = Non_terminal(name='compound_stmt', first_set=['{'],
-                             follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
-                                         'switch', '+', '-', 'ID', '}', 'else', 'case', 'default'])
-
-statement_list = Non_terminal(name='statement_list',
-                              first_set=['EPSILON', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch',
-                                         '+', '-', 'ID'],
-                              follow_set=['}', 'case', 'default'])
-
-statement_list_1 = Non_terminal(name='statement_list_1',
-                                first_set=['EPSILON', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch',
-                                           '+', '-', 'ID'],
-                                follow_set=['}', 'case', 'default'])
-
-statement = Non_terminal(name='statement',
-                         first_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID'],
-                         follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID',
-                                     '}', 'else', 'case', 'default'])
-
-expression_stmt = Non_terminal(name='expression_stmt', first_set=['continue', 'break', ';', '+', '-', 'ID'],
-                               follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-',
-                                           'ID', '}', 'else', 'case', 'default'])
-
-selection_stmt = Non_terminal(name='selection_stmt', first_set=['if'],
-                              follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-',
-                                          'ID', '}', 'else', 'case', 'default'])
-
-iteration_stmt = Non_terminal(name='iteration_stmt', first_set=['while'],
-                              follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-',
-                                          'ID', '}', 'else', 'case', 'default'])
-
-return_stmt = Non_terminal(name='return_stmt', first_set=['return'],
-                           follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID',
-                                       '}', 'else', 'case', 'default'])
-
-prime2 = Non_terminal(name='prime2', first_set=[';', '+', '-', 'ID'],
-                      follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}',
-                                  'else', 'case', 'default'])
 
 
-switch_stmt = Non_terminal(name='switch_stmt', first_set=['switch'],
-                           follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID',
-                                       '}',
-                                       'else', 'case', 'default'])
 
-case_stmts_1 = Non_terminal(name='case_stmts_1', first_set=['EPSILON', 'case'], follow_set=['default', '}'])
 
-case_stmt = Non_terminal(name='case_stmt', first_set=['case'], follow_set=['case', 'default', '}'])
 
-default_stmt = Non_terminal(name='default_stmt', first_set=['default', 'EPSILON'], follow_set=['}'])
 
-expression = Non_terminal(name='expression', first_set=['+', '-', 'ID'], follow_set=[';', ')', ']', ','])
 
-Var4 = Non_terminal(name='Var4', follow_set=[';', ')', ']', ','], first_set=['[', '=', '(', 'ID', 'NUM'])
 
-var = Non_terminal(name='Var', first_set=['ID'], follow_set=[])
 
-Var3 = Non_terminal(name='Var3', first_set=['[', 'EPSILON'], follow_set=['='])
 
-simple_expression = Non_terminal(name='simple_expression', first_set=['+', '-', '(', 'ID', 'NUM'], follow_set=[])
 
-Var2 = Non_terminal(name='Var2', first_set=['EPSILON', '<', '=='], follow_set=[';', ')', ']', ','])
 
-relop = Non_terminal(name='relop', first_set=['<', '=='], follow_set=['+', '-', '(', 'ID', 'NUM'])
+program	= Non_terminal(name = 'program', first_set=['$', 'int', 'void'], follow_set=[])
 
-additive_expression = Non_terminal(name='additive_expression', first_set=['+', '-', '(', 'ID', 'NUM'],
+DeclarationList = Non_terminal(name = 'declaration_list', first_set= ['EPSILON', 'int', 'void'] ,
+                               follow_set=['$', '{', 'continue', 'break', ';', 'if',
+'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'])
+
+
+DeclarationList1 = Non_terminal(name = 'declaration_list1', first_set= ['EPSILON', 'int', 'void'],
+                                follow_set=['$', '{', 'continue', 'break', ';', 'if',
+'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'])
+
+Declaration	= Non_terminal(name = 'declatation', first_set=['int', 'void'],
+                              follow_set =['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch'
+                                  , 'ID', '+', '-', '(', 'NUM', '}'])
+
+
+FTypeSpecifier2 = Non_terminal(name = 'FTypeSpecifier2', first_set=	['ID'],
+                               follow_set=['int', 'void', '$', '{', 'continue','break', ';', 'if', 'while', 'return', 'switch',
+                                    'ID', '+', '-', '(', 'NUM', '}'])
+
+Fid = Non_terminal(name='Fid', first_set=['(',';', '['], follow_set=['int', 'void', '$', '{', 'continue','break', ';', 'if', 'while', 'return', 'switch',
+                                    'ID', '+', '-', '(', 'NUM', '}'])
+# FID = Non_terminal(name = 'FID', first_set=['(', 'EPSILON', '[', ';'],
+#                    follow_set=['int', 'void', '$','*', '+', '-', 'ID', '(', 'NUM', '<', '==',
+#                             ';', ')', '{', 'continue', 'break', 'if', 'while', 'return', 'switch', '}', ']', ','])
+#
+
+FTypeSpecifier	= Non_terminal(name= 'FTypeSpecifier', first_set= ['ID'],
+                                 follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while',
+'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}'])
+
+FID1 = Non_terminal(name = 'FID1', first_set=[';', '['],
+                    follow_set=['int', 'void', '$', '{', 'continue','break', ';', 'if', 'while', 'return', 'switch',
+                                    'ID', '+', '-', '(', 'NUM', '}'])
+
+TypeSpecifier = Non_terminal(name = 'TypeSpecifier', first_set=['int', 'void'],
+                             follow_set=['ID'])
+
+Params	= Non_terminal(name = 'params', first_set=['int', 'void'], follow_set=[')'])
+Fvoid	= Non_terminal(name = 'Fvoid', first_set=['EPSILON', 'ID'], follow_set=[')'])
+
+ParamList1	= Non_terminal(name = 'param_list1', first_set=[',', 'EPSILON'], follow_set=[')'])
+
+Param = Non_terminal(name = 'param', first_set=['int', 'void'], follow_set= [',' ')'])
+
+FTypeSpecifier1 = Non_terminal(name = 'FTypeSpecifier1', first_set=['ID'], follow_set=[',', ')'])
+
+FID2 = Non_terminal(name = 'FID2', first_set=['EPSILON', '['], follow_set=[',', ')'])
+
+
+CompoundStmt = Non_terminal(name = 'CompoundStmt', first_set=['{'],
+                            follow_set=['int', 'void', '$', '{', 'continue',
+                        'break', ';', 'if', 'while', 'return', 'switch', 'ID', '(', 'NUM', '-', '+', '}',
+                            'else', 'case', 'default'])
+
+
+StatementList = Non_terminal(name = 'StatementList', first_set=['EPSILON', '{', 'continue',
+                        'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM'], follow_set=['}', 'case', 'default'])
+
+StatementList1	= Non_terminal(name = 'StatementList1',
+                                 first_set=['EPSILON', '{', 'continue',
+                        'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM'],
+                                 follow_set=['}', 'case', 'default'])
+
+Statement	= Non_terminal(name = 'Statement',
+                            first_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-', '(', 'NUM'],
+            follow_set = ['{', 'continue', 'break', ';', 'if', 'while',
+                          'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else', 'case', 'default'])
+
+ExpressionStmt	= Non_terminal(name = 'ExpressionStmt', first_set=['continue', 'break', ';', 'ID', '+', '-', '(', 'NUM'],
+                                 follow_set=['{', 'continue', 'break', ';', 'if', 'while',
+                          'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else', 'case', 'default'])
+
+SelectionStmt = Non_terminal(name = 'SelectionStmt', first_set=['if'],
+                             follow_set=['{', 'continue', 'break', ';', 'if', 'while',
+                          'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else', 'case', 'default'])
+IterationStmt = Non_terminal(name = 'IterationStmt', first_set=['while'],
+                             follow_set=['{', 'continue', 'break', ';', 'if', 'while',
+                          'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else', 'case', 'default'])
+
+ReturnStmt	= Non_terminal(name = 'ReturnStmt', first_set=['return'],
+                             follow_set=['{', 'continue', 'break', ';', 'if', 'while',
+                          'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else', 'case', 'default'])
+
+
+Freturn	= Non_terminal(name = 'Freturn', first_set=[';', 'ID', '+', '-', '(', 'NUM'],
+                          follow_set=['{', 'continue', 'break', ';', 'if', 'while',
+                          'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else', 'case', 'default'])
+
+
+SwitchStmt = Non_terminal(name = 'SwitchStmt', first_set=['switch'],
+                          follow_set=['{', 'continue', 'break', ';', 'if', 'while',
+                          'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else', 'case', 'default'])
+
+
+CaseStmts = Non_terminal(name = 'CaseStmts', first_set=['EPSILON', 'case'], follow_set=['default', '}'])
+CaseStmts1	= Non_terminal(name = 'CaseStmts1', first_set=['EPSILON', 'case'], follow_set=['default', '}'])
+CaseStmt = Non_terminal(name = 'CaseStmt', first_set=['case'], follow_set=['case', 'default', '}'])
+
+DefaultStmt	= Non_terminal(name = 'DefaultStmt', first_set=['default','EPSILON'], follow_set=['}'])
+
+Expression	= Non_terminal(name = 'Expression', first_set=['ID', '+', '-', '(', 'NUM'],
+                             follow_set=[';', ')', ']', ','])
+
+
+FID = Non_terminal(name = 'FID', first_set=['EPSILON', '['], follow_set=['*', '+', '-', 'ID', '(', 'NUM', '<', '==', ';', ')', ']', ','])
+
+
+
+
+FAdditiveExpression = Non_terminal(name = 'FAdditiveExpression', first_set=['EPSILON', '<', '=='], follow_set=[';', ')', ']', ','])
+Relop = Non_terminal(name = 'Relop', first_set = ['<', '=='], follow_set=['+', '-', '(', 'ID', 'NUM'])
+AdditiveExpression	= Non_terminal(name = 'AdditiveExpression', first_set = ['+', '-', '(', 'ID', 'NUM'],
+                                     follow_set=[';', ')', ']', ','])
+
+AdditiveExpression1 = Non_terminal(name = 'AdditiveExpression1', first_set=['EPSILON', '+', '-'],
                                    follow_set=['<', '==', ';', ')', ']', ','])
 
-additive_expression_1 = Non_terminal(name='additive_expression_1', first_set=['EPSILON', '+', '-'],
-                                     follow_set=['<', '==', ';', ')', ']', ','])
+Addop = Non_terminal(name = 'Addop', first_set = ['+', '-'], follow_set=['+', '-', '(', 'ID', 'NUM'])
+Term = Non_terminal(name = 'Term', first_set = ['+', '-', '(', 'ID', 'NUM'],
+                    follow_set=['+', '-', ';', ')', '<', '==', ']', ','])
 
-addop = Non_terminal(name='addop', first_set=['+', '-'], follow_set=['+', '-', '(', 'ID', 'NUM'])
 
-term = Non_terminal(name='term', first_set=['+', '-', '(', 'ID', 'NUM'],
-                    follow_set=['+', '-', '<', '==', ';', ')', ']', ','])
+Term1 = Non_terminal(name = 'term1', first_set = ['*', 'EPSILON'], follow_set=['+', '-', ';', ')', '<', '==', ']', ','])
 
-term_1 = Non_terminal(name='term_prime', first_set=['*', 'EPSILON'],
-                      follow_set=['+', '-', '<', '==', ';', ')', ']', ','])
 
-signed_factor = Non_terminal(name='signed_factor', first_set=['+', '-', '(', 'ID', 'NUM'],
-                             follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
+SignedFactor = Non_terminal(name = 'SignedFactor', first_set = ['+', '-', '(', 'ID', 'NUM'],
+                            follow_set=['*', '+', '-', ';', ')', '<', '==', ']', ','])
 
-factor = Non_terminal(name='factor', first_set=['(', 'ID', 'NUM'],
-                      follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
+Factor	= Non_terminal(name = 'Factor', first_set = ['(', 'ID', 'NUM'],
+                            follow_set=['*', '+', '-', 'ID', '(', 'NUM', '<', '==', ';', ')', ']', ','])
 
-Var1 = Non_terminal(name='Var1', first_set=['EPSILON', '[', '('],
-                    follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
+Fid_1 = Non_terminal(name = 'Fid_1', first_set=['(', '[', 'EPSILON',],
+                     follow_set=['*', '+', '-', '<', '==', ';', ')', ']', ','])
 
-call = Non_terminal(name='call', first_set=['ID'], follow_set=[])
 
-args = Non_terminal(name='args', first_set=['EPSILON, +, -, ID'], follow_set=[')'])
+Call = Non_terminal(name = 'Call', first_set=['ID'],
+                    follow_set = ['*', '+', '-', '<', '==', ';', ')', ']', ','])
 
-arg_list = Non_terminal(name='arg_list', first_set=['+', '-', 'ID'], follow_set=[')'])
 
-arg_list_1 = Non_terminal(name='arg_list_1', first_set=[',', 'EPSILON'], follow_set=[')'])
+Args = Non_terminal(name = 'Args', first_set=['EPSILON', 'ID', '+', '-', '(', 'NUM'], follow_set=[')'])
+ArgList	= Non_terminal(name = 'ArgList', first_set=['ID', '+', '-', '(', 'NUM'], follow_set=[')'])
+ArgList1 = Non_terminal(name = 'ArgList1', first_set=[',', 'EPSILON'], follow_set=[')'])
 
-switch_stmt_dictionary = {(0, 'switch'): 1, (1, '('): 2, (2, expression): 3, (3, ')'): 4,
-                          (4, '{'): 5, (5, case_stmts_1): 6, (6, default_stmt): 7, (7, '}'): 8}
-switch_stmt.set_transition_dictionary(switch_stmt_dictionary, 0, 8)
+Assign_2 = Non_terminal(name = 'assign_2 ', first_set = ['(', 'NUM', '-', '+'], follow_set=[';', ')', ']', ','])
+Assign_3 = Non_terminal(name = 'assign_3', first_set=['*', 'EPSILON', '+', '-', '<', '=='], follow_set=[';', ')', ']', ','])
+Assign_1 = Non_terminal(name = 'assign_3', first_set=['=', '[', '*', 'EPSILON', '(', '+', '-', '<', '=='],
+                        follow_set=[';', ')', ']', ','])
 
-case_stmts_1_dictionary = {(0, case_stmt): 1, (1, case_stmts_1): 2, (0, 'EPSILON'): 2}
-case_stmts_1.set_transition_dictionary(case_stmts_1_dictionary, 0, 2)
+#
+#
+# Program -> DeclarationList $
+#
+# DeclarationList -> DeclarationList_1
+#
+# DeclarationList_1 -> Declaration DeclarationList_1
+# DeclarationList_1 -> ε
+#
+# Declaration -> TypeSpecifier FTypeSpecifier_2
+#
+# FTypeSpecifier_2 -> ID Fid
+#
+# Fid -> FID_1
+# Fid -> ( Params ) CompoundStmt
+#
+# FID_1 -> ;
+# FID_1 ->[ NUM ] ;
+#
+# TypeSpecifier -> int
+# TypeSpecifier -> void
+#
+# Params -> void Fvoid
+# Params -> int FTypeSpecifier_1 ParamList_1
+#
+# Fvoid -> FTypeSpecifier_1 ParamList_1
+# Fvoid -> ε
+#
+# ParamList_1 -> , Param ParamList_1
+# ParamList_1 -> ε
+#
+# Param -> TypeSpecifier FTypeSpecifier_1
+#
+# FTypeSpecifier_1 -> ID FID_2
+#
+# FID_2 -> ε
+# FID_2 -> [ ]
+#
+# CompoundStmt -> { DeclarationList StatementList }
+#
+# StatementList -> StatementList_1
+#
+# StatementList_1 -> Statement StatementList_1
+# StatementList_1 -> ε
+#
+# Statement -> ExpressionStmt
+# Statement -> CompoundStmt
+# Statement -> SelectionStmt
+# Statement -> IterationStmt
+# Statement -> ReturnStmt
+# Statement -> SwitchStmt
+#
+# ExpressionStmt -> Expression ;
+# ExpressionStmt -> continue ;
+# ExpressionStmt -> break ;
+# ExpressionStmt -> ;
+#
+# SelectionStmt -> if ( Expression ) Statement else Statement
+#
+# IterationStmt -> while ( Expression ) Statement
+#
+# ReturnStmt -> return Freturn
+#
+# Freturn -> ;
+# Freturn -> Expression ;
+#
+# SwitchStmt -> switch ( Expression ) { CaseStmts DefaultStmt }
+#
+# CaseStmts -> CaseStmts_1
+#
+# CaseStmts_1 -> CaseStmt CaseStmts_1
+# CaseStmts_1 -> ε
+#
+# CaseStmt -> case NUM : StatementList
+#
+# DefaultStmt -> default : StatementList
+# DefaultStmt -> ε
+#
+# Expression -> ID Assign_1
+# Expression -> Assign_2
+#
+# FID -> ε
+# FID -> [ Expression ]
+#
+# FAdditiveExpression -> Relop AdditiveExpression
+# FAdditiveExpression -> ε
+#
+# Relop -> <
+# Relop -> ==
+#
+# AdditiveExpression -> Term AdditiveExpression_1
+#
+# AdditiveExpression_1 -> Addop Term AdditiveExpression_1
+# AdditiveExpression_1 -> ε
+#
+# Addop -> +
+# Addop -> -
+#
+# Term -> SignedFactor Term_1
+#
+# Term_1 -> * SignedFactor Term_1
+# Term_1 -> ε
+#
+# SignedFactor -> Factor
+# SignedFactor -> + Factor
+# SignedFactor -> - Factor
+#
+# Factor -> ( Expression )
+# Factor -> ID Fid_1
+# Factor -> NUM
+#
+# Fid_1 -> FID
+# Fid_1 -> ( Args )
+#
+# Args -> ArgList
+# Args -> ε
+#
+# ArgList -> Expression ArgList_1
+#
+# ArgList_1 -> , Expression ArgList_1
+# ArgList_1 -> ε
+#
+# Assign_2 -> ( Expression ) Assign_3
+# Assign_2 -> NUM Assign_3
+# Assign_2 -> - Factor Assign_3
+# Assign_2 -> + Factor Assign_3
+#
+# Assign_3 -> Term_1 AdditiveExpression_1 FAdditiveExpression
+#
+# Assign_1 -> = FID Expression
+# Assign_1 -> FID Term_1 AdditiveExpression_1 FAdditiveExpression
+# Assign_1 -> ( Args ) Term_1 AdditiveExpression_1 FAdditiveExpression
 
-case_stmt_dictionary = {(0, 'case'): 1, (1, 'NUM'): 2, (2, ':'): 3, (3, statement_list): 4}
-case_stmt.set_transition_dictionary(case_stmt_dictionary, 0, 4)
+program_dictionary = {(0, DeclarationList): 1, (1, '$') :2}
+program.set_transition_dictionary(program_dictionary,0 , 2)
 
-default_stmt_dictinoary = {(0, 'default'): 1, (1, ':'): 2, (2, statement_list): 3, (0, 'EPSILON'): 1}
-default_stmt.set_transition_dictionary(default_stmt_dictinoary, 0, 3)
+DeclarationList_dictionary = {(0, DeclarationList1): 1}
+DeclarationList.set_transition_dictionary(DeclarationList_dictionary, 0, 1)
 
-expression_dictionary = {(0, '+'): 1, (1, factor): 2, (2, term_1): 3, (3, additive_expression_1): 4, (4, Var2): 5,
-                         (0, '-'): 6, (6, factor): 2, (0, 'ID'): 7, (7, Var4): 5}
-expression.set_transition_dictionary(expression_dictionary, 0, 5)
 
-Var4_dictionary = {(0, Var3): 1, (1, '='): 2, (2, expression): 3,
-                   (0, factor): 4, (4, term_1): 5, (5, additive_expression_1): 6, (6, Var2): 3}
-Var4.set_transition_dictionary(Var4_dictionary, 0, 3)
+DeclarationList1_dictionary = {(0, Declaration) : 1, (1, DeclarationList1) : 2, (0, 'EPSILON') : 2}
+DeclarationList1.set_transition_dictionary(DeclarationList1_dictionary, 0 , 2)
 
-var_dictionary = {(0, 'ID'): 1, (1, Var3): 2}
-var.set_transition_dictionary(var_dictionary, 0, 2)
+Declaration_dictionary = {(0, TypeSpecifier) : 1, (1, FTypeSpecifier2) : 2}
+Declaration.set_transition_dictionary(Declaration_dictionary, 0 , 2)
 
-Var3_dictionary = {(0, '['): 1, (1, expression): 2, (2, ']'): 3, (0, 'EPSILON'): 3}
-Var3.set_transition_dictionary(Var3_dictionary, 0, 3)
 
-simple_expression_dictionary = {(0, additive_expression): 1, (1, Var2): 2}
-simple_expression.set_transition_dictionary(simple_expression_dictionary, 0, 2)
+FTypeSpecifier2_dictionary = {(0, 'ID') : 1, (1, Fid) : 2}
+FTypeSpecifier2.set_transition_dictionary(FTypeSpecifier2_dictionary, 0, 2)
 
-Var2_dictionary = {(0, relop): 1, (1, additive_expression): 2, (0, 'EPSILON'): 2}
-Var2.set_transition_dictionary(Var2_dictionary, 0, 2)
 
-relop_dictionary = {(0, '<'): 1, (1, '=='): 2}
-relop.set_transition_dictionary(relop_dictionary, 0, 2)
+Fid_dictionary = {(0, FID1) : 1, (0, '(') : 2, (2, Params) : 3, (3, ')') : 4, (4, CompoundStmt) : 1}
+Fid.set_transition_dictionary(Fid_dictionary, 0, 1)
 
-additive_expression_dictionary = {(0, term): 1, (1, additive_expression_1): 2}
-additive_expression.set_transition_dictionary(additive_expression_dictionary, 0, 2)
+FID1_dictionary = {(0, '[') : 1,(1,'NUM') : 2, (2, ']') : 3, (3, ';'): 4, (0, ';') : 4}
+FID1.set_transition_dictionary(FID1_dictionary, 0 , 4)
 
-additive_expression_1_dictionary = {(0, addop): 1, (1, term): 2, (2, additive_expression_1): 3, (0, 'EPSILON'): 3}
-additive_expression_1.set_transition_dictionary(additive_expression_1_dictionary, 0, 3)
+TypeSpecifier_dictionary = {(0, 'int') : 1, (0, 'void') : 1}
+TypeSpecifier.set_transition_dictionary(TypeSpecifier_dictionary, 0 , 1)
 
-addop_dictionary = {(0, '+'): 1, (1, '-'): 2}
-addop.set_transition_dictionary(addop_dictionary, 0, 2)
 
-term_dictionary = {(0, signed_factor): 1, (1, term_1): 2}
-term.set_transition_dictionary(term_dictionary, 0, 2)
+Params_dictionary = {(0, 'int') : 1, (1, FTypeSpecifier1) : 2, (2, ParamList1) : 3, (0, 'void') : 4, (4, Fvoid) : 3}
+Params.set_transition_dictionary(Params_dictionary, 0, 3)
 
-term_1_dictionary = {(0, '*'): 1, (1, signed_factor): 2, (2, term_1): 3, (0, 'EPSILON'): 3}
-term_1.set_transition_dictionary(term_1_dictionary, 0, 3)
 
-signed_factor_dictionary = {(0, factor): 1, (0, '+'): 2, (2, factor): 1, (0, '-'): 3, (3, factor): 1}
-signed_factor.set_transition_dictionary(signed_factor_dictionary, 0, 1)
+Fvoid_dictionary = {(0, FTypeSpecifier1) : 1, (1, ParamList1) : 2, (0, 'EPSILON') : 2}
+Fvoid.set_transition_dictionary(Fvoid_dictionary, 0 , 2)
 
-factor_dictionary = {(0, '('): 1, (1, expression): 2, (2, ')'): 3, (0, 'ID'): 4, (4, Var1): 3, (0, 'NUM'): 3}
-factor.set_transition_dictionary(factor_dictionary, 0, 3)
-
-Var1_dictionary = {(0, 'EPSILON'): 1, (0, '['): 2, (2, expression): 3, (3, ']'): 1, (0, '('): 4, (4, args): 5,
-                   (5, ')'): 1}
-Var1.set_transition_dictionary(Var1_dictionary, 0, 1)
-
-call_dictionary = {(0, 'ID'): 1, (1, '('): 2, (2, args): 3, (3, ')'): 4}
-call.set_transition_dictionary(call_dictionary, 0, 4)
-
-args_dictionary = {(0, arg_list): 1, (0, 'EPSILON'): 1}
-args.set_transition_dictionary(args_dictionary, 0, 1)
-
-arg_list_dictionary = {(0, expression): 1, (1, arg_list_1): 2}
-arg_list.set_transition_dictionary(arg_list_dictionary, 0, 2)
-
-arg_list_1_dictionary = {(0, ','): 1, (1, expression): 2, (2, arg_list_1): 3, (0, 'EPSILON'): 3}
-arg_list_1.set_transition_dictionary(arg_list_1_dictionary, 0, 3)
-
-program_dictionary = {
-    (0, declaration_list): 1,
-    (1, '$'): 2
-}
-program.set_transition_dictionary(program_dictionary, 0, 2)
-
-declaration_list_dictionary = {
-    (0, declaration_list_1): 1
-}
-declaration_list.set_transition_dictionary(declaration_list_dictionary, 0, 1)
-
-declaration_list_1_dictionary = {
-    (0, declaration): 1,
-    (1, declaration_list_1): 2,
-    (0, 'EPSILON'): 2
-}
-declaration_list_1.set_transition_dictionary(declaration_list_1_dictionary, 0, 2)
-
-declaration_dictionary = {
-    (0, type_specifier): 1,
-    (1, 'ID'): 2,
-    (2, V1): 3
-}
-declaration.set_transition_dictionary(declaration_dictionary, 0, 3)
-
-V1_dictionary = {
-    (0, prime): 1,
-    (0, '('): 2,
-    (2, params) : 3,
-    (3, ')'): 4,
-    (4, compound_stmt): 1
-}
-V1.set_transition_dictionary(V1_dictionary, 0, 1)
-
-var_declaration_dictionary = {
-    (0, type_specifier): 1,
-    (1, 'ID'): 2,
-    (2, prime): 3
-}
-var_declaration.set_transition_dictionary(var_declaration_dictionary, 0, 3)
-
-prime_dictionary = {
-    (0, ';'): 1,
-    (0, '['): 2,
-    (2, 'NUM'): 3,
-    (3, ']'): 4,
-    (4, ';'): 1
-}
-prime.set_transition_dictionary(prime_dictionary, 0, 1)
-
-type_specifier_dictionary = {
-    (0, 'int'): 1,
-    (0, 'void'): 1
-}
-type_specifier.set_transition_dictionary(type_specifier_dictionary, 0, 1)
-
-fun_declaration_dictionary = {
-    (0, type_specifier): 1,
-    (1, 'ID'): 2,
-    (2, '('): 3,
-    (3, params): 4,
-    (4, ')'): 5,
-    (5, compound_stmt): 6
-}
-fun_declaration.set_transition_dictionary(fun_declaration_dictionary, 0, 6)
-
-params_dictionary = {
-    (0, 'void'): 1,
-    (1, param_list1): 2
-}
-params.set_transition_dictionary(params_dictionary, 0, 2)
-
-param_list1_dictionary = {
-    (0, 'EPSILON'): 1,
-    (0, 'ID'): 2,
-    (2, prime1): 3,
-    (3, param_list_1): 1
-}
-param_list1.set_transition_dictionary(param_list1_dictionary, 0, 1)
-
-param_list_dictionary = {
-    (0, param): 1,
-    (1, param_list_1): 2
-}
-param_list.set_transition_dictionary(param_list_dictionary, 0, 2)
-
-param_list_1_dictionary = {
-    (0, ','): 1,
-    (1, param): 2,
-    (2, param_list_1): 3,
+ParamList1_dictionary = {
+    (0,',') : 1,
+    (1, Param) : 2,
+    (2, ParamList1) : 3,
     (0, 'EPSILON'): 3
 }
-param_list_1.set_transition_dictionary(param_list_1_dictionary, 0, 3)
+ParamList1.set_transition_dictionary(ParamList1_dictionary, 0, 3)
 
-param_dictionary = {
-    (0, type_specifier): 1,
-    (1, 'ID'): 2,
-    (2, prime1): 3
+Param_dictionary = {
+    (0, TypeSpecifier) : 1,
+    (1, FTypeSpecifier1) : 2
 }
-param.set_transition_dictionary(param_dictionary, 0, 3)
+Param.set_transition_dictionary(Param_dictionary, 0, 2)
 
-prime1_dictionary = {
-    (0, '['): 1,
-    (1, ']'): 2,
-    (0, 'EPSILON'): 2
+FTypeSpecifier1_dictionary = {
+    (0, 'ID') : 1,
+    (1, FID2) : 2
 }
-prime1.set_transition_dictionary(prime1_dictionary, 0, 2)
+FTypeSpecifier1.set_transition_dictionary(FTypeSpecifier1_dictionary, 0, 2)
 
-compound_stmt_dictionary = {
-    (0, '{'): 1,
-    (1, declaration_list): 2,
-    (2, statement_list): 3,
-    (3, '}'): 4
+FID2_dictionary = {(0, 'EPSILON') : 1, (0, '[') : 2, (2, ']') : 1}
+FID2.set_transition_dictionary(FID2_dictionary, 0 , 1)
+
+
+CompoundStmt_dictionary = {(0, '{') : 1, (1, DeclarationList1) : 2, (2, StatementList) : 3, (3, '}') : 4}
+CompoundStmt.set_transition_dictionary(CompoundStmt_dictionary, 0, 4)
+
+
+
+StatementList_dictionary = {(0, StatementList1) : 1}
+StatementList.set_transition_dictionary(StatementList_dictionary, 0 , 1)
+
+StatementList1_dictionary = {(0, Statement) : 1, (1, StatementList1) : 2, (0, 'EPSILON') : 2}
+StatementList1.set_transition_dictionary(StatementList1_dictionary, 0 , 2)
+
+Statement_dictionary = {(0, ExpressionStmt) : 1, (0, CompoundStmt) :1 , (0, SelectionStmt) :1 ,
+                        (0, IterationStmt) : 1,
+                        (0, ReturnStmt) : 1,
+                        (0, SwitchStmt) : 1}
+
+Statement.set_transition_dictionary(Statement_dictionary, 0, 1)
+
+
+
+ExpressionStmt_dictionary = {(0, Expression) : 1, (1, ';') : 2, (0, 'continue') : 3, (3, ';') : 2, (0, 'break') : 4, (4, ';') : 2, (0, ';') : 3}
+
+ExpressionStmt.set_transition_dictionary(ExpressionStmt_dictionary, 0, 2)
+
+
+SelectionStmt_dictionary = {(0, 'if') : 1, (1, '(') :2 ,
+                            (2, Expression) : 3, (3, ')') : 4, (4, Statement) : 5,
+                            (5, 'else') : 6, (6, Statement) : 7}
+SelectionStmt.set_transition_dictionary(SelectionStmt_dictionary, 0, 7)
+
+IterationStmt_dictionary = {(0, 'while') : 1, (1, '(') : 2, (2, Expression) : 3, (3, ')') : 4, (4, Statement) : 5 }
+IterationStmt.set_transition_dictionary(IterationStmt_dictionary, 0, 5)
+
+ReturnStmt_dictionary = {(0, 'return') : 1, (1, Freturn) : 2}
+ReturnStmt.set_transition_dictionary(ReturnStmt_dictionary, 0, 2)
+Freturn_dictionary = {(0, ';'): 1, (0, Expression) : 2, (2, ';') : 1}
+
+Freturn.set_transition_dictionary(Freturn_dictionary, 0 ,1)
+
+SwitchStmt_dictionary = {(0, 'switch') : 1, (1, '(') : 2, (2, Expression) : 3,
+                         (3, ')') : 4, (4, '{'): 5, (5, CaseStmts) : 6,
+                         (6, DefaultStmt) : 7, (7, '}') : 8}
+SwitchStmt.set_transition_dictionary(SwitchStmt_dictionary, 0, 8)
+
+CaseStmts_dictionary = {(0, CaseStmts1) : 1}
+CaseStmts.set_transition_dictionary(CaseStmts_dictionary, 0 , 1)
+
+CaseStmts1_dictionary = {(0, CaseStmt) : 1, (1, CaseStmts1) : 2, (0, 'EPSILON') : 2}
+CaseStmts1.set_transition_dictionary(CaseStmts1_dictionary, 0, 2)
+
+CaseStmt_dictionary = {(0, 'case') : 1, (1, 'NUM') : 2, (2, ':') : 3, (3, StatementList) : 4}
+CaseStmt.set_transition_dictionary(CaseStmt_dictionary, 0 , 4)
+
+DefaultStmt_dictionary = {(0, 'default') : 1, (1, ':') : 2, (2, StatementList) : 3, (0, 'EPSILON') : 3}
+DefaultStmt.set_transition_dictionary(DefaultStmt_dictionary, 0, 3)
+
+
+Expression_dictionary = {(0, 'ID') : 1, (1, Assign_1) : 2, (0, Assign_2) : 2}
+Expression.set_transition_dictionary(Expression_dictionary, 0, 2)
+
+
+FID_dictionary = {
+    (0, 'EPSILON') : 1,
+    (0, '[') : 2,
+    (2, Expression) : 3,
+    (3, ']') : 1
 }
-compound_stmt.set_transition_dictionary(compound_stmt_dictionary, 0, 4)
-
-statement_list_dictionary = {
-    (0, statement_list_1): 1,
-}
-statement_list.set_transition_dictionary(statement_list_dictionary, 0, 1)
-
-statement_list_1_dictionary = {
-    (0, statement): 1,
-    (1, statement_list_1): 2,
-    (0, 'EPSILON'): 2
-}
-statement_list_1.set_transition_dictionary(statement_list_1_dictionary, 0, 2)
-
-statement_dictionary = {
-    (0, expression_stmt): 1,
-    (0, compound_stmt): 1,
-    (0, selection_stmt): 1,
-    (0, iteration_stmt): 1,
-    (0, return_stmt): 1,
-    (0, switch_stmt): 1
-}
-statement.set_transition_dictionary(statement_dictionary, 0, 1)
-
-expression_stmt_dictionary = {
-    (0, expression): 1,
-    (1, ';'): 2,
-    (0, 'continue'): 1,
-    (1, ';'): 2,
-    (0, 'break'): 1,
-    (1, ';'): 2,
-    (0, ';'): 2,
-}
-expression_stmt.set_transition_dictionary(expression_stmt_dictionary, 0, 2)
-
-selection_stmt_dictionary = {
-    (0, 'if'): 1,
-    (1, '('): 2,
-    (2, expression): 3,
-    (3, ')'): 4,
-    (4, statement): 5,
-    (5, 'else'): 6,
-    (6, statement): 7
-}
-selection_stmt.set_transition_dictionary(selection_stmt_dictionary, 0, 7)
-
-iteration_stmt_dictionary = {
-    (0, 'while'): 1,
-    (1, '('): 2,
-    (2, expression): 3,
-    (3, ')'): 4,
-    (4, statement): 5
-}
-iteration_stmt.set_transition_dictionary(iteration_stmt_dictionary, 0, 5)
+FID.set_transition_dictionary(FID_dictionary, 0, 1)
 
 
-return_stmt_dictionary = {
-    (0, 'return'): 1,
-    (1, prime2): 2
-}
-return_stmt.set_transition_dictionary(return_stmt_dictionary, 0, 2)
 
-prime2_dictionary = {
-    (0, expression): 1,
-    (1, ';'): 2,
-    (0, ';'): 2
-}
-prime2.set_transition_dictionary(prime2_dictionary, 0, 2)
+FAdditiveExpression_dictionary = {(0, Relop) : 1, (1, AdditiveExpression) : 2, (0, 'EPSILON') : 2}
+FAdditiveExpression.set_transition_dictionary(FAdditiveExpression_dictionary, 0, 2)
 
 
-# # First sets
-# First sets
-# # Sets
-# program EOF, int, void
-# declaration_list ε, int, void
-# declaration_list_prime ε, int, void
-# declaration int, void
-# V1 (, ;, [
-# var_declaration int, void
-# prime ;, [
-# type_specifier int, void
-# fun_declaration int, void
-# params void
-# param_list1 ε, ID
-# param_list int, void
-# param_list_prime ,, ε
-# param int, void
-# prime1 [, ε
-# compound_stmt {
-# statement_list ε, {, continue, break, ;, if, while, return, switch, +, -, ID
-# statement_list_prime ε, {, continue, break, ;, if, while, return, switch, +, -, ID
-# statement {, continue, break, ;, if, while, return, switch, +, -, ID
-# expression_stmt continue, break, ;, +, -, ID
-# selection_stmt if
-# iteration_stmt while
-# return_stmt return
-# prime2 ;, +, -, ID
-# switch_stmt switch
-# case_stmts_prime ε, case
-# case_stmt case
-# default_stmt default, ε
-# expression +, -, ID
-# Var4 [, =, (, ID, NUM
-# var ID
-# Var3 [, ε
-# simple_expression +, -, (, ID, NUM
-# Var2 ε, <, ==
-# relop <, ==
-# additive_expression +, -, (, ID, NUM
-# additive_expression_prime ε, +, -
-# addop +, -
-# term +, -, (, ID, NUM
-# term_prime *, ε
-# signed_factor +, -, (, ID, NUM
-# factor (, ID, NUM
-# Var1 ε, [, (
-# call ID
-# args ε, +, -, ID
-# arg_list +, -, ID
-# arg_list_prime ,, ε
+Relop_dictionary = {(0, '==') : 1, (0, '<') : 1}
+Relop.set_transition_dictionary(Relop_dictionary, 0, 1)
 
 
-# Follow sets
-# # Sets
-# program -|
-# declaration_list EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# declaration_list_prime EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# declaration int, void, EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# V1 int, void, EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# var_declaration
-# prime int, void, EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# type_specifier ID
-# fun_declaration
-# params )
-# param_list1 )
-# param_list
-# param_list_prime )
-# param ,, )
-# prime1 ,, )
-# compound_stmt int, void, EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# statement_list }, case, default
-# statement_list_prime }, case, default
-# statement {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# expression_stmt {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# selection_stmt {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# iteration_stmt {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# return_stmt {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# prime2 {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# switch_stmt {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# case_stmts_prime default, }
-# case_stmt case, default, }
-# default_stmt }
-# expression ;, ), ], ,
-# Var4 ;, ), ], ,
-# var
-# Var3 =
-# simple_expression
-# Var2 ;, ), ], ,
-# relop +, -, (, ID, NUM
-# additive_expression <, ==, ;, ), ], ,
-# additive_expression_prime <, ==, ;, ), ], ,
-# addop +, -, (, ID, NUM
-# term +, -, <, ==, ;, ), ], ,
-# term_prime +, -, <, ==, ;, ), ], ,
-# signed_factor *, +, -, <, ==, ;, ), ], ,
-# factor *, +, -, <, ==, ;, ), ], ,
-# Var1 *, +, -, <, ==, ;, ), ], ,
-# call
-# args )
-# arg_list )
-# arg_list_prime )
+AdditiveExpression_dictionary = {(0, Term) : 1, (1, AdditiveExpression1) : 2}
+AdditiveExpression.set_transition_dictionary(AdditiveExpression_dictionary, 0 , 2)
+
+AdditiveExpression1_dictionary = {(0, Addop) : 1,(1, Term) : 2, (2, AdditiveExpression1) : 3, (0, 'EPSILON') :3}
+AdditiveExpression1.set_transition_dictionary(AdditiveExpression1_dictionary, 0, 3)
 
 
+Addop_dictionary = {(0, '+') : 1 , (0, '-') : 1}
+Addop.set_transition_dictionary(Addop_dictionary, 0, 1)
+
+
+Term_dictionary = {(0, SignedFactor) : 1,  (1, Term1) : 2}
+Term.set_transition_dictionary(Term_dictionary, 0, 2)
+
+Term1_dictionary = {(0, '*') : 1, (1, SignedFactor) : 2 , (2, Term1) : 3, (0, 'EPSILON') : 3}
+Term1.set_transition_dictionary(Term1_dictionary, 0, 3)
+
+SignedFactor_dictionary = {(0, Factor) : 1, (0, '+') : 2, (2, Factor) : 1, (0, '-') : 3, (3, Factor) : 1}
+SignedFactor.set_transition_dictionary(SignedFactor_dictionary, 0 , 1)
+
+
+
+Factor_dictionary = {(0, '(') : 1 ,(1, Expression) : 2, (2, ')') :3, (0, 'ID') : 4 , (4, Fid_1) : 3, (0, 'NUM') : 3}
+Factor.set_transition_dictionary(Factor_dictionary, 0, 3)
+
+FID1_dictionary={(0, FID) : 1, (0, '(') : 2,(2, Args) : 3, (3, ')') : 1}
+FID1.set_transition_dictionary(FID1_dictionary, 0, 1)
+
+
+Args_dictionary = {(0, ArgList) : 1, (0, 'EPSILON') : 1}
+Args.set_transition_dictionary(Args_dictionary, 0, 1)
+
+ArgList_dictionary = {(0, Expression) : 1, (1, ArgList1) : 2}
+ArgList.set_transition_dictionary(ArgList_dictionary, 0, 2)
+
+ArgList1_dictionary = {(0, ',') : 1 , (1, Expression) : 2, (2, ArgList1) : 3, (0, 'EPSILON') : 3}
+ArgList1.set_transition_dictionary(ArgList1_dictionary, 0, 3)
+
+
+Assign_2_dictionary = {(0, '(') : 1, (1, Expression) : 2, (2, ')') : 3, (3, Assign_3) : 4, (0, 'NUM') : 5, (5, Assign_3) : 4,
+                       (0, '-'): 6, (6 , Factor): 7, (7, Assign_3) : 4,
+                       (0, '+') : 6}
+Assign_2.set_transition_dictionary(Assign_2_dictionary, 0, 4)
+Assign_3_dictionary = {(0, Term1) : 1, (1, AdditiveExpression1) : 2 , (2, FAdditiveExpression) : 3}
+
+Assign_3.set_transition_dictionary(Assign_3_dictionary, 0, 3)
+
+Assign_1_dictionary = {(0, '=') : 1, (1, FID) : 2, (2, Expression) : 3, (0, FID) : 4,
+                       (4, Term1) : 5, (5, AdditiveExpression1) : 6, (6, FAdditiveExpression): 3,
+                       (0, '(') : 7, (7, Args) : 8, (8, Term1) : 5}
+Assign_1.set_transition_dictionary(Assign_1_dictionary, 0, 3)
 get_char()
 get_new_token()
 parser.running = True
