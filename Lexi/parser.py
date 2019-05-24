@@ -563,7 +563,7 @@ ArgList1 = Non_terminal(name='ArgList1', first_set=[',', 'EPSILON'], follow_set=
 Assign_2 = Non_terminal(name='assign_2 ', first_set=['(', 'NUM', '-', '+'], follow_set=[';', ')', ']', ','])
 Assign_3 = Non_terminal(name='assign_3', first_set=['*', 'EPSILON', '+', '-', '<', '=='],
                         follow_set=[';', ')', ']', ','])
-Assign_1 = Non_terminal(name='assign_3', first_set=['=', '[', '*', 'EPSILON', '(', '+', '-', '<', '=='],
+Assign_1 = Non_terminal(name='assign_1', first_set=['=', '[', '*', 'EPSILON', '(', '+', '-', '<', '=='],
                         follow_set=[';', ')', ']', ','])
 
 #
@@ -719,6 +719,11 @@ Fid.set_transition_dictionary(Fid_dictionary, 0, 1)
 
 FID1_dictionary = {(0, '['): 1, (1, 'NUM'): 2, (2, ']'): 3, (3, ';'): 4, (0, ';'): 4}
 FID1.set_transition_dictionary(FID1_dictionary, 0, 4)
+
+
+Fid_1_dictionary ={(0, FID) : 1, (0, '(') : 2, (2, Args) : 3, (3, ')') : 1}
+Fid_1.set_transition_dictionary(Fid_1_dictionary, 0, 1)
+
 
 TypeSpecifier_dictionary = {(0, 'int'): 1, (0, 'void'): 1}
 TypeSpecifier.set_transition_dictionary(TypeSpecifier_dictionary, 0, 1)
