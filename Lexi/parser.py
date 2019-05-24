@@ -602,7 +602,170 @@ declaration_list_1_dictionary = {
 }
 declaration_list_1.set_transition_dictionary(declaration_list_1_dictionary, 0, 2)
 
+declaration_dictionary = {
+    (0, type_specifier): 1,
+    (1, 'ID'): 2,
+    (2, V1): 3
+}
+declaration.set_transition_dictionary(declaration_dictionary, 0, 3)
 
+V1_dictionary = {
+    (0, prime): 1,
+    (0, '('): 2,
+    (2, params) : 3,
+    (3, ')'): 4,
+    (4, compound_stmt): 1
+}
+V1.set_transition_dictionary(V1_dictionary, 0, 1)
+
+var_declaration_dictionary = {
+    (0, type_specifier): 1,
+    (1, 'ID'): 2,
+    (2, prime): 3
+}
+var_declaration.set_transition_dictionary(var_declaration_dictionary, 0, 3)
+
+prime_dictionary = {
+    (0, ';'): 1,
+    (0, '['): 2,
+    (2, 'NUM'): 3,
+    (3, ']'): 4,
+    (4, ';'): 1
+}
+prime.set_transition_dictionary(prime_dictionary, 0, 1)
+
+type_specifier_dictionary = {
+    (0, 'int'): 1,
+    (0, 'void'): 1
+}
+type_specifier.set_transition_dictionary(type_specifier, 0, 1)
+
+fun_declaration_dictionary = {
+    (0, type_specifier): 1,
+    (1, 'ID'): 2,
+    (2, '('): 3,
+    (3, params): 4,
+    (4, ')'): 5,
+    (5, compound_stmt): 6
+}
+fun_declaration.set_transition_dictionary(fun_declaration_dictionary, 0, 6)
+
+params_dictionary = {
+    (0, 'void'): 1,
+    (1, param_list1): 2
+}
+params.set_transition_dictionary(params_dictionary, 0, 2)
+
+param_list1_dictionary = {
+    (0, 'EPSILON'): 1,
+    (0, 'ID'): 2,
+    (2, prime1): 3,
+    (3, param_list_1): 1
+}
+param_list1.set_transition_dictionary(param_list1_dictionary, 0, 1)
+
+param_list_dictionary = {
+    (0, param): 1,
+    (1, param_list_1): 2
+}
+param_list.set_transition_dictionary(param_list_dictionary, 0, 2)
+
+param_list_1_dictionary = {
+    (0, ','): 1,
+    (1, param): 2,
+    (2, param_list_1): 3,
+    (0, 'EPSILON'): 3
+}
+param_list_1.set_transition_dictionary(param_list_1_dictionary, 0, 3)
+
+param_dictionary = {
+    (0, type_specifier): 1,
+    (1, 'ID'): 2,
+    (2, prime1): 3
+}
+param.set_transition_dictionary(param_dictionary, 0, 3)
+
+prime1_dictionary = {
+    (0, '['): 1,
+    (1, ']'): 2,
+    (0, 'EPSILON'): 2
+}
+prime1.set_transition_dictionary(prime1_dictionary, 0, 2)
+
+compound_stmt_dictionary = {
+    (0, '{'): 1,
+    (1, declaration_list): 2,
+    (2, statement_list): 3,
+    (3, '}'): 4
+}
+compound_stmt.set_transition_dictionary(compound_stmt_dictionary, 0, 4)
+
+statement_list_dictionary = {
+    (0, statement_list_1): 1,
+}
+statement_list.set_transition_dictionary(statement_list_dictionary, 0, 1)
+
+statement_list_1_dictionary = {
+    (0, statement): 1,
+    (1, statement_list_1): 2,
+    (0, 'EPSILON'): 2
+}
+statement_list_1.set_transition_dictionary(statement_list_1_dictionary, 0, 2)
+
+statement_dictionary = {
+    (0, expression_stmt): 1,
+    (0, compound_stmt): 1,
+    (0, selection_stmt): 1,
+    (0, iteration_stmt): 1,
+    (0, return_stmt): 1,
+    (0, switch_stmt): 1
+}
+statement.set_transition_dictionary(statement_dictionary, 0, 1)
+
+expression_stmt_dictionary = {
+    (0, expression): 1,
+    (1, ';'): 2,
+    (0, 'continue'): 1,
+    (1, ';'): 2,
+    (0, 'break'): 1,
+    (1, ';'): 2,
+    (0, ';'): 2,
+}
+expression_stmt.set_transition_dictionary(expression_stmt_dictionary, 0, 2)
+
+selection_stmt_dictionary = {
+    (0, 'if'): 1,
+    (1, '('): 2,
+    (2, expression): 3,
+    (3, ')'): 4,
+    (4, statement): 5,
+    (5, 'else'): 6,
+    (6, statement): 7
+}
+selection_stmt.set_transition_dictionary(selection_stmt_dictionary, 0, 7)
+
+iteration_stmt_dictionary = {
+    (0, 'while'): 1,
+    (1, '('): 2,
+    (2, expression): 3,
+    (3, ')'): 4,
+    (4, statement): 5
+}
+iteration_stmt.set_transition_dictionary(iteration_stmt_dictionary, 0, 5)
+
+
+return_stmt_dictionary = {
+    (0, 'return'): 1,
+    (1, prime2): 2
+}
+return_stmt.set_transition_dictionary(return_stmt_dictionary, 0, 2)
+
+prime2_dictionary = {
+    (0, expression): 1,
+    (1, ';'): 2,
+    (0, ';'): 2
+}
+prime2.set_transition_dictionary(prime2_dictionary, 0, 2)
 
 
 # # First sets
