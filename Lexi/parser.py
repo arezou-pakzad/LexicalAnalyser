@@ -769,13 +769,14 @@ Statement_dictionary = {(0, ExpressionStmt): 1, (0, CompoundStmt): 1, (0, Select
 Statement.set_transition_dictionary(Statement_dictionary, 0, 1)
 
 ExpressionStmt_dictionary = {(0, Expression): 1, (1, ';'): 2, (0, 'continue'): 3, (3, ';'): 2, (0, 'break'): 4,
-                             (4, ';'): 2, (0, ';'): 3}
+                             (4, ';'): 2, (0, ';'): 2}
 
 ExpressionStmt.set_transition_dictionary(ExpressionStmt_dictionary, 0, 2)
 
 SelectionStmt_dictionary = {(0, 'if'): 1, (1, '('): 2,
                             (2, Expression): 3, (3, ')'): 4, (4, Statement): 5,
                             (5, 'else'): 6, (6, Statement): 7}
+
 SelectionStmt.set_transition_dictionary(SelectionStmt_dictionary, 0, 7)
 
 IterationStmt_dictionary = {(0, 'while'): 1, (1, '('): 2, (2, Expression): 3, (3, ')'): 4, (4, Statement): 5}
@@ -842,8 +843,6 @@ SignedFactor.set_transition_dictionary(SignedFactor_dictionary, 0, 1)
 Factor_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'ID'): 4, (4, Fid_1): 3, (0, 'NUM'): 3}
 Factor.set_transition_dictionary(Factor_dictionary, 0, 3)
 
-FID1_dictionary = {(0, FID): 1, (0, '('): 2, (2, Args): 3, (3, ')'): 1}
-FID1.set_transition_dictionary(FID1_dictionary, 0, 1)
 
 Args_dictionary = {(0, ArgList): 1, (0, 'EPSILON'): 1}
 Args.set_transition_dictionary(Args_dictionary, 0, 1)
