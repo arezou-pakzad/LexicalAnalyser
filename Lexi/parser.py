@@ -584,6 +584,27 @@ arg_list.set_transition_dictionary(arg_list_dictionary, 0, 2)
 arg_list_1_dictionary = {(0, ','): 1, (1, expression): 2, (2, arg_list_1): 3, (0, 'EPSILON'): 3}
 arg_list_1.set_transition_dictionary(arg_list_1_dictionary, 0, 3)
 
+program_dictionary = {
+    (0, declaration_list): 1,
+    (1, '$'): 2
+}
+program.set_transition_dictionary(program_dictionary, 0, 2)
+
+declaration_list_dictionary = {
+    (0, declaration_list_1): 1
+}
+declaration_list.set_transition_dictionary(declaration_list_dictionary, 0, 1)
+
+declaration_list_1_dictionary = {
+    (0, declaration): 1,
+    (1, declaration_list_1): 2,
+    (0, 'EPSILON'): 2
+}
+declaration_list_1.set_transition_dictionary(declaration_list_1_dictionary, 0, 2)
+
+
+
+
 # # First sets
 # First sets
 # # Sets
