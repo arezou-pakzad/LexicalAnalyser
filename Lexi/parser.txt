@@ -1,14 +1,47 @@
-E
-| T
-| | NUM
-| | Y
-| | | EPSILON
-| X
-| | +
-| | E
-| | | T
-| | | | NUM
-| | | | Y
-| | | | | EPSILON
-| | | X
-| | | | EPSILON
+program
+| declaration_list
+| | declaration_list1
+| | | declatation
+| | | | TypeSpecifier
+| | | | | void
+| | | | FTypeSpecifier2
+| | | | | ID
+| | | | | (
+| | | | | params
+| | | | | | void
+| | | | | | Fvoid
+| | | | | | | EPSILON
+| | | | | )
+| | | | | CompoundStmt
+| | | | | | {
+| | | | | | declaration_list1
+| | | | | | | EPSILON
+| | | | | | StatementList
+| | | | | | | StatementList1
+| | | | | | | | Statement
+| | | | | | | | | SwitchStmt
+| | | | | | | | | | switch
+| | | | | | | | | | (
+| | | | | | | | | | Expression
+| | | | | | | | | | | Var
+| | | | | | | | | | | | ID
+| | | | | | | | | | | | FID
+| | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | =
+| | | | | | | | | | | Expression
+| | | | | | | | | | | | Var
+| | | | | | | | | | | | | ID
+| | | | | | | | | | | | | FID
+| | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | =
+| | | | | | | | | | | | Expression
+| | | | | | | | | | | | | Var
+| | | | | | | | | | | | | | ID
+| | | | | | | | | | | | | | FID
+| | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | =
+| | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | Var
+| | | | | | | | | | | | | | | ID
+| | | | | | | | | | | | | | | FID
+| | | | | | | | | | | | | | | | EPSILON

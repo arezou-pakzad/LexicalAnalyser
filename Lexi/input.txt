@@ -1,1 +1,10 @@
-1 + 1
+void main (void) {
+    switch (a) {
+        case 2:
+            b = b + 1;
+        case 3:
+            b = b + 2;
+        case default:
+            b = b - -2;
+    }
+}
