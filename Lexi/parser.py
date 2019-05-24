@@ -516,7 +516,7 @@ switch_stmt_dictionary = {(0, 'switch'): 1, (1, '('): 2, (2, expression): 3, (3,
 switch_stmt.set_transition_dictionary(switch_stmt_dictionary, 0, 8)
 
 case_stmts_1_dictionary = {(0, case_stmt): 1, (1, case_stmts_1): 2, (0, 'EPSILON'): 2}
-case_stmts_1.set_transition_dictionary(case_stmts_1_dictionary)
+case_stmts_1.set_transition_dictionary(case_stmts_1_dictionary, 0, 2)
 
 case_stmt_dictionary = {(0, 'case'): 1, (1, 'NUM'): 2, (2, ':'): 3, (3, statement_list): 4}
 case_stmt.set_transition_dictionary(case_stmt_dictionary, 0, 4)
@@ -526,7 +526,7 @@ default_stmt.set_transition_dictionary(default_stmt_dictinoary, 0, 3)
 
 expression_dictionary = {(0, '+'): 1, (1, factor): 2, (2, term_1): 3, (3, additive_expression_1): 4, (4, Var2): 5,
                          (0, '-'): 6, (6, factor): 2, (0, 'ID'): 7, (7, Var4): 5}
-expression.set_transition_dictionary(expression_dictionary)
+expression.set_transition_dictionary(expression_dictionary, 0, 5)
 
 Var4_dictionary = {(0, Var3): 1, (1, '='): 2, (2, expression): 3,
                    (0, factor): 4, (4, term_1): 5, (5, additive_expression_1): 6, (6, Var2): 3}
