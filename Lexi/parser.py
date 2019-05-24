@@ -454,8 +454,6 @@ prime2 = Non_terminal(name='prime2', first_set=[';', '+', '-', 'ID'],
                       follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}',
                                   'else', 'case', 'default'])
 
-
-
 switch_stmt = Non_terminal(name='switch_stmt', first_set=['switch'],
                            follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID',
                                        '}',
