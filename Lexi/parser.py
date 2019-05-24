@@ -5,7 +5,7 @@ code = input_file.read()
 output_file = open("scanner.txt", 'w+')
 first_output = True
 
-error_file = open("lexical_errors.txt", 'w+')
+error_file = open("errors.txt", 'w+')
 first_error = True
 
 parser_file_dir = 'parser.txt'
@@ -377,210 +377,178 @@ def parser(non_terminal, height):
     return True
 
 
+program = Non_terminal(name='program', first_set=['$', 'int', 'void'], follow_set=[])
+declaration_list = Non_terminal(name='declaration_list', first_set=['EPSILON', 'int', 'void'],
+                                follow_set=['$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}'])
+
+declaration_list_1 = Non_terminal(name='declaration_list_1', first_set=['EPSILON', 'int', 'void'],
+                                  follow_set=['$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+','-', 'ID', '}'])
+
+declaration = Non_terminal(name='declaration', first_set=['int', 'void'],
+                           follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}'])
+
+V1 = Non_terminal(name='V1', first_set=['(', ';', '['],
+                  follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}'])
+
+var_declaration = Non_terminal(name='var_declaration', first_set=['int', 'void'], follow_set=[])
+
+prime = Non_terminal(name='prime', first_set=[';', '['],
+                     follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}'])
+
+type_specifier = Non_terminal(name='type_specifier', first_set=['int', 'void'], follow_set=['ID'])
+
+fun_declaration = Non_terminal(name='fun_declaration', first_set=['int', 'void'], follow_set=[])
+
+params = Non_terminal(name='params', first_set=['void'], follow_set=[')'])
+
+param_list1 = Non_terminal(name='param_list1', first_set=['EPSILON', 'ID'], follow_set=[')'])
+
+param_list = Non_terminal(name='param_list', first_set=['int', 'void'], follow_set=[])
+
+param_list_1 = Non_terminal(name='param_list_1', first_set=[',', 'EPSILON'], follow_set=[')'])
+
+param = Non_terminal(name='param', first_set=['int', 'void'], follow_set=[',', ')'])
+
+prime1 = Non_terminal(name='prime1', first_set=['[', 'EPSILON'], follow_set=[',', ')'])
+
+compound_stmt = Non_terminal(name='compound_stmt', first_set=['{'],
+                             follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}', 'else', 'case', 'default'])
+
+statement_list = Non_terminal(name='statement_list',
+                              first_set=['EPSILON', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID'],
+                              follow_set=['}', 'case', 'default'])
+
+statement_list_1 = Non_terminal(name='statement_list_1',
+                                first_set=['EPSILON', '{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID'],
+                                follow_set=['}', 'case', 'default'])
+
+statement = Non_terminal(name='statement', first_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID'],
+                         follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}', 'else', 'case', 'default'])
+
+expression_stmt = Non_terminal(name='expression_stmt', first_set=['continue', 'break', ';', '+', '-', 'ID'],
+                               follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}', 'else', 'case', 'default'])
+
+selection_stmt = Non_terminal(name='selection_stmt', first_set=['if'],
+                              follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}', 'else', 'case', 'default'])
+
+iteration_stmt = Non_terminal(name='iteration_stmt', first_set=['while'],
+                              follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}', 'else', 'case', 'default'])
+
+return_stmt = Non_terminal(name='return_stmt', first_set=['return'],
+                           follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}', 'else', 'case', 'default'])
+
+prime2 = Non_terminal(name='prime2', first_set=[';', '+', '-', 'ID'],
+                      follow_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', '+', '-', 'ID', '}', 'else', 'case', 'default'])
+
+
+
+# # First sets
 # First sets
-# #	Sets
-# program	EOF, int, void
-# declaration_list	ε, int, void
-# declaration_list_prime	ε, int, void
-# declaration	int, void
-# V1	prime., (
-# var_declaration	int, void
-# prime	;, [
-# type_specifier	int, void
-# fun_declaration	int, void
-# params	void
-# param_list1	ε, ID
-# param_list	int, void
-# param_list_prime	,, ε
-# param	int, void
-# prime1	[, ε
-# compound_stmt	{
-# statement_list	ε, {, continue, break, ;, if, while, return, switch, +, -, ID
-# statement_list_prime	ε, {, continue, break, ;, if, while, return, switch, +, -, ID
-# statement	{, continue, break, ;, if, while, return, switch, +, -, ID
-# expression_stmt	continue, break, ;, +, -, ID
-# selection_stmt	if
-# iteration_stmt	while
-# return_stmt	return
-# prime2	;, +, -, ID
-# switch_stmt	switch
-# case_stmts_prime	ε, case
-# case_stmt	case
-# default_stmt	default, ε
-# expression	+, -, ID
-# Var4	[, =, (, ID, NUM
-# var	ID
-# Var3	[, ε
-# simple_expression	+, -, (, ID, NUM
-# Var2	ε, <, ==
-# relop	<, ==
-# additive_expression	+, -, (, ID, NUM
-# additive_expression_prime	ε, +, -
-# addop	+, -
-# term	+, -, (, ID, NUM
-# term_prime	*, ε
-# signed_factor	+, -, (, ID, NUM
-# factor	(, ID, NUM
-# Var1	ε, [, (
-# call	ID
-# args	ε, +, -, ID
-# arg_list	+, -, ID
-# arg_list_prime	,, ε
-
-
-
-
-
-
-
-
-
-
-
+# # Sets
+# program EOF, int, void
+# declaration_list ε, int, void
+# declaration_list_prime ε, int, void
+# declaration int, void
+# V1 (, ;, [
+# var_declaration int, void
+# prime ;, [
+# type_specifier int, void
+# fun_declaration int, void
+# params void
+# param_list1 ε, ID
+# param_list int, void
+# param_list_prime ,, ε
+# param int, void
+# prime1 [, ε
+# compound_stmt {
+# statement_list ε, {, continue, break, ;, if, while, return, switch, +, -, ID
+# statement_list_prime ε, {, continue, break, ;, if, while, return, switch, +, -, ID
+# statement {, continue, break, ;, if, while, return, switch, +, -, ID
+# expression_stmt continue, break, ;, +, -, ID
+# selection_stmt if
+# iteration_stmt while
+# return_stmt return
+# prime2 ;, +, -, ID
+# switch_stmt switch
+# case_stmts_prime ε, case
+# case_stmt case
+# default_stmt default, ε
+# expression +, -, ID
+# Var4 [, =, (, ID, NUM
+# var ID
+# Var3 [, ε
+# simple_expression +, -, (, ID, NUM
+# Var2 ε, <, ==
+# relop <, ==
+# additive_expression +, -, (, ID, NUM
+# additive_expression_prime ε, +, -
+# addop +, -
+# term +, -, (, ID, NUM
+# term_prime *, ε
+# signed_factor +, -, (, ID, NUM
+# factor (, ID, NUM
+# Var1 ε, [, (
+# call ID
+# args ε, +, -, ID
+# arg_list +, -, ID
+# arg_list_prime ,, ε
 
 
 # Follow sets
-# #	Sets
-# program	-|
-# declaration_list	EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# declaration_list_prime	EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# declaration	int, void, EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
-# V1
+# # Sets
+# program -|
+# declaration_list EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
+# declaration_list_prime EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
+# declaration int, void, EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
+# V1 int, void, EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
 # var_declaration
-# prime
-# type_specifier	b, ID
+# prime int, void, EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }
+# type_specifier ID
 # fun_declaration
-# params	)
-# param_list1	)
+# params )
+# param_list1 )
 # param_list
-# param_list_prime	)
-# param	,, )
-# prime1	,, )
-# compound_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# statement_list	}, case, default
-# statement_list_prime	}, case, default
-# statement	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# expression_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# selection_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# iteration_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# return_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# prime2	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# switch_stmt	{, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
-# case_stmts_prime	default, }
-# case_stmt	case, default, }
-# default_stmt	}
-# expression	;, ), ], ,
-# Var4	;, ), ], ,
+# param_list_prime )
+# param ,, )
+# prime1 ,, )
+# compound_stmt int, void, EOF, {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
+# statement_list }, case, default
+# statement_list_prime }, case, default
+# statement {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
+# expression_stmt {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
+# selection_stmt {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
+# iteration_stmt {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
+# return_stmt {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
+# prime2 {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
+# switch_stmt {, continue, break, ;, if, while, return, switch, +, -, ID, }, else, case, default
+# case_stmts_prime default, }
+# case_stmt case, default, }
+# default_stmt }
+# expression ;, ), ], ,
+# Var4 ;, ), ], ,
 # var
-# Var3	=
+# Var3 =
 # simple_expression
-# Var2	;, ), ], ,
-# relop	+, -, (, ID, NUM
-# additive_expression	<, ==, ;, ), ], ,
-# additive_expression_prime	<, ==, ;, ), ], ,
-# addop	+, -, (, ID, NUM
-# term	+, -, <, ==, ;, ), ], ,
-# term_prime	+, -, <, ==, ;, ), ], ,
-# signed_factor	*, +, -, <, ==, ;, ), ], ,
-# factor	*, +, -, <, ==, ;, ), ], ,
-# Var1	*, +, -, <, ==, ;, ), ], ,
+# Var2 ;, ), ], ,
+# relop +, -, (, ID, NUM
+# additive_expression <, ==, ;, ), ], ,
+# additive_expression_prime <, ==, ;, ), ], ,
+# addop +, -, (, ID, NUM
+# term +, -, <, ==, ;, ), ], ,
+# term_prime +, -, <, ==, ;, ), ], ,
+# signed_factor *, +, -, <, ==, ;, ), ], ,
+# factor *, +, -, <, ==, ;, ), ], ,
+# Var1 *, +, -, <, ==, ;, ), ], ,
 # call
-# args	)
-# arg_list	)
-# arg_list_prime	)
-
+# args )
+# arg_list )
+# arg_list_prime )
 
 
 get_char()
 get_new_token()
 parser.running = True
 parser(program, height=0)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
