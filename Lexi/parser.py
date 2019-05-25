@@ -35,7 +35,7 @@ TOKEN_WHITESPACE = 6
 TOKEN_EOF = 7
 EOF = "@EOF@"
 state = TOKEN_INITIAL
-symbols = [';', ':', ',', '[', ']', '(', ')', '{', '}', '+', '-', '*', '=', '<', '==']
+symbols = [';', ':', ',', '[', ']', '(', ')', '{', '}', '+', '-', '*', '=', '<', '==', '>']
 whitespace = ['\n', '\r', '\t', ' ', '\v', '\f']
 digit = [str(i) for i in range(10)]
 alphabet = [chr(i) for i in range(65, 91)] + [chr(i) for i in range(97, 123)]
@@ -249,7 +249,7 @@ def print_token(token_type, token_string):
 
 
 def print_error(token_type, token_string):
-    global lexical_error_file, error_line_changed, first_lexical_error
+    global lexical_error_file, error_line_changed, first_lexical_error, line_num
     if error_line_changed and not first_lexical_error:
         lexical_error_file.write('\n')
 
@@ -264,7 +264,7 @@ def print_error(token_type, token_string):
 
 
 def write_parser_error(error_message):
-    global parser_error_file, error_line_changed, first_parser_error
+    global parser_error_file, error_line_changed, first_parser_error, line_num
     if error_line_changed and not first_parser_error:
         parser_error_file.write('\n')
 
@@ -287,7 +287,7 @@ def combine_errors():
     f2 = f2.readlines()
     for line in f1:
         all_errors_file.write(line)
-    all_errors_file.write('\nParser Errors:\n')
+    all_errors_file.write('\n\nParser Errors:\n')
     for line in f2:
         all_errors_file.write(line)
 
@@ -871,6 +871,8 @@ Assign_1_dictionary = {(0, '='): 1, (1, FID): 2, (2, Expression): 3, (0, FID): 4
                        (4, Term1): 5, (5, AdditiveExpression1): 6, (6, FAdditiveExpression): 3,
                        (0, '('): 7, (7, Args): 8, (8, Term1): 5}
 Assign_1.set_transition_dictionary(Assign_1_dictionary, 0, 3)
+
+
 
 get_char()
 get_new_token()
