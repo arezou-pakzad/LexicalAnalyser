@@ -596,7 +596,7 @@ Fid_4.set_transition_dictionary(Fid_4_dictionary, 0, 1)
 
 
 Fid_1_dictionary ={(0, ';'): 1,
-                   (0, '[') : 2, (2, 'NUM') : 3, (3, ']') : 1}
+                   (0, '[') : 2, (2, 'NUM') : 3, (3, ']') : 4, (4, ';') : 1}
 Fid_1.set_transition_dictionary(Fid_1_dictionary, 0, 1)
 
 
@@ -754,7 +754,7 @@ SignedFactor_2_dictionary = {(0, Factor_2): 1, (0, '+'): 2, (2, Factor): 1, (0, 
 SignedFactor_2.set_transition_dictionary(SignedFactor_2_dictionary, 0, 1)
 
 
-Factor_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'ID'): 4, (4, Fid_1): 3, (0, 'NUM'): 3}
+Factor_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'ID'): 4, (4, Fid_3): 3, (0, 'NUM'): 3}
 Factor.set_transition_dictionary(Factor_dictionary, 0, 3)
 
 
