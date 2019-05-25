@@ -232,16 +232,16 @@ def print_token(token_type, token_string):
 
 def print_error(token_type, token_string):
     global lexical_error_file, error_line_changed, first_lexical_error
-    if error_line_changed and not first_error:
+    if error_line_changed and not first_lexical_error:
         # print()
-        error_file.write('\n')
+        lexical_error_file.write('\n')
     if error_line_changed:
         # print(str(line_num) + '. (' + token_string + ', ' + token_type + ')', end='')
-        error_file.write(str(line_num) + '. (' + token_string + ', ' + token_type + ')')
+        lexical_error_file.write(str(line_num) + '. (' + token_string + ', ' + token_type + ')')
         error_line_changed = False
     else:
         # print(' (' + token_string + ', ' + token_type + ')', end='')
-        error_file.write(' (' + token_string + ', ' + token_type + ')')
+        lexical_error_file.write(' (' + token_string + ', ' + token_type + ')')
     first_error = False
 
 # output_file.close()
