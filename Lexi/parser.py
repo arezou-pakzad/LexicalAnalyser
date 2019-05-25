@@ -404,6 +404,7 @@ def parser(non_terminal, height):
                 print(non_terminal.name, ' finished')
         if not flag:
             for key in this_state.keys():
+                print('key[1]' , key[1])
                 write_parser_error('Syntax Error! Missing ' + str(key[1].name))
                 print('Syntax Error! Missing ' + str(key[1].name))
                 break
@@ -564,141 +565,24 @@ ArgList1 = Non_terminal(name='ArgList1', first_set=[',', 'EPSILON'], follow_set=
 Assign_2 = Non_terminal(name='assign_2 ', first_set=['(', 'NUM', '-', '+'], follow_set=[';', ')', ']', ','])
 Assign_3 = Non_terminal(name='assign_3', first_set=['*', 'EPSILON', '+', '-', '<', '=='],
                         follow_set=[';', ')', ']', ','])
-Assign_1 = Non_terminal(name='assign_1', first_set=['=', '[', '*', 'EPSILON', '(', '+', '-', '<', '=='],
+Assign_1 = Non_terminal(name='assign_1', first_set=[ '[', '(', 'EPSILON', '=','*', '+', '-', '(', 'ID', 'NUM',  '<', '=='],
                         follow_set=[';', ')', ']', ','])
 
+
+X = Non_terminal(name = 'X', first_set=['EPSILON', '=','*', '+', '-', '(', 'ID', 'NUM',  '<', '=='],
+                 follow_set=[')'])
+
+
+
+# Assign_1 -> eq FID Expression
+#            |FID X
+#            |( Args ) Term_1 AdditiveExpression_1 FAdditiveExpression .
 #
+# X -> eq Expression
+#     |Term_1 AdditiveExpression_1 FAdditiveExpression.
 #
-# Program -> DeclarationList $
-#
-# DeclarationList -> DeclarationList_1
-#
-# DeclarationList_1 -> Declaration DeclarationList_1
-# DeclarationList_1 -> ε
-#
-# Declaration -> TypeSpecifier FTypeSpecifier_2
-#
-# FTypeSpecifier_2 -> ID Fid
-#
-# Fid -> FID_1
-# Fid -> ( Params ) CompoundStmt
-#
-# FID_1 -> ;
-# FID_1 ->[ NUM ] ;
-#
-# TypeSpecifier -> int
-# TypeSpecifier -> void
-#
-# Params -> void Fvoid
-# Params -> int FTypeSpecifier_1 ParamList_1
-#
-# Fvoid -> FTypeSpecifier_1 ParamList_1
-# Fvoid -> ε
-#
-# ParamList_1 -> , Param ParamList_1
-# ParamList_1 -> ε
-#
-# Param -> TypeSpecifier FTypeSpecifier_1
-#
-# FTypeSpecifier_1 -> ID FID_2
-#
-# FID_2 -> ε
-# FID_2 -> [ ]
-#
-# CompoundStmt -> { DeclarationList StatementList }
-#
-# StatementList -> StatementList_1
-#
-# StatementList_1 -> Statement StatementList_1
-# StatementList_1 -> ε
-#
-# Statement -> ExpressionStmt
-# Statement -> CompoundStmt
-# Statement -> SelectionStmt
-# Statement -> IterationStmt
-# Statement -> ReturnStmt
-# Statement -> SwitchStmt
-#
-# ExpressionStmt -> Expression ;
-# ExpressionStmt -> continue ;
-# ExpressionStmt -> break ;
-# ExpressionStmt -> ;
-#
-# SelectionStmt -> if ( Expression ) Statement else Statement
-#
-# IterationStmt -> while ( Expression ) Statement
-#
-# ReturnStmt -> return Freturn
-#
-# Freturn -> ;
-# Freturn -> Expression ;
-#
-# SwitchStmt -> switch ( Expression ) { CaseStmts DefaultStmt }
-#
-# CaseStmts -> CaseStmts_1
-#
-# CaseStmts_1 -> CaseStmt CaseStmts_1
-# CaseStmts_1 -> ε
-#
-# CaseStmt -> case NUM : StatementList
-#
-# DefaultStmt -> default : StatementList
-# DefaultStmt -> ε
-#
-# Expression -> ID Assign_1
-# Expression -> Assign_2
-#
-# FID -> ε
-# FID -> [ Expression ]
-#
-# FAdditiveExpression -> Relop AdditiveExpression
-# FAdditiveExpression -> ε
-#
-# Relop -> <
-# Relop -> ==
-#
-# AdditiveExpression -> Term AdditiveExpression_1
-#
-# AdditiveExpression_1 -> Addop Term AdditiveExpression_1
-# AdditiveExpression_1 -> ε
-#
-# Addop -> +
-# Addop -> -
-#
-# Term -> SignedFactor Term_1
-#
-# Term_1 -> * SignedFactor Term_1
-# Term_1 -> ε
-#
-# SignedFactor -> Factor
-# SignedFactor -> + Factor
-# SignedFactor -> - Factor
-#
-# Factor -> ( Expression )
-# Factor -> ID Fid_1
-# Factor -> NUM
-#
-# Fid_1 -> FID
-# Fid_1 -> ( Args )
-#
-# Args -> ArgList
-# Args -> ε
-#
-# ArgList -> Expression ArgList_1
-#
-# ArgList_1 -> , Expression ArgList_1
-# ArgList_1 -> ε
-#
-# Assign_2 -> ( Expression ) Assign_3
-# Assign_2 -> NUM Assign_3
-# Assign_2 -> - Factor Assign_3
-# Assign_2 -> + Factor Assign_3
-#
-# Assign_3 -> Term_1 AdditiveExpression_1 FAdditiveExpression
-#
-# Assign_1 -> = FID Expression
-# Assign_1 -> FID Term_1 AdditiveExpression_1 FAdditiveExpression
-# Assign_1 -> ( Args ) Term_1 AdditiveExpression_1 FAdditiveExpression
+
+
 
 program_dictionary = {(0, DeclarationList): 1, (1, '$'): 2}
 program.set_transition_dictionary(program_dictionary, 0, 2)
@@ -721,9 +605,6 @@ Fid.set_transition_dictionary(Fid_dictionary, 0, 1)
 FID1_dictionary = {(0, '['): 1, (1, 'NUM'): 2, (2, ']'): 3, (3, ';'): 4, (0, ';'): 4}
 FID1.set_transition_dictionary(FID1_dictionary, 0, 4)
 
-
-Fid_1_dictionary ={(0, FID) : 1, (0, '(') : 2, (2, Args) : 3, (3, ')') : 1}
-Fid_1.set_transition_dictionary(Fid_1_dictionary, 0, 1)
 
 
 TypeSpecifier_dictionary = {(0, 'int'): 1, (0, 'void'): 1}
@@ -828,6 +709,7 @@ FAdditiveExpression.set_transition_dictionary(FAdditiveExpression_dictionary, 0,
 Relop_dictionary = {(0, '=='): 1, (0, '<'): 1}
 Relop.set_transition_dictionary(Relop_dictionary, 0, 1)
 
+
 AdditiveExpression_dictionary = {(0, Term): 1, (1, AdditiveExpression1): 2}
 AdditiveExpression.set_transition_dictionary(AdditiveExpression_dictionary, 0, 2)
 
@@ -850,6 +732,10 @@ Factor_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'ID'): 4,
 Factor.set_transition_dictionary(Factor_dictionary, 0, 3)
 
 
+Fid_1_dictionary ={(0, FID) : 1, (0, '(') : 2, (2, Args) : 3, (3, ')') : 1}
+Fid_1.set_transition_dictionary(Fid_1_dictionary, 0, 1)
+
+
 Args_dictionary = {(0, ArgList): 1, (0, 'EPSILON'): 1}
 Args.set_transition_dictionary(Args_dictionary, 0, 1)
 
@@ -867,10 +753,34 @@ Assign_3_dictionary = {(0, Term1): 1, (1, AdditiveExpression1): 2, (2, FAdditive
 
 Assign_3.set_transition_dictionary(Assign_3_dictionary, 0, 3)
 
-Assign_1_dictionary = {(0, '='): 1, (1, FID): 2, (2, Expression): 3, (0, FID): 4,
-                       (4, Term1): 5, (5, AdditiveExpression1): 6, (6, FAdditiveExpression): 3,
-                       (0, '('): 7, (7, Args): 8, (8, Term1): 5}
+
+
+# Assign_1 -> eq FID Expression
+#            |FID X
+#            |( Args ) Term_1 AdditiveExpression_1 FAdditiveExpression .
+#
+# X -> eq Expression
+#     |Term_1 AdditiveExpression_1 FAdditiveExpression.
+#
+
+Assign_1_dictionary = {
+    (0, '=') : 1,
+    (1, FID) : 2,
+    (2, Expression) : 3,
+    (0, FID) : 4,
+    (4, X) : 3,
+    (0, '(') : 5, (5, Args) : 6, (6, ')') : 7, (7, Term1) : 8, (8, AdditiveExpression1) : 9, (9, FAdditiveExpression) : 3}
+
 Assign_1.set_transition_dictionary(Assign_1_dictionary, 0, 3)
+
+X_dictionary = {
+    (0, '=') : 1, (1, Expression) : 2,
+    (0, Term1) : 3, (3, AdditiveExpression1) : 4, (4, FAdditiveExpression) : 2
+}
+
+X.set_transition_dictionary(X_dictionary, 0, 2)
+
+
 
 get_char()
 get_new_token()
