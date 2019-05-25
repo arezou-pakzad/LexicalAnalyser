@@ -405,6 +405,7 @@ def parser(non_terminal, height):
         if not flag:
             for key in this_state.keys():
                 write_parser_error('Syntax Error! Missing ' + str(key[1].name))
+                print('Syntax Error! Missing ' + str(key[1].name))
                 break
             # TODO write error
             get_new_token()
@@ -757,7 +758,7 @@ FTypeSpecifier1.set_transition_dictionary(FTypeSpecifier1_dictionary, 0, 2)
 FID2_dictionary = {(0, 'EPSILON'): 1, (0, '['): 2, (2, ']'): 1}
 FID2.set_transition_dictionary(FID2_dictionary, 0, 1)
 
-CompoundStmt_dictionary = {(0, '{'): 1, (1, DeclarationList1): 2, (2, StatementList): 3, (3, '}'): 4}
+CompoundStmt_dictionary = {(0, '{'): 1, (1, DeclarationList): 2, (2, StatementList): 3, (3, '}'): 4}
 CompoundStmt.set_transition_dictionary(CompoundStmt_dictionary, 0, 4)
 
 StatementList_dictionary = {(0, StatementList1): 1}
