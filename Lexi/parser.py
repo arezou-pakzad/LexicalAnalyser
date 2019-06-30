@@ -1,4 +1,6 @@
 # from lexical_analyser import get_token_one_by_one
+from intermediate_code import *
+
 input_file = open("input.txt", 'r')
 code = input_file.read()
 
@@ -313,7 +315,6 @@ def write_to_parser_file(height, leaf):
     parser_file.write(leaf + '\n')
 
 
-
 def get_new_token():
     global current_token_type, current_token_string
     current_token_type, current_token_string = get_token_one_by_one()
@@ -342,12 +343,15 @@ def parser(non_terminal, height):
         print('this state:', this_state)
         print('current state and token type: ', (s, current_token_type))
         print('len this state: ', len(this_state))
+
+        if isinstance(s, Routine):
+            code_gen(Routine)
+
         if len(this_state) == 1:
             terminal_edge = list(this_state.keys())[0][1]
             if isinstance(terminal_edge, str) and terminal_edge != current_token_type:
                 if current_token_type != '$':
                     write_parser_error('Syntax Error! Missing ' + str(terminal_edge))
-                    # TODO error #LINE_NUM : Syntax Error! Missing #TERMINAL_NAME
                     print('error #LINE_NUM : Syntax Error! Missing #TERMINAL_NAME')
                     print('state: ', s, ' terminal edge: ', terminal_edge, ' token:', current_token_type)
                     current_token_type = terminal_edge
@@ -355,7 +359,6 @@ def parser(non_terminal, height):
                 else:
                     print('LINE_NUM : Syntax Error! Malformed Input')
                     write_parser_error('Syntax Error! Malformed Input')
-                    # TODO LINE_NUM : Syntax Error! Malformed Input
                     parser.running = False
 
         if (s, current_token_type) in this_state:  # .items added
@@ -372,16 +375,14 @@ def parser(non_terminal, height):
         elif len(this_state) > 0:
             for key, value in this_state.items():
                 print(isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set))
-                # if isinstance(key[1], Non_terminal) and current_token_type not in key[1].first_set and 'EPSILON' not in key[1].first_set and current_token_type in key[1].follow_set:
-                #     error_flag = True
-
                 if isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set or
-                                                         (('EPSILON' in key[1].first_set or error_flag) and current_token_type in key[1].follow_set)):
+                                                         (('EPSILON' in key[
+                                                             1].first_set or error_flag) and current_token_type in key[
+                                                              1].follow_set)):
                     print(current_token_type, 'hereeeeeeeeee')
                     if error_flag and 'EPSILON' not in key[1].first_set and current_token_type not in key[1].first_set:
                         print('Syntax Error! Missing #NON_TERMINAL_DESCRIPTION')
                         write_parser_error('Syntax Error! Missing ' + key[1].name)
-                        # TODO #LINE_NUM : Syntax Error! Missing #NON_TERMINAL_DESCRIPTION
                         s = value
                         error_flag = False
                         flag = True
@@ -393,7 +394,6 @@ def parser(non_terminal, height):
                     s = value
                     flag = True
                     if not res:
-                        # TODO: error handling
                         return False
                     break
         if not flag and (s, 'EPSILON') in this_state.keys():  # what is this?
@@ -407,21 +407,74 @@ def parser(non_terminal, height):
         if not flag:
             if error_flag:
                 for key in this_state.keys():
-                    print('key[1]' , key[1])
+                    print('key[1]', key[1])
                     write_parser_error('Syntax Error! Missing ' + str(key[1].name))
                     print('Syntax Error! Missing ' + str(key[1].name))
-                # TODO write error
                     get_new_token()
                     break
             if current_token_type == '$':
                 print('Syntax Error! Unexpected EndOfFile')
                 write_parser_error('Syntax Error! Unexpected EndOfFile')
-                # TODO #LINE_NUM : Syntax Error! Unexpected EndOfFile
                 parser.running = False
 
             error_flag = True
 
     return True
+
+
+ss = Stack()
+goto_ss = Stack()
+PB = Program_block()
+DB = Data_block()
+
+
+class Routine:
+    def __init__(self, name):
+        self.name = name
+
+
+def code_gen(routine):
+    action = routine.name
+    if action == '#save':
+        _save()
+    elif action == '#label':
+        _label()
+    elif action == '#while':
+        _while()
+
+
+def _label():
+    ss.push(PB.index)
+
+
+def _save():
+    ss.push(PB.index)
+    PB.increase_index()
+
+
+def _while():
+    PB.write(ss.get_item(0), assembly_gen('JPF', ss.get_item(1), PB.index + 1))
+    PB.write(PB.index, assembly_gen('JP', ss.get_item(2)))
+    PB.increase_index()
+    ss.pop(3)
+
+
+def _output():
+    PB.write(PB.index, assembly_gen('PRINT', ss.get_item(0)))
+    PB.increase_index()
+    ss.pop(1)
+
+
+def _at(s):
+    return '@' + str(s)
+
+
+def _hashtag(s):
+    return '#' + str(s)
+
+
+def assembly_gen(cmd='', s1='', s2='', d=''):
+    return '(' + cmd + ', ' + str(s1) + ', ' + str(s2) + ', ' + str(d) + ')'
 
 
 program = Non_terminal(name='program', first_set=['$', 'int', 'void'], follow_set=[])
@@ -444,17 +497,18 @@ FTypeSpecifier2 = Non_terminal(name='FTypeSpecifier2', first_set=['ID'],
                                            'switch',
                                            'ID', '+', '-', '(', 'NUM', '}'])
 
-Fid_4 = Non_terminal(name = 'Fid_4', first_set = ['(', ';', '['], follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
-                                           'switch',
-                                           'ID', '+', '-', '(', 'NUM', '}'])
+Fid_4 = Non_terminal(name='Fid_4', first_set=['(', ';', '['],
+                     follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                 'switch',
+                                 'ID', '+', '-', '(', 'NUM', '}'])
 
-Fid_1 = Non_terminal(name = 'Fid_1', first_set=[';', '['], follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
-                                           'switch',
-                                           'ID', '+', '-', '(', 'NUM', '}'])
+Fid_1 = Non_terminal(name='Fid_1', first_set=[';', '['],
+                     follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
+                                 'switch',
+                                 'ID', '+', '-', '(', 'NUM', '}'])
 
 TypeSpecifier = Non_terminal(name='TypeSpecifier', first_set=['int', 'void'],
                              follow_set=['ID'])
-
 
 Params = Non_terminal(name='params', first_set=['int', 'void'], follow_set=[')'])
 
@@ -487,9 +541,9 @@ StatementList1 = Non_terminal(name='StatementList1',
 Statement = Non_terminal(name='Statement',
                          first_set=['{', 'continue', 'break', ';', 'if', 'while', 'return', 'switch', 'ID', '+', '-',
                                     '(', 'NUM'],
-                              follow_set=['{', 'continue', 'break', ';', 'if', 'while',
+                         follow_set=['{', 'continue', 'break', ';', 'if', 'while',
                                      'return', 'switch', 'ID', '+', '-', '(', 'NUM', '}', 'else', 'case',
-                                    'default'])
+                                     'default'])
 
 ExpressionStmt = Non_terminal(name='ExpressionStmt', first_set=['continue', 'break', ';', 'ID', '+', '-', '(', 'NUM'],
                               follow_set=['{', 'continue', 'break', ';', 'if', 'while',
@@ -526,12 +580,11 @@ DefaultStmt = Non_terminal(name='DefaultStmt', first_set=['default', 'EPSILON'],
 Expression = Non_terminal(name='Expression', first_set=['ID', '+', '-', '(', 'NUM'],
                           follow_set=[';', ')', ']', ','])
 
+FExpr = Non_terminal(name='FExpr', first_set=['(', '[', '=', '*', 'EPSILON', '+', '-', '<', '=='],
+                     follow_set=[';', ')', ']', ','])
 
-
-FExpr = Non_terminal(name = 'FExpr', first_set=['(', '[', '=', '*', 'EPSILON', '+', '-', '<', '=='], follow_set=[';', ')', ']', ','])
-
-FExpr_1	= Non_terminal(name = 'FExpr_1', first_set=['=', '*', 'EPSILON', '+', '-', '<', '=='], follow_set=[';', ')', ']', ','])
-
+FExpr_1 = Non_terminal(name='FExpr_1', first_set=['=', '*', 'EPSILON', '+', '-', '<', '=='],
+                       follow_set=[';', ')', ']', ','])
 
 Fid = Non_terminal(name='FID', first_set=['EPSILON', '['],
                    follow_set=['=', '*', '+', '-', '<', '==', ';', ')', ']', ','])
@@ -551,29 +604,27 @@ Term = Non_terminal(name='Term', first_set=['+', '-', '(', 'ID', 'NUM'],
 
 Term1 = Non_terminal(name='term1', first_set=['*', 'EPSILON'], follow_set=['+', '-', ';', ')', '<', '==', ']', ','])
 
-Term_2 = Non_terminal(name= 'Term2', first_set=['+', '-', '(', 'NUM'], follow_set=['+', '-', ';', ')', '<', '==', ']', ','])
-
+Term_2 = Non_terminal(name='Term2', first_set=['+', '-', '(', 'NUM'],
+                      follow_set=['+', '-', ';', ')', '<', '==', ']', ','])
 
 SignedFactor = Non_terminal(name='SignedFactor', first_set=['+', '-', '(', 'ID', 'NUM'],
                             follow_set=['*', '+', '-', ';', ')', '<', '==', ']', ','])
 
-SignedFactor_2	= Non_terminal(name = 'SignedFactor2', first_set=['+', '-', '(', 'NUM'], follow_set=['*', '+', '-', 'ID', '(', 'NUM', '<', '==', ';', ')', ']', ','])
-
+SignedFactor_2 = Non_terminal(name='SignedFactor2', first_set=['+', '-', '(', 'NUM'],
+                              follow_set=['*', '+', '-', 'ID', '(', 'NUM', '<', '==', ';', ')', ']', ','])
 
 Factor = Non_terminal(name='Factor', first_set=['(', 'ID', 'NUM'],
                       follow_set=['*', '+', '-', ';', ')', '<', '==', ']', ','])
 
+Factor_2 = Non_terminal(name='Factor_2', first_set=['(', 'NUM'],
+                        follow_set=['*', '+', '-', ';', ')', '<', '==', ']', ','])
 
-Factor_2 = Non_terminal(name = 'Factor_2', first_set=['(', 'NUM'], follow_set=['*', '+', '-', ';', ')', '<', '==', ']', ','])
-
-Fid_3 = Non_terminal(name = 'Fid_3', first_set=['[', 'EPSILON', '('], follow_set=['*', '+', '-', ';', ')', '<', '==', ']', ','])
+Fid_3 = Non_terminal(name='Fid_3', first_set=['[', 'EPSILON', '('],
+                     follow_set=['*', '+', '-', ';', ')', '<', '==', ']', ','])
 
 Args = Non_terminal(name='Args', first_set=['EPSILON', 'ID', '+', '-', '(', 'NUM'], follow_set=[')'])
 ArgList = Non_terminal(name='ArgList', first_set=['ID', '+', '-', '(', 'NUM'], follow_set=[')'])
 ArgList1 = Non_terminal(name='ArgList1', first_set=[',', 'EPSILON'], follow_set=[')'])
-
-
-
 
 program_dictionary = {(0, DeclarationList): 1, (1, '$'): 2}
 program.set_transition_dictionary(program_dictionary, 0, 2)
@@ -590,21 +641,14 @@ Declaration.set_transition_dictionary(Declaration_dictionary, 0, 2)
 FTypeSpecifier2_dictionary = {(0, 'ID'): 1, (1, Fid_4): 2}
 FTypeSpecifier2.set_transition_dictionary(FTypeSpecifier2_dictionary, 0, 2)
 
-
-
-Fid_4_dictionary = {(0, Fid_1) : 1,
-                    (0, '(') : 2, (2, Params) : 3, (3, ')') : 4, (4, CompoundStmt) : 1}
+Fid_4_dictionary = {(0, Fid_1): 1,
+                    (0, '('): 2, (2, Params): 3, (3, ')'): 4, (4, CompoundStmt): 1}
 
 Fid_4.set_transition_dictionary(Fid_4_dictionary, 0, 1)
 
-
-Fid_1_dictionary ={(0, ';'): 1,
-                   (0, '[') : 2, (2, 'NUM') : 3, (3, ']') : 4, (4, ';') : 1}
+Fid_1_dictionary = {(0, ';'): 1,
+                    (0, '['): 2, (2, 'NUM'): 3, (3, ']'): 4, (4, ';'): 1}
 Fid_1.set_transition_dictionary(Fid_1_dictionary, 0, 1)
-
-
-
-
 
 TypeSpecifier_dictionary = {(0, 'int'): 1, (0, 'void'): 1}
 TypeSpecifier.set_transition_dictionary(TypeSpecifier_dictionary, 0, 1)
@@ -612,10 +656,8 @@ TypeSpecifier.set_transition_dictionary(TypeSpecifier_dictionary, 0, 1)
 Params_dictionary = {(0, 'int'): 1, (1, FTypeSpecifier1): 2, (2, ParamList1): 3, (0, 'void'): 4, (4, FParam): 3}
 Params.set_transition_dictionary(Params_dictionary, 0, 3)
 
-
-FParam_dictionary = {(0, FTypeSpecifier2) : 1, (1, ParamList1) : 2, (0, 'EPSILON') : 2}
+FParam_dictionary = {(0, FTypeSpecifier2): 1, (1, ParamList1): 2, (0, 'EPSILON'): 2}
 FParam.set_transition_dictionary(FParam_dictionary, 0, 2)
-
 
 ParamList1_dictionary = {
     (0, ','): 1,
@@ -654,42 +696,37 @@ Statement_dictionary = {(0, ExpressionStmt): 1, (0, CompoundStmt): 1, (0, Select
                         (0, ReturnStmt): 1,
                         (0, SwitchStmt): 1}
 
-
-
 ExpressionStmt_dictionary = {
-    (0, Expression) : 1,(1, ';') : 2,
-    (0, 'continue') : 3, (3, ';') : 2,
-    (0, 'break') : 4, (4, ';') : 2,
-    (0, ';') : 2
+    (0, Expression): 1, (1, ';'): 2,
+    (0, 'continue'): 3, (3, ';'): 2,
+    (0, 'break'): 4, (4, ';'): 2,
+    (0, ';'): 2
 }
 
 ExpressionStmt.set_transition_dictionary(ExpressionStmt_dictionary, 0, 2)
 Statement.set_transition_dictionary(Statement_dictionary, 0, 1)
 
 Expression_dictionary = {
-    (0, 'ID') : 1, (1,FExpr ) : 2,
-    (0, Term_2) : 3, (3, AdditiveExpression1) : 4, (4, FAdditiveExpression) : 2
+    (0, 'ID'): 1, (1, FExpr): 2,
+    (0, Term_2): 3, (3, AdditiveExpression1): 4, (4, FAdditiveExpression): 2
 }
 Expression.set_transition_dictionary(Expression_dictionary, 0, 2)
 
 FExpr_dictionary = {
-    (0, Fid) : 1,(1, FExpr_1) : 2,
-    (0, '(') : 3, (3, Args) : 4, (4, ')') : 5, (5, Term1) : 6, (6, AdditiveExpression1) : 7, (7, FAdditiveExpression) : 2
+    (0, Fid): 1, (1, FExpr_1): 2,
+    (0, '('): 3, (3, Args): 4, (4, ')'): 5, (5, Term1): 6, (6, AdditiveExpression1): 7, (7, FAdditiveExpression): 2
 }
 
-FExpr.set_transition_dictionary(FExpr_dictionary, 0 ,2)
-
+FExpr.set_transition_dictionary(FExpr_dictionary, 0, 2)
 
 FExpr_1_dictionary = {
-    (0, '=') : 1, (1, Expression) : 2,
-    (0, Term1) : 3, (3, AdditiveExpression1) : 4, (4, FAdditiveExpression) : 2
+    (0, '='): 1, (1, Expression): 2,
+    (0, Term1): 3, (3, AdditiveExpression1): 4, (4, FAdditiveExpression): 2
 }
 FExpr_1.set_transition_dictionary(FExpr_1_dictionary, 0, 2)
 
-
-Fid_dictionary = {(0, 'EPSILON') : 1, (0, '[') : 2, (2, Expression) : 3, (3, ']') : 1}
+Fid_dictionary = {(0, 'EPSILON'): 1, (0, '['): 2, (2, Expression): 3, (3, ']'): 1}
 Fid.set_transition_dictionary(Fid_dictionary, 0, 1)
-
 
 SelectionStmt_dictionary = {(0, 'if'): 1, (1, '('): 2,
                             (2, Expression): 3, (3, ')'): 4, (4, Statement): 5,
@@ -723,13 +760,11 @@ CaseStmt.set_transition_dictionary(CaseStmt_dictionary, 0, 4)
 DefaultStmt_dictionary = {(0, 'default'): 1, (1, ':'): 2, (2, StatementList): 3, (0, 'EPSILON'): 3}
 DefaultStmt.set_transition_dictionary(DefaultStmt_dictionary, 0, 3)
 
-
 FAdditiveExpression_dictionary = {(0, Relop): 1, (1, AdditiveExpression): 2, (0, 'EPSILON'): 2}
 FAdditiveExpression.set_transition_dictionary(FAdditiveExpression_dictionary, 0, 2)
 
 Relop_dictionary = {(0, '=='): 1, (0, '<'): 1}
 Relop.set_transition_dictionary(Relop_dictionary, 0, 1)
-
 
 AdditiveExpression_dictionary = {(0, Term): 1, (1, AdditiveExpression1): 2}
 AdditiveExpression.set_transition_dictionary(AdditiveExpression_dictionary, 0, 2)
@@ -746,8 +781,7 @@ Term.set_transition_dictionary(Term_dictionary, 0, 2)
 Term1_dictionary = {(0, '*'): 1, (1, SignedFactor): 2, (2, Term1): 3, (0, 'EPSILON'): 3}
 Term1.set_transition_dictionary(Term1_dictionary, 0, 3)
 
-
-Term_2_dictionary = {(0, SignedFactor_2) : 1, (1, Term1) : 2}
+Term_2_dictionary = {(0, SignedFactor_2): 1, (1, Term1): 2}
 Term_2.set_transition_dictionary(Term_2_dictionary, 0, 2)
 
 SignedFactor_dictionary = {(0, Factor): 1, (0, '+'): 2, (2, Factor): 1, (0, '-'): 3, (3, Factor): 1}
@@ -756,21 +790,14 @@ SignedFactor.set_transition_dictionary(SignedFactor_dictionary, 0, 1)
 SignedFactor_2_dictionary = {(0, Factor_2): 1, (0, '+'): 2, (2, Factor): 1, (0, '-'): 3, (3, Factor): 1}
 SignedFactor_2.set_transition_dictionary(SignedFactor_2_dictionary, 0, 1)
 
-
 Factor_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'ID'): 4, (4, Fid_3): 3, (0, 'NUM'): 3}
 Factor.set_transition_dictionary(Factor_dictionary, 0, 3)
 
-
-
-Factor_2_dictionary = {(0, '(') : 1, (1, Expression) : 2, (2, ')') : 3, (0, 'NUM') : 3}
+Factor_2_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'NUM'): 3}
 Factor_2.set_transition_dictionary(Factor_2_dictionary, 0, 3)
 
-
-
-
-Fid_3_dictionary = {(0, Fid) : 1, (0, '(') : 2, (2, Args) : 3, (3, ')') : 1}
+Fid_3_dictionary = {(0, Fid): 1, (0, '('): 2, (2, Args): 3, (3, ')'): 1}
 Fid_3.set_transition_dictionary(Fid_3_dictionary, 0, 1)
-
 
 Args_dictionary = {(0, ArgList): 1, (0, 'EPSILON'): 1}
 Args.set_transition_dictionary(Args_dictionary, 0, 1)
@@ -780,10 +807,6 @@ ArgList.set_transition_dictionary(ArgList_dictionary, 0, 2)
 
 ArgList1_dictionary = {(0, ','): 1, (1, Expression): 2, (2, ArgList1): 3, (0, 'EPSILON'): 3}
 ArgList1.set_transition_dictionary(ArgList1_dictionary, 0, 3)
-
-
-
-
 
 get_char()
 get_new_token()

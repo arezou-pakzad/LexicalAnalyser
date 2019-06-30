@@ -24,7 +24,6 @@ class While_pointer:
         self.stmt = stmt
 
 
-
 class Stack:
     def __init__(self):
         self.stack = []
@@ -41,7 +40,6 @@ class Stack:
         return self.stack[top - index]
 
 
-
 class Program_block:
     def __init__(self):
         self.program = ['' for i in range(10000)]
@@ -54,26 +52,43 @@ class Program_block:
         self.index += 1
 
 
-
-
-
 class Data_block:
     def __init__(self):
         self.index = 0
         self.memory = [0 for i in range(10000)]
 
-    def write(self,item):
+    def write(self, item):
         self.memory[self.index] = item
         self.index += 4
+        return self.index - 4
 
     def write(self, item, addr):
         self.memory[addr] = item
+
+    def write_array(self, array, size):
+        addr = self.write(array[0])
+        for i in range(1, size):
+            self.write(array[i])
+        return addr
 
     def read(self, addr):
         return self.memory[addr]
 
 
+class Activation_record:
+    def __init__(self, name, PB_index, DB_index):
+        self.name = name
+        self.PB_index = PB_index
+        self.DB_index = DB_index
+        self.symbol_counter = 0
+        self.symbol_dict = {}
+        self.array_dict = {}
 
+    def add_symbol(self, symbol, symbol_value, DB):
+        if symbol not in self.symbol_array.keys():
+            DB.write(symbol_value, self.DB_index + self.symbol_counter)
+            self.symbol_counter += 4
+            self.symbol_dict[symbol] = self.DB_index + self.symbol_counter
 
 
 
