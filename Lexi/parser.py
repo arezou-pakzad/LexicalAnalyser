@@ -372,10 +372,12 @@ def parser(non_terminal, height):
         elif len(this_state) > 0:
             for key, value in this_state.items():
                 print(isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set))
+                # if isinstance(key[1], Non_terminal) and current_token_type not in key[1].first_set and 'EPSILON' not in key[1].first_set and current_token_type in key[1].follow_set:
+                #     error_flag = True
+
                 if isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set or
-                                                         (('EPSILON' in key[
-                                                             1].first_set or error_flag) and current_token_type in key[
-                                                              1].follow_set)):
+                                                         (('EPSILON' in key[1].first_set or error_flag) and current_token_type in key[1].follow_set)):
+                    print(current_token_type, 'hereeeeeeeeee')
                     if error_flag and 'EPSILON' not in key[1].first_set and current_token_type not in key[1].first_set:
                         print('Syntax Error! Missing #NON_TERMINAL_DESCRIPTION')
                         write_parser_error('Syntax Error! Missing ' + key[1].name)
@@ -403,13 +405,14 @@ def parser(non_terminal, height):
             if s == non_terminal.final_state:
                 print(non_terminal.name, ' finished')
         if not flag:
-            for key in this_state.keys():
-                print('key[1]' , key[1])
-                write_parser_error('Syntax Error! Missing ' + str(key[1].name))
-                print('Syntax Error! Missing ' + str(key[1].name))
-                break
-            # TODO write error
-            get_new_token()
+            if error_flag:
+                for key in this_state.keys():
+                    print('key[1]' , key[1])
+                    write_parser_error('Syntax Error! Missing ' + str(key[1].name))
+                    print('Syntax Error! Missing ' + str(key[1].name))
+                # TODO write error
+                    get_new_token()
+                    break
             if current_token_type == '$':
                 print('Syntax Error! Unexpected EndOfFile')
                 write_parser_error('Syntax Error! Unexpected EndOfFile')

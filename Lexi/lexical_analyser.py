@@ -244,6 +244,8 @@ def print_error(token_type, token_string):
         lexical_error_file.write(' (' + token_string + ', ' + token_type + ')')
     first_error = False
 
+
+get_next_token()
 # output_file.close()
 # error_file.close()
 # input_file.close()
