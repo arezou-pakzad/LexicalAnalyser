@@ -44,7 +44,7 @@ class Stack:
 
 class Program_block:
     def __init__(self):
-        self.program = [] * 100000
+        self.program = ['' for i in range(10000)]
         self.index = 0
 
     def write(self, index, statement):
@@ -57,10 +57,20 @@ class Program_block:
 
 
 
+class Data_block:
+    def __init__(self):
+        self.index = 0
+        self.memory = [0 for i in range(10000)]
 
+    def write(self,item):
+        self.memory[self.index] = item
+        self.index += 4
 
+    def write(self, item, addr):
+        self.memory[addr] = item
 
-
+    def read(self, addr):
+        return self.memory[addr]
 
 
 
