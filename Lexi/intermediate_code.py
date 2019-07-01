@@ -39,6 +39,9 @@ class Stack:
         top = len(self.stack) - 1
         return self.stack[top - index]
 
+    def get_top_index(self):
+        return len(self.stack) - 1
+
 
 class Program_block:
     def __init__(self):
@@ -172,6 +175,4 @@ class Activation_record:
             DB.write(symbol_value, self.DB_index + self.symbol_counter)
             self.symbol_counter += 4
             self.symbol_dict[symbol] = self.DB_index + self.symbol_counter
-
-
 

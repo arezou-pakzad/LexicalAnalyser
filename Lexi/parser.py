@@ -423,7 +423,8 @@ ss = Stack()
 goto_ss = Stack()
 PB = Program_block()
 DB = Data_block()
-
+activation_record_stack = Stack()
+function_activatior = {}
 
 class Routine:
     def __init__(self, name):
@@ -438,6 +439,16 @@ def code_gen(routine):
         _label()
     elif action == '#while':
         _while()
+    elif action == '#mark_plus':
+        _mark_minus()
+    elif action == '#mark_minus':
+        _mark_minus()
+    elif action == '#mark_less':
+        _mark_less()
+    elif action == '#mark_deq':
+        _mark_deq()
+
+
 
 
 def _label():
@@ -460,6 +471,26 @@ def _output():
     PB.write(PB.index, assembly_gen('PRINT', ss.get_item(0)))
     PB.increase_index()
     ss.pop(1)
+
+
+def _mark_plus():
+    ss.push(1)
+
+def _mark_minus():
+    ss.push(0)
+
+def _mark_less():
+    ss.push(0)
+
+def _mark_deq():
+    ss.push(1)
+
+def _jp_save():
+    PB.write(ss.get_item(0), statement= assembly_gen('JPF', ss.get_item(1), PB.index + 1))
+    ss.pop(2)
+    ss.push(PB.index)
+    PB.increase_index()
+
 
 
 def _at(s):
