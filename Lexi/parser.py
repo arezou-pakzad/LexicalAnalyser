@@ -1,6 +1,6 @@
 # from lexical_analyser import get_token_one_by_one
 from intermediate_code import *
-
+from routines import *
 input_file = open("input.txt", 'r')
 code = input_file.read()
 
@@ -423,12 +423,11 @@ ss = Stack()
 goto_ss = Stack()
 PB = Program_block()
 DB = Data_block()
-activation_record_stack = Stack()
+function_activation_record_stack = Stack()
+scope_activation_record_stack = Stack()
 function_activatior = {}
-
-class Routine:
-    def __init__(self, name):
-        self.name = name
+first_scope = Activation_record(name = 'first scope', PB_index=0, DB_index=0) #the first scope that has eveeeerything in it
+scope_activation_record_stack.push(first_scope)
 
 
 def code_gen(routine):
@@ -439,14 +438,69 @@ def code_gen(routine):
         _label()
     elif action == '#while':
         _while()
-    elif action == '#mark_plus':
-        _mark_minus()
-    elif action == '#mark_minus':
-        _mark_minus()
-    elif action == '#mark_less':
-        _mark_less()
-    elif action == '#mark_deq':
-        _mark_deq()
+    elif action == '#push_one':
+        _push_one()
+    elif action == '#push_zero':
+        _push_zero()
+    elif action == '#jp_save':
+        _jp_save()
+    elif action == '#jp':
+        _jp()
+    elif action == '#push_string':
+        _push_string()
+    elif action == '#pid':
+        _pid()
+    elif action == '#array_element':
+        _array_element()
+
+    elif action == '#get_array_with_index':
+        _get_array_with_index()
+    elif action == '#make_id':
+        _make_id()
+
+    elif action == '#make_array':
+        _make_array()
+
+    elif action == '#new_scope':
+        _new_scope()
+
+    elif action == '#expression_end':
+        _expression_end()
+
+    elif action == '#assignment':
+        _assignment()
+    elif action == '#minus_factor':
+        _minus_factor()
+    elif action == '#mult':
+        _mult()
+
+    elif action == '#push_number':
+        _push_number()
+
+    elif action == '#addop':
+        _addop()
+
+    elif action == '#relop':
+        _relop()
+
+    elif action == '#push_arg':
+        _push_arg()
+
+
+    elif action == '#call':
+        _call()
+
+    elif action == '#make_function':
+        _make_function()
+
+    elif action == '#add_symbol_param':
+        _add_symbol_param()
+
+    elif action == '#add_array_param':
+        _add_array_param()
+
+    elif action == '#return':
+        _return()
 
 
 
@@ -460,7 +514,8 @@ def _save():
     PB.increase_index()
 
 
-def _while():
+def _while(): #TODO add adress to second line, start the code from the third line, first line : jp to the third line, add activation_record scope to its stack.
+    #TODO pop the activation record after while is done!
     PB.write(ss.get_item(0), assembly_gen('JPF', ss.get_item(1), PB.index + 1))
     PB.write(PB.index, assembly_gen('JP', ss.get_item(2)))
     PB.increase_index()
@@ -473,23 +528,200 @@ def _output():
     ss.pop(1)
 
 
-def _mark_plus():
-    ss.push(1)
+def _push_one():
+    t = DB.get_temp()
+    DB.write(1, t)
+    ss.push(t)
 
-def _mark_minus():
-    ss.push(0)
+def _push_zero():
+    t = DB.get_temp()
+    DB.write(0, t)
+    ss.push(t)
 
-def _mark_less():
-    ss.push(0)
-
-def _mark_deq():
-    ss.push(1)
 
 def _jp_save():
     PB.write(ss.get_item(0), statement= assembly_gen('JPF', ss.get_item(1), PB.index + 1))
     ss.pop(2)
     ss.push(PB.index)
     PB.increase_index()
+
+def _jp():
+    PB.write(ss.get_item(0), PB.index)
+    ss.pop(1)
+
+def _pid():
+    symbol_addr = find_the_symbol(activation_record_stack= scope_activation_record_stack, symbol= ss.get_item(0))
+    ss.pop(1)
+    ss.push(symbol_addr)
+
+def _array_element():
+    id = ss.get_item(1)
+    array_index = ss.get_item(0)
+    array_element_index = find_the_array_element(activation_record_stack= scope_activation_record_stack, array_name= id, index=array_index, DB = DB, is_address = True)
+    ss.pop(2)
+    ss.push(array_element_index)
+
+def _push_string():
+    ss.push(current_token_string)
+
+def _get_array_with_index():
+    id = ss.get_item(1)
+    index = ss.get_item(0)
+    array_element_index = find_the_array_element(activation_record_stack=scope_activation_record_stack, array_name=id,
+                                                 index=index, DB=DB, is_address=False)
+    ss.pop(2)
+    ss.push(array_element_index)
+
+def _make_id():
+    id = ss.get_item(1)
+    ss.get_item(0).add_symbol(id, DB)
+    ss.pop(1)
+
+def _make_array():
+    array_name = ss.get_item(1)
+    num_of_elements = ss.get_item(0)
+    ss.get_item(0).add_array(num_of_elements, array_name, DB)
+    ss.pop(2)
+
+def _new_scope():
+    scope_activation_record_stack.push(Activation_record(name = 'new scope', PB_index = PB.index, DB_index= DB.get_index()))
+
+
+def _expression_end():
+    ss.pop(1)
+
+def _assignment():
+    PB.write(PB.index, assembly_gen('ASSIGN', s1=ss.get_item(0), s2=ss.get_item(1)))
+    PB.increase_index()
+    ss.pop(1)
+
+
+def _minus_factor():
+    PB.write(PB.index, assembly_gen('MULT', s1= ss.get_item(0), s2= _hashtag(1), d = ss.get_item(0)))
+    PB.increase_index()
+
+
+def _mult():
+    t = DB.get_temp()
+    PB.write(PB.index, statement= assembly_gen('MULT', s1 = ss.get_item(0), s2 = ss.get_item(1), d = t))
+    ss.pop(2)
+    ss.push(t)
+
+def _addop():
+    PB.write(PB.index, assembly_gen('JPF', s1=ss.get_item(1), s2= PB.index + 3))
+    PB.increase_index()
+    t = DB.get_temp()
+    PB.write(PB.index, assembly_gen('ADD', s1= ss.get_item(2),s2 = ss.get_item(0),d= t))
+    PB.increase_index()
+    PB.write(PB.index, assembly_gen('JP', s1= PB.index + 2))
+    PB.increase_index()
+    PB.write(PB.index, assembly_gen('SUB', s1 = ss.get_item(2), s2=ss.get_item(0), d = t))
+    ss.pop(3)
+    ss.push(t)
+
+
+def _relop():
+    PB.write(PB.index, assembly_gen('JPF', s1=ss.get_item(1), s2= PB.index + 3))
+    PB.increase_index()
+    t = DB.get_temp()
+    PB.write(PB.index, assembly_gen('EQ', s1= ss.get_item(2),s2 = ss.get_item(0),d= t))
+    PB.increase_index()
+    PB.write(PB.index, assembly_gen('JP', s1= PB.index + 2))
+    PB.increase_index()
+    PB.write(PB.index, assembly_gen('LT', s1 = ss.get_item(2), s2=ss.get_item(0), d = t))
+    ss.pop(3)
+    ss.push(t)
+
+
+
+def _push_number():
+    t = DB.get_temp()
+    DB.write(current_token_string, t)
+    ss.push(t)
+
+
+
+def _push_arg():
+    t1 = DB.get_temp()
+    t2 = DB.get_temp()
+    PB.write(PB.index, assembly_gen('ASSIGN', s1 = ss.get_item(0), s2= t1))
+    PB.increase_index()
+    PB.write(PB.index, assembly_gen('ASSIGN', s1= ss.get_item(1), s2= t2))
+    PB.increase_index()
+    PB.write(PB.index, assembly_gen('ADD', s1=t2 , s2= _hashtag('1'), d = t2))
+    ss.pop(2)
+    ss.push(t1)
+    ss.push(t2)
+
+
+def _call():
+    number_of_args = DB.read(ss.get_item(0))
+    function_name = ss.get_item(number_of_args + 1)
+    address = -1
+    function_AR = None
+    for i in range(function_activation_record_stack.get_len()):
+        if function_activation_record_stack[i].name == function_name:
+            address = function_activation_record_stack[i].PB_index
+            function_AR = function_activation_record_stack[i]
+            break
+    if address == -1:
+        #TODO error
+        pass
+    if function_AR.arguments_num != number_of_args:
+        pass
+        #TODO error
+
+    arguments_names = function_AR.arguments_name
+
+    for i in reversed(range(number_of_args)):
+        id = arguments_names[i]
+        value = DB.read(ss.get_item(number_of_args - i))
+
+        if id in function_AR.symbol_dict.keys():
+            function_AR.update_symbol(id, value, DB)
+        else:
+            function_AR.update_array_address(id, value, DB)
+
+    PB.write(PB.index, assembly_gen('JP', s1= address))
+    PB.increase_index()
+    ss.pop(number_of_args + 2)  #one for number_of_args and one for the function name
+    PB.write(address, PB.index + 1) #second line of a function is its return address
+    PB.increase_index()
+
+
+def _make_function():
+    id = ss.get_item(0)
+    function_AR = Activation_record(name=id, PB_index= PB.index, DB_index= DB.index)
+    function_activation_record_stack.push(function_AR)
+    scope_activation_record_stack.push(function_AR)
+    PB.write(PB.index, assembly_gen('JP', PB.index + 2))
+    #PB[i + 1] = return_address
+    PB.increase_index()
+    PB.increase_index()
+    ss.pop(1)
+
+
+def _add_symbol_param():
+    id = ss.get_item(0)
+    function_AR = function_activation_record_stack.get_item(0)
+    function_AR.add_arg_symbol(id, DB)
+    ss.pop(1)
+
+def _add_array_param():
+    id = ss.get_item(0)
+    function_AR = function_activation_record_stack.get_item(0)
+    function_AR.add_arg_array(id, DB)
+    ss.pop(1)
+
+def _return():
+    function_AR = scope_activation_record_stack.get_item(0)
+    function_start_address = function_AR.PB_index
+    PB.write(PB.index, assembly_gen('JP', s1= function_start_address + 1))
+    scope_activation_record_stack.pop(1)
+
+
+
+
 
 
 
@@ -519,6 +751,7 @@ Declaration = Non_terminal(name='declatation', first_set=['int', 'void'],
                            follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
                                        'switch'
                                , 'ID', '+', '-', '(', 'NUM', '}'])
+
 
 FTypeSpecifier2 = Non_terminal(name='FTypeSpecifier2', first_set=['ID'],
                                follow_set=['int', 'void', '$', '{', 'continue', 'break', ';', 'if', 'while', 'return',
@@ -666,16 +899,16 @@ DeclarationList1.set_transition_dictionary(DeclarationList1_dictionary, 0, 2)
 Declaration_dictionary = {(0, TypeSpecifier): 1, (1, FTypeSpecifier2): 2}
 Declaration.set_transition_dictionary(Declaration_dictionary, 0, 2)
 
-FTypeSpecifier2_dictionary = {(0, 'ID'): 1, (1, Fid_4): 2}
-FTypeSpecifier2.set_transition_dictionary(FTypeSpecifier2_dictionary, 0, 2)
+FTypeSpecifier2_dictionary = {(0, push_string_routine) : 1,( 1, 'ID'): 2, (2, Fid_4): 3}
+FTypeSpecifier2.set_transition_dictionary(FTypeSpecifier2_dictionary, 0, 3)
 
 Fid_4_dictionary = {(0, Fid_1): 1,
-                    (0, '('): 2, (2, Params): 3, (3, ')'): 4, (4, CompoundStmt): 1}
+                    (0, '('): 5,(5, make_function_routine) : 2, (2, Params): 3, (3, ')'): 4, (4, CompoundStmt): 1}
 
 Fid_4.set_transition_dictionary(Fid_4_dictionary, 0, 1)
 
-Fid_1_dictionary = {(0, ';'): 1,
-                    (0, '['): 2, (2, 'NUM'): 3, (3, ']'): 4, (4, ';'): 1}
+Fid_1_dictionary = {(0, ';'): 5, (5, make_id_routine) : 1,
+                    (0, '['): 2, (2, push_string_routine) : 6, (6, 'NUM'): 3, (3, make_array_routine) : 7,  (7, ']'): 4, (4, ';'): 1}
 Fid_1.set_transition_dictionary(Fid_1_dictionary, 0, 1)
 
 TypeSpecifier_dictionary = {(0, 'int'): 1, (0, 'void'): 1}
@@ -702,15 +935,17 @@ Param_dictionary = {
 Param.set_transition_dictionary(Param_dictionary, 0, 2)
 
 FTypeSpecifier1_dictionary = {
-    (0, 'ID'): 1,
-    (1, Fid2): 2
+    (0, push_string_routine) : 1,
+    (1, 'ID'): 2,
+    (2, Fid2): 3
 }
-FTypeSpecifier1.set_transition_dictionary(FTypeSpecifier1_dictionary, 0, 2)
+FTypeSpecifier1.set_transition_dictionary(FTypeSpecifier1_dictionary, 0, 3)
 
-Fid2_dictionary = {(0, 'EPSILON'): 1, (0, '['): 2, (2, ']'): 1}
+Fid2_dictionary = {(0, add_symbol_param_routine) : 3,
+                   (3, 'EPSILON'): 1, (0, '['): 2, (2, ']'): 7, (7, add_array_param_routine) : 1}
 Fid2.set_transition_dictionary(Fid2_dictionary, 0, 1)
 
-CompoundStmt_dictionary = {(0, '{'): 1, (1, DeclarationList): 2, (2, StatementList): 3, (3, '}'): 4}
+CompoundStmt_dictionary = {(0, '{'): 1, (1, new_scope_routine) : 5,  (5, DeclarationList): 2, (2, StatementList): 3, (3, '}'): 4}
 CompoundStmt.set_transition_dictionary(CompoundStmt_dictionary, 0, 4)
 
 StatementList_dictionary = {(0, StatementList1): 1}
@@ -724,41 +959,44 @@ Statement_dictionary = {(0, ExpressionStmt): 1, (0, CompoundStmt): 1, (0, Select
                         (0, ReturnStmt): 1,
                         (0, SwitchStmt): 1}
 
-ExpressionStmt_dictionary = {
-    (0, Expression): 1, (1, ';'): 2,
+Statement.set_transition_dictionary(Statement_dictionary, 0, 1)
+ExpressionStmt_dictionary = { #TODO
+    (0, Expression): 1, (1, ';'): 5, (5, expression_end_routine) : 2,
     (0, 'continue'): 3, (3, ';'): 2,
     (0, 'break'): 4, (4, ';'): 2,
     (0, ';'): 2
 }
 
 ExpressionStmt.set_transition_dictionary(ExpressionStmt_dictionary, 0, 2)
-Statement.set_transition_dictionary(Statement_dictionary, 0, 1)
+
 
 Expression_dictionary = {
-    (0, 'ID'): 1, (1, FExpr): 2,
-    (0, Term_2): 3, (3, AdditiveExpression1): 4, (4, FAdditiveExpression): 2
+    (0, push_string_routine) : 1, (1, 'ID'): 1, (2, FExpr): 3,
+    (0, Term_2): 4, (4, AdditiveExpression1): 5, (4, FAdditiveExpression): 3
 }
-Expression.set_transition_dictionary(Expression_dictionary, 0, 2)
+Expression.set_transition_dictionary(Expression_dictionary, 0, 3)
 
 FExpr_dictionary = {
     (0, Fid): 1, (1, FExpr_1): 2,
-    (0, '('): 3, (3, Args): 4, (4, ')'): 5, (5, Term1): 6, (6, AdditiveExpression1): 7, (7, FAdditiveExpression): 2
+    (0, '('): 3, (3, Args): 4, (4, ')'): 5 ,(5, call_routine) : 8, (8, Term1): 6,
+    (6, AdditiveExpression1): 7, (7, FAdditiveExpression): 2
 }
 
 FExpr.set_transition_dictionary(FExpr_dictionary, 0, 2)
 
 FExpr_1_dictionary = {
-    (0, '='): 1, (1, Expression): 2,
+    (0, '='): 1, (1, Expression): 5, (5, assignment_routine) : 2,
     (0, Term1): 3, (3, AdditiveExpression1): 4, (4, FAdditiveExpression): 2
 }
 FExpr_1.set_transition_dictionary(FExpr_1_dictionary, 0, 2)
 
-Fid_dictionary = {(0, 'EPSILON'): 1, (0, '['): 2, (2, Expression): 3, (3, ']'): 1}
+Fid_dictionary = {(0, 'EPSILON'): 4, (4, pid_routine) : 1,
+                  (0, '['): 2, (2, Expression): 3, (3, ']'): 5, (5, get_array_with_index_routine) : 1}
 Fid.set_transition_dictionary(Fid_dictionary, 0, 1)
 
 SelectionStmt_dictionary = {(0, 'if'): 1, (1, '('): 2,
-                            (2, Expression): 3, (3, ')'): 4, (4, Statement): 5,
-                            (5, 'else'): 6, (6, Statement): 7}
+                            (2, Expression): 3, (3, ')'): 4,(4, save_routine) : 8, (8, Statement): 5,
+                            (5, 'else'): 6, (6, jp_save_routine) : 9, (9, Statement): 10, (10, jp_routine) : 7}
 
 SelectionStmt.set_transition_dictionary(SelectionStmt_dictionary, 0, 7)
 
@@ -767,7 +1005,8 @@ IterationStmt.set_transition_dictionary(IterationStmt_dictionary, 0, 5)
 
 ReturnStmt_dictionary = {(0, 'return'): 1, (1, Freturn): 2}
 ReturnStmt.set_transition_dictionary(ReturnStmt_dictionary, 0, 2)
-Freturn_dictionary = {(0, ';'): 1, (0, Expression): 2, (2, ';'): 1}
+Freturn_dictionary = {(0, ';'): 3, (3, return_routine) : 1,
+                      (0, Expression): 2, (2, ';'): 3}
 
 Freturn.set_transition_dictionary(Freturn_dictionary, 0, 1)
 
@@ -788,58 +1027,63 @@ CaseStmt.set_transition_dictionary(CaseStmt_dictionary, 0, 4)
 DefaultStmt_dictionary = {(0, 'default'): 1, (1, ':'): 2, (2, StatementList): 3, (0, 'EPSILON'): 3}
 DefaultStmt.set_transition_dictionary(DefaultStmt_dictionary, 0, 3)
 
-FAdditiveExpression_dictionary = {(0, Relop): 1, (1, AdditiveExpression): 2, (0, 'EPSILON'): 2}
+FAdditiveExpression_dictionary = {(0, Relop): 1, (1, relop_routine) : 3,  (3, AdditiveExpression): 2, (0, 'EPSILON'): 2}
 FAdditiveExpression.set_transition_dictionary(FAdditiveExpression_dictionary, 0, 2)
 
-Relop_dictionary = {(0, '=='): 1, (0, '<'): 1}
+Relop_dictionary = {(0, '=='): 3 , (3, push_one_routine) : 1, (0, '<'): 2 , (2 , push_zero_routine) : 1}
 Relop.set_transition_dictionary(Relop_dictionary, 0, 1)
 
 AdditiveExpression_dictionary = {(0, Term): 1, (1, AdditiveExpression1): 2}
 AdditiveExpression.set_transition_dictionary(AdditiveExpression_dictionary, 0, 2)
 
-AdditiveExpression1_dictionary = {(0, Addop): 1, (1, Term): 2, (2, AdditiveExpression1): 3, (0, 'EPSILON'): 3}
+AdditiveExpression1_dictionary = {(0, Addop): 1, (1, Term): 2, (2, addop_routine): 4,  (4, AdditiveExpression1): 3, (0, 'EPSILON'): 3}
 AdditiveExpression1.set_transition_dictionary(AdditiveExpression1_dictionary, 0, 3)
 
-Addop_dictionary = {(0, '+'): 1, (0, '-'): 1}
+Addop_dictionary = {(0, '+'): 2, (2, push_one_routine) : 1, (0, '-'): 3, (3, push_zero_routine) : 1}
 Addop.set_transition_dictionary(Addop_dictionary, 0, 1)
 
 Term_dictionary = {(0, SignedFactor): 1, (1, Term1): 2}
 Term.set_transition_dictionary(Term_dictionary, 0, 2)
 
-Term1_dictionary = {(0, '*'): 1, (1, SignedFactor): 2, (2, Term1): 3, (0, 'EPSILON'): 3}
+Term1_dictionary = {(0, '*'): 1, (1, SignedFactor): 2, (2, mult_routine) : 4, (4, Term1): 3, (0, 'EPSILON'): 3}
 Term1.set_transition_dictionary(Term1_dictionary, 0, 3)
 
 Term_2_dictionary = {(0, SignedFactor_2): 1, (1, Term1): 2}
 Term_2.set_transition_dictionary(Term_2_dictionary, 0, 2)
 
-SignedFactor_dictionary = {(0, Factor): 1, (0, '+'): 2, (2, Factor): 1, (0, '-'): 3, (3, Factor): 1}
+SignedFactor_dictionary = {(0, Factor): 1, (0, '+'): 2, (2, Factor): 1, (0, '-'): 3, (3, Factor): 4, (4, minus_factor_routine) : 1}
+
 SignedFactor.set_transition_dictionary(SignedFactor_dictionary, 0, 1)
 
-SignedFactor_2_dictionary = {(0, Factor_2): 1, (0, '+'): 2, (2, Factor): 1, (0, '-'): 3, (3, Factor): 1}
+SignedFactor_2_dictionary = {(0, Factor_2): 1, (0, '+'): 2, (2, Factor): 1, (0, '-'): 3, (3, Factor): 4, (4, minus_factor_routine) : 1}
 SignedFactor_2.set_transition_dictionary(SignedFactor_2_dictionary, 0, 1)
 
-Factor_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'ID'): 4, (4, Fid_3): 3, (0, 'NUM'): 3}
+Factor_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3,
+                     (0, push_string_routine) : 4, (4, 'ID'): 5, (5, Fid_3): 3,
+                     (0, 'NUM'): 3}
 Factor.set_transition_dictionary(Factor_dictionary, 0, 3)
 
 
-Factor_2_dictionary = {(0, '(') : 1, (1, Expression) : 2, (2, ')') : 3, (0, 'NUM') : 3}
+Factor_2_dictionary = {(0, '(') : 1, (1, Expression) : 2, (2, ')') : 3,
+                       (0, push_string_routine) : 4 , (4, 'NUM') : 3}
 Factor_2.set_transition_dictionary(Factor_2_dictionary, 0, 3)
 
 
 Factor_2_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'NUM'): 3}
 Factor_2.set_transition_dictionary(Factor_2_dictionary, 0, 3)
 
-Fid_3_dictionary = {(0, Fid): 1, (0, '('): 2, (2, Args): 3, (3, ')'): 1}
+Fid_3_dictionary = {(0, Fid): 1, (0, '('): 2, (2, Args): 3, (3, ')'): 4, (4, _call()) : 1}
 Fid_3.set_transition_dictionary(Fid_3_dictionary, 0, 1)
 
-Args_dictionary = {(0, ArgList): 1, (0, 'EPSILON'): 1}
-Args.set_transition_dictionary(Args_dictionary, 0, 1)
+Args_dictionary = {(0, ArgList): 1, (0, 'EPSILON'): 1, (1, push_zero_routine) : 2}
+Args.set_transition_dictionary(Args_dictionary, 0, 2)
 
-ArgList_dictionary = {(0, Expression): 1, (1, ArgList1): 2}
-ArgList.set_transition_dictionary(ArgList_dictionary, 0, 2)
+ArgList_dictionary = {(0, Expression): 1, (1, push_arg_routine) : 2 , (2, ArgList1): 3}
+ArgList.set_transition_dictionary(ArgList_dictionary, 0, 3)
 
-ArgList1_dictionary = {(0, ','): 1, (1, Expression): 2, (2, ArgList1): 3, (0, 'EPSILON'): 3}
-ArgList1.set_transition_dictionary(ArgList1_dictionary, 0, 3)
+ArgList1_dictionary = {(0, ','): 1, (1, Expression): 2, (2, push_arg_routine) : 3, (3, ArgList1): 4,
+                       (0, 'EPSILON'): 4}
+ArgList1.set_transition_dictionary(ArgList1_dictionary, 0, 4)
 
 get_char()
 get_new_token()
@@ -850,5 +1094,4 @@ output_file.close()
 lexical_error_file.close()
 parser_error_file.close()
 input_file.close()
-
 combine_errors()
