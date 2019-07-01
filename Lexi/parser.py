@@ -1,4 +1,4 @@
-# from lexical_analyser import get_token_one_by_one
+from intermediate_code import While_pointer, While_stmt, Stack, Program_block
 input_file = open("input.txt", 'r')
 code = input_file.read()
 
@@ -234,16 +234,13 @@ def print_token(token_type, token_string):
     global output_file, line_changed, first_output
 
     if line_changed and not first_output:
-        # print()
         output_file.write('\n')
     if line_changed:
 
-        # print(str(line_num) + '. (' + token_type + ', ' + token_string + ')', end='')
         output_file.write(str(line_num) + '. (' + token_type + ', ' + token_string + ')')
         line_changed = False
     else:
 
-        # print(' (' + token_type + ', ' + token_string + ')', end='')
         output_file.write(' (' + token_type + ', ' + token_string + ')')
     first_output = False
 
@@ -372,9 +369,6 @@ def parser(non_terminal, height):
         elif len(this_state) > 0:
             for key, value in this_state.items():
                 print(isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set))
-                # if isinstance(key[1], Non_terminal) and current_token_type not in key[1].first_set and 'EPSILON' not in key[1].first_set and current_token_type in key[1].follow_set:
-                #     error_flag = True
-
                 if isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set or
                                                          (('EPSILON' in key[1].first_set or error_flag) and current_token_type in key[1].follow_set)):
                     print(current_token_type, 'hereeeeeeeeee')
@@ -654,8 +648,6 @@ Statement_dictionary = {(0, ExpressionStmt): 1, (0, CompoundStmt): 1, (0, Select
                         (0, ReturnStmt): 1,
                         (0, SwitchStmt): 1}
 
-
-
 ExpressionStmt_dictionary = {
     (0, Expression) : 1,(1, ';') : 2,
     (0, 'continue') : 3, (3, ';') : 2,
@@ -761,11 +753,8 @@ Factor_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'ID'): 4,
 Factor.set_transition_dictionary(Factor_dictionary, 0, 3)
 
 
-
 Factor_2_dictionary = {(0, '(') : 1, (1, Expression) : 2, (2, ')') : 3, (0, 'NUM') : 3}
 Factor_2.set_transition_dictionary(Factor_2_dictionary, 0, 3)
-
-
 
 
 Fid_3_dictionary = {(0, Fid) : 1, (0, '(') : 2, (2, Args) : 3, (3, ')') : 1}
