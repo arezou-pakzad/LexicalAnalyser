@@ -19,6 +19,9 @@ first_parser_error = True
 
 all_errors_file = open("errors.txt", 'w+')
 
+semantic_error_file = open('semantic_error.txt', 'w+')
+
+
 start_ind = 0
 end_ind = 0
 ind = -1
@@ -278,6 +281,10 @@ def write_parser_error(error_message):
 
     first_parser_error = False
 
+def write_semantic_error_file(error_message):
+    global line_num
+    semantic_error_file.write(str(line_num) + '.' + error_message + '\n')
+
 
 def combine_errors():
     global parser_error_file, lexical_error_file, all_errors_file
@@ -312,6 +319,7 @@ def write_to_parser_file(height, leaf):
     for i in range(height):
         parser_file.write('| ')
     parser_file.write(leaf + '\n')
+
 
 
 def get_new_token():
@@ -605,6 +613,9 @@ def _jp():
 def _pid():
     print('symbol: ', ss.get_item(0))
     symbol_addr = find_the_symbol(activation_record_stack= scope_activation_record_stack, symbol= ss.get_item(0))
+    if symbol_addr is None:
+        write_semantic_error_file(ss.get_item(0) + 'is not defined.')
+        print('error ID’ is not defined')
     ss.pop(1)
     print('symbol address:' , symbol_addr)
     ss.push(symbol_addr)
@@ -670,6 +681,10 @@ def _minus_factor():
 
 
 def _mult():
+    if  DB.get_type(ss.get_item(1)) == 1 or DB.get_type(ss.get_item(0)) == 1:
+        print('Type mismatch in operands')
+        write_semantic_error_file('Type mismatch in operands')
+        return
     t = DB.get_temp()
     PB.write(PB.index, statement=assembly_gen('MULT', s1=ss.get_item(0), s2=ss.get_item(1), d=t))
     PB.increase_index()
@@ -678,6 +693,10 @@ def _mult():
 
 
 def _addop():
+    if  DB.get_type(ss.get_item(2)) == 1 or DB.get_type(ss.get_item(0)) == 1:
+        print('Type mismatch in operands')
+        write_semantic_error_file('Type mismatch in operands')
+        return
     PB.write(PB.index, assembly_gen('JPF', s1=ss.get_item(1), s2=PB.index + 3))
     PB.increase_index()
     t = DB.get_temp()
@@ -692,6 +711,10 @@ def _addop():
 
 
 def _relop():
+    if  DB.get_type(ss.get_item(2)) == 1 or DB.get_type(ss.get_item(0)) == 1:
+        print('Type mismatch in operands')
+        write_semantic_error_file('Type mismatch in operands')
+        return
     PB.write(PB.index, assembly_gen('JPF', s1=ss.get_item(1), s2=PB.index + 3))
     PB.increase_index()
     t = DB.get_temp()
@@ -753,18 +776,21 @@ def _call():
     if address == -1:
 
         if function_name != 'output':
-            print('could not find function ', function_name, ' error')
+            write_semantic_error_file((function_name + ' not found.'))
             #TODO print function not found error
 
         else:
             if number_of_args != 1:
                 pass
                 print('number of args error')
+                write_semantic_error_file('Mismatch in numbers of arguments of '  + function_name)
                 # TODO error
             else:
                 _output()
 
     if function_AR.arguments_num != number_of_args:
+        write_semantic_error_file('Mismatch in numbers of arguments of ' + function_name)
+
         print('number of args error')
         pass
         # TODO error
@@ -800,25 +826,20 @@ def _void():
     global seen_void
     seen_void = 1
 
-    # if scope_activation_record_stack.get_item(0).name != 'main':
-    #     print(scope_activation_record_stack.get_item(0).name)
-    #     print('illegal type of void')
-    #     return #TODO return error : illegal type of void
 
 def _non_void_checker():
     if seen_void == 1:
         if scope_activation_record_stack.get_item(0).name != 'main':
             print(scope_activation_record_stack.get_item(0).name)
             print('illegal type of void')
+            write_semantic_error_file('illegal type of void')
             return #TODO return error : illegal type of void
     else:
         if scope_activation_record_stack.get_item(0).name == 'main':
             print('void main(int) error')
+            write_semantic_error_file('main function not found!')
             return #Todo error
 
-    if scope_activation_record_stack.get_item(0).name != 'main':
-        print('illegal type of void')
-        return  # TODO return error : illegal type of void
 
 
 def _unvoid():
@@ -832,12 +853,12 @@ def _void_main_check():
     if seen_void == 1:
         if id != 'main':
             print('void func error')
+            write_semantic_error_file('Illegal type of function.')
             return #TODo error
     elif id == 'main':
         print('int main error')
+        write_semantic_error_file('main function not found!')
         return  #TODO error
-
-    # ss.push(current_token_string)
 
 
 def _make_function():
@@ -845,11 +866,13 @@ def _make_function():
     if seen_void == 1:
         if id != 'main':
             print('void func error')
+            write_semantic_error_file('Illegal type of function!')
             #TODO error
             return
     else:
         if id == 'main':
             print('int main error')
+            write_semantic_error_file('main functino not found!')
             return #TODO error
 
     function_AR = Activation_record(name=id, PB_index= PB.index, DB_index= DB.index)
@@ -905,6 +928,7 @@ def _return_value():
 def _main_param_check_not_int():
     if scope_activation_record_stack.get_item(0).name == 'main':
         print('void main(int) error')
+        write_semantic_error_file('main function not found!')
         return #TODO error
 
 
@@ -912,6 +936,7 @@ def _main_param_check_not_int():
 def _func_param_check_not_void():
     if scope_activation_record_stack.get_item(0).name != 'main':
         print('function has void attrb error')
+        write_semantic_error_file('Illegal type of void.')
         #TODO error
 
 def _tmp_save():
@@ -1360,3 +1385,4 @@ lexical_error_file.close()
 parser_error_file.close()
 input_file.close()
 combine_errors()
+semantic_error_file.close()

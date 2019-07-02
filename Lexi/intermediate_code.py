@@ -52,6 +52,7 @@ class Program_block:
         self.program = ['' for i in range(10000)]
         self.index = 1
 
+
     def write(self, index, statement):
         self.program[index] = statement
 
@@ -59,8 +60,12 @@ class Program_block:
         self.index += 1
 
     def print_self(self):
+        file = 'output.text'
+        f = open(file, 'w+')
         for i in range(self.index):
-            print(i, '                  ', self.program[i])
+            f.write((str(i) +  '    ' + str(self.program[i]) + '\n'))
+
+        f.close()
 
 class Data_block:
     def __init__(self):
@@ -70,6 +75,7 @@ class Data_block:
         self.temp_index = self.temp_start
         self.array_start = 5000
         self.array_index = self.array_start
+        self.type_checker = [0 for i in range(10000)]
 
 
     def write(self, item):
@@ -113,6 +119,11 @@ class Data_block:
         self.array_index += 4 * size
         return addr
 
+    def set_type(self, address, type):
+        self.type_checker[address] = type
+
+    def get_type(self, address):
+        return self.type_checker[address]
 
 
 
@@ -176,8 +187,8 @@ class Activation_record:   #first argnums of the symbol_counter are the argument
             DB.write(address, self.DB_index + 4 * self.symbol_counter)  # ma tooye khube DB_index + 4 * symbol_counter mirim in addressi ke behemoon dadeh ro minevisim
             DB.index = self.DB_index + 4 * self.symbol_counter + 4
             print('array: ', array_name, ' address:' , address, ' address addr: ' ,self.DB_index + 4 * self.symbol_counter )
-
             self.array_dict[array_name] = (address, array_size, self.symbol_counter)
+            DB.set_type(self.DB_index + 4 * self.symbol_counter, 1)
             self.symbol_counter += 1
             self.array_counter += 1
 
@@ -248,8 +259,6 @@ def find_the_symbol(activation_record_stack, symbol):  #finds both symbol addres
             print('address of ', symbol , ' : ' , array_addr)
             return array_addr
 
-    #TODO print error ID’ is not defined
-    print('error ID’ is not defined')
     return None
 
 def find_the_array_element(activation_record_stack, array_name, index, DB, is_address):
