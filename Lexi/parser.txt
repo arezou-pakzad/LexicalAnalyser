@@ -4,13 +4,13 @@ program
 | | | declatation
 | | | | TypeSpecifier
 | | | | | void
-| | | | FTypeSpecifier2
+| | | | TypeSpecifier_function
 | | | | | ID
-| | | | | Fid_4
+| | | | | ID_Function
 | | | | | | (
 | | | | | | params
 | | | | | | | void
-| | | | | | | FParam
+| | | | | | | void_Params
 | | | | | | | | EPSILON
 | | | | | | )
 | | | | | | CompoundStmt
@@ -20,19 +20,19 @@ program
 | | | | | | | | | declatation
 | | | | | | | | | | TypeSpecifier
 | | | | | | | | | | | int
-| | | | | | | | | | FTypeSpecifier2
+| | | | | | | | | | TypeSpecifier_function
 | | | | | | | | | | | ID
-| | | | | | | | | | | Fid_4
-| | | | | | | | | | | | Fid_1
+| | | | | | | | | | | ID_Function
+| | | | | | | | | | | | ID_Array_define
 | | | | | | | | | | | | | ;
 | | | | | | | | | declaration_list1
 | | | | | | | | | | declatation
 | | | | | | | | | | | TypeSpecifier
 | | | | | | | | | | | | int
-| | | | | | | | | | | FTypeSpecifier2
+| | | | | | | | | | | TypeSpecifier_function
 | | | | | | | | | | | | ID
-| | | | | | | | | | | | Fid_4
-| | | | | | | | | | | | | Fid_1
+| | | | | | | | | | | | ID_Function
+| | | | | | | | | | | | | ID_Array_define
 | | | | | | | | | | | | | | ;
 | | | | | | | | | | declaration_list1
 | | | | | | | | | | | EPSILON
@@ -42,65 +42,98 @@ program
 | | | | | | | | | | ExpressionStmt
 | | | | | | | | | | | Expression
 | | | | | | | | | | | | ID
-| | | | | | | | | | | | FExpr
-| | | | | | | | | | | | | FID
+| | | | | | | | | | | | Expression_id_start
+| | | | | | | | | | | | | ID_array
 | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | FExpr_1
+| | | | | | | | | | | | | Expression_id_start_1
 | | | | | | | | | | | | | | =
 | | | | | | | | | | | | | | Expression
 | | | | | | | | | | | | | | | Term2
 | | | | | | | | | | | | | | | | SignedFactor2
-| | | | | | | | | | | | | | | | | Factor_2
+| | | | | | | | | | | | | | | | | Factor_no_id
 | | | | | | | | | | | | | | | | | | NUM
 | | | | | | | | | | | | | | | | term1
 | | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | AdditiveExpression1
+| | | | | | | | | | | | | | | Expression_addop_op_start
 | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | FAdditiveExpression
+| | | | | | | | | | | | | | | Expression_relop
 | | | | | | | | | | | | | | | | EPSILON
 | | | | | | | | | | | ;
 | | | | | | | | | StatementList1
 | | | | | | | | | | Statement
-| | | | | | | | | | | SwitchStmt
-| | | | | | | | | | | | switch
+| | | | | | | | | | | IterationStmt
+| | | | | | | | | | | | while
 | | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
-| | | | | | | | | | | | (
+| | | | | | | | | | | | Expression
+| | | | | | | | | | | | | ID
+| | | | | | | | | | | | | Expression_id_start
+| | | | | | | | | | | | | | ID_array
+| | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | Expression_id_start_1
+| | | | | | | | | | | | | | | term1
+| | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | Expression_addop_op_start
+| | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | Expression_relop
+| | | | | | | | | | | | | | | | Relop
+| | | | | | | | | | | | | | | | | <
+| | | | | | | | | | | | | | | | Expression_addop
+| | | | | | | | | | | | | | | | | Term
+| | | | | | | | | | | | | | | | | | SignedFactor
+| | | | | | | | | | | | | | | | | | | Factor
+| | | | | | | | | | | | | | | | | | | | ID
+| | | | | | | | | | | | | | | | | | | | ID_array_3
+| | | | | | | | | | | | | | | | | | | | | ID_array
+| | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | term1
+| | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | Expression_addop_op_start
+| | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | )
+| | | | | | | | | | | | Statement
+| | | | | | | | | | | | | CompoundStmt
+| | | | | | | | | | | | | | {
+| | | | | | | | | | | | | | declaration_list
+| | | | | | | | | | | | | | | declaration_list1
+| | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | ExpressionStmt
+| | | | | | | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | | | | | | ID
+| | | | | | | | | | | | | | | | | | | Expression_id_start
+| | | | | | | | | | | | | | | | | | | | ID_array
+| | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | Expression_id_start_1
+| | | | | | | | | | | | | | | | | | | | | =
+| | | | | | | | | | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | | | | | | | | | ID
+| | | | | | | | | | | | | | | | | | | | | | Expression_id_start
+| | | | | | | | | | | | | | | | | | | | | | | ID_array
+| | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | | | Expression_id_start_1
+| | | | | | | | | | | | | | | | | | | | | | | | term1
+| | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | | | | Expression_addop_op_start
+| | | | | | | | | | | | | | | | | | | | | | | | | Addop
+| | | | | | | | | | | | | | | | | | | | | | | | | | +
+| | | | | | | | | | | | | | | | | | | | | | | | | Term
+| | | | | | | | | | | | | | | | | | | | | | | | | | SignedFactor
+| | | | | | | | | | | | | | | | | | | | | | | | | | | Factor
+| | | | | | | | | | | | | | | | | | | | | | | | | | | | NUM
+| | | | | | | | | | | | | | | | | | | | | | | | | | term1
+| | | | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | | | | | Expression_addop_op_start
+| | | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | | | | Expression_relop
+| | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | ;
+| | | | | | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | }
+| | | | | | | | | | StatementList1
+| | | | | | | | | | | EPSILON
+| | | | | | | }
+| | | declaration_list1
+| | | | EPSILON

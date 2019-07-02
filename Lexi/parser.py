@@ -1341,10 +1341,10 @@ Freturn_dictionary = {(0, ';'): 3, (3, return_routine): 1,
 
 Freturn.set_transition_dictionary(Freturn_dictionary, 0, 1)
 
-SwitchStmt_dictionary = {(0, 'switch'): 9, (9, new_switch_scope_routine): 1, (1, '('): 9, (9, tmp_save_routine): 2,
+SwitchStmt_dictionary = {(0, 'switch'): 9, (9, new_switch_scope_routine): 1, (1, '('): 10, (10, tmp_save_routine): 2,
                          (2, Expression): 3,
                          (3, ')'): 4, (4, '{'): 5, (5, CaseStmts): 6,
-                         (6, DefaultStmt): 9, (9, jp_switch_routine): 7, (7, '}'): 8}
+                         (6, DefaultStmt): 11, (11, jp_switch_routine): 7, (7, '}'): 8}
 SwitchStmt.set_transition_dictionary(SwitchStmt_dictionary, 0, 8)
 
 CaseStmts_dictionary = {(0, 'case'): 1, (1, push_string_routine): 2, (2, 'num'): 3, (3, cmp_save_routine): 4,
@@ -1403,10 +1403,6 @@ Factor.set_transition_dictionary(Factor_dictionary, 0, 3)
 
 Factor_2_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'NUM'): 4, (4, push_number_routine): 3}
 Factor_2.set_transition_dictionary(Factor_2_dictionary, 0, 3)
-
-Fid_3_dictionary = {(0, Fid): 1, (0, '('): 2, (2, push_zero_routine): 5, (5, Args): 3, (3, ')'): 4,
-                    (4, call_routine): 1}
-Fid_3.set_transition_dictionary(Fid_3_dictionary, 0, 1)
 
 Args_dictionary = {
     (0, ArgList): 1, (0, 'EPSILON'): 1}
