@@ -1,28 +1,11 @@
-int b;
-int foo(int d){
-}
-int arr[3];
-void main(void) {
-  int a;
-  a = -3 + +11;
-  b = 5 * a + foo(a, a);
-  return;
+void main(void){
 int a;
-
-void foo (int c)
-{
-	int d;
-	d = c + -2;
-	return d * ;
+int b;
+a = 8;
+switch (a) {
+    case 3: b = 5; break;
+    case 4: b = 4 ; break;
+    case 8: b = 6 ; break;
+    default: b = 7; break;
 }
-
-void main(void)
-{
-	int s;
-	int w = 3;
-	if a == 2) foo(w);
-	else {
-		s = [w + * -2;
-	}
-	return
 }
