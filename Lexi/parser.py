@@ -509,6 +509,9 @@ def code_gen(routine):
     elif action == '#return':
         _return()
 
+    elif action == '#return_value':
+        _return_value()
+
     elif action == '#void':
         _void()
 
@@ -586,6 +589,8 @@ def _push_pre_string():
 
 def _push_one():
     t = DB.get_temp()
+    PB.write(PB.index, assembly_gen('ASSIGN', _hashtag('1'), t))
+    PB.increase_index()
     DB.write(1, t)
     ss.push(t)
 
@@ -612,9 +617,9 @@ def _jp():
 
 def _pid():
     print('symbol: ', ss.get_item(0))
-    symbol_addr = find_the_symbol(activation_record_stack=scope_activation_record_stack, symbol=ss.get_item(0))
+    symbol_addr = find_the_symbol(activation_record_stack= scope_activation_record_stack, symbol= ss.get_item(0))
     ss.pop(1)
-    print('symbol address:', symbol_addr)
+    print('symbol address:' , symbol_addr)
     ss.push(symbol_addr)
 
 
@@ -635,8 +640,9 @@ def _push_string():
 def _get_array_with_index():
     id = ss.get_item(1)
     index = ss.get_item(0)
+    print('array:' , id, ' index: ' , index)
     array_element_index = find_the_array_element(activation_record_stack=scope_activation_record_stack, array_name=id,
-                                                 index=index, DB=DB, is_address=False)
+                                                 index=index, DB=DB, is_address=True)
     ss.pop(2)
     ss.push(array_element_index)
 
@@ -686,6 +692,7 @@ def _minus_factor():
 def _mult():
     t = DB.get_temp()
     PB.write(PB.index, statement=assembly_gen('MULT', s1=ss.get_item(0), s2=ss.get_item(1), d=t))
+    PB.increase_index()
     ss.pop(2)
     ss.push(t)
 
@@ -699,6 +706,7 @@ def _addop():
     PB.write(PB.index, assembly_gen('JP', s1=PB.index + 2))
     PB.increase_index()
     PB.write(PB.index, assembly_gen('SUB', s1=ss.get_item(2), s2=ss.get_item(0), d=t))
+    PB.increase_index()
     ss.pop(3)
     ss.push(t)
 
@@ -768,7 +776,7 @@ def _call():
 
         if function_name != 'output':
             print('could not find function ', function_name, ' error')
-            # TODO print function not found error
+            #TODO print function not found error
 
         else:
             if number_of_args != 1:
@@ -788,6 +796,7 @@ def _call():
 
     for i in reversed(range(number_of_args)):
         id = arguments_names[i]
+        print(ss.get_item(number_of_args - i))
         value = DB.read(ss.get_item(number_of_args - i))
 
         if id in function_AR.symbol_dict.keys():
@@ -796,15 +805,17 @@ def _call():
             PB.write(PB.index, assembly_gen('ASSIGN', ss.get_item(number_of_args - i), symbol_adr))
             PB.increase_index()
         else:
+            print(id , ' is array', 'value = ' , value)
             function_AR.update_array_address(id, value, DB)
-            array_addr = function_AR.get_array
-            PB.write(PB.index, assembly_gen('ASSIGN', ss.get_item(number_of_args - i), array_addr))
+            array_addr = function_AR.get_array(id)
+            PB.write(PB.index, assembly_gen('ASSIGN',ss.get_item(number_of_args - i) , array_addr))
             PB.increase_index()
 
     PB.write(PB.index, assembly_gen('JP', s1=address))
     PB.increase_index()
-    ss.pop(number_of_args + 2)  # one for number_of_args and one for the function name
-    PB.write(address + 1, PB.index)  # second line of a function is its return address
+    ss.pop(number_of_args + 2)  #one for number_of_args and one for the function name
+    PB.write(address + 1, PB.index) #second line of a function is its return address
+    ss.push(PB.program[address + 2])
 
 
 def _void():
@@ -822,11 +833,11 @@ def _non_void_checker():
         if scope_activation_record_stack.get_item(0).name != 'main':
             print(scope_activation_record_stack.get_item(0).name)
             print('illegal type of void')
-            return  # TODO return error : illegal type of void
+            return #TODO return error : illegal type of void
     else:
         if scope_activation_record_stack.get_item(0).name == 'main':
             print('void main(int) error')
-            return  # Todo error
+            return #Todo error
 
     if scope_activation_record_stack.get_item(0).name != 'main':
         print('illegal type of void')
@@ -844,10 +855,10 @@ def _void_main_check():
     if seen_void == 1:
         if id != 'main':
             print('void func error')
-            return  # TODo error
+            return #TODo error
     elif id == 'main':
         print('int main error')
-        return  # TODO error
+        return  #TODO error
 
     # ss.push(current_token_string)
 
@@ -857,20 +868,22 @@ def _make_function():
     if seen_void == 1:
         if id != 'main':
             print('void func error')
-            # TODO error
+            #TODO error
             return
     else:
         if id == 'main':
             print('int main error')
-            return  # TODO error
+            return #TODO error
 
-    function_AR = Activation_record(name=id, PB_index=PB.index, DB_index=DB.index)
-    print('function name = ', id, 'start address:', function_AR.PB_index)
+    function_AR = Activation_record(name=id, PB_index= PB.index, DB_index= DB.index)
+    print('function name = ' , id, 'start address:', function_AR.PB_index, 'DB start:', DB.index)
     function_activation_record_stack.push(function_AR)
     scope_activation_record_stack.push(function_AR)
     all_function.append(function_AR)
-    PB.write(PB.index, assembly_gen('JP', PB.index + 2))
+    PB.write(PB.index, assembly_gen('JP', PB.index + 3))
     # PB[i + 1] = return_address
+    # PB[i + 2] = return value
+    PB.increase_index()
     PB.increase_index()
     PB.increase_index()
     ss.pop(1)
@@ -894,10 +907,20 @@ def _add_array_param():
 def _return():
     function_AR = function_activation_record_stack.get_item(0)
     function_start_address = function_AR.PB_index
-    print('function start address:', function_start_address)
-    PB.write(PB.index, assembly_gen('JP', s1=_at(function_start_address + 1)))
+    PB.write(PB.index, assembly_gen('JP', s1 = _at(function_start_address + 1)))
     PB.increase_index()
-    PB.write(PB.index, assembly_gen('JP', s1=_at(function_start_address + 1)))
+    scope_activation_record_stack.pop(1)
+    function_activation_record_stack.pop(1)
+
+def _return_value():
+    function_AR = function_activation_record_stack.get_item(0)
+    function_start_address = function_AR.PB_index
+    print(ss.get_item(0), '    ', DB.read(addr=ss.get_item(0)))
+    print('function start address:' , function_start_address, ' f name:' , function_AR.name, ' PB:' , PB.index)
+    PB.write(PB.index, assembly_gen('JP', s1 = _at(function_start_address + 1)))
+    PB.increase_index()
+    PB.write(function_start_address + 2, ss.get_item(0))
+    ss.pop(1)
     scope_activation_record_stack.pop(1)
     function_activation_record_stack.pop(1)
 
@@ -905,13 +928,14 @@ def _return():
 def _main_param_check_not_int():
     if scope_activation_record_stack.get_item(0).name == 'main':
         print('void main(int) error')
-        return  # TODO error
+        return #TODO error
+
 
 
 def _func_param_check_not_void():
     if scope_activation_record_stack.get_item(0).name != 'main':
         print('function has void attrb error')
-        # TODO error
+        #TODO error
 
 
 def _tmp_save():
@@ -1269,7 +1293,7 @@ IterationStmt.set_transition_dictionary(IterationStmt_dictionary, 0, 8)
 ReturnStmt_dictionary = {(0, 'return'): 1, (1, Freturn): 2}
 ReturnStmt.set_transition_dictionary(ReturnStmt_dictionary, 0, 2)
 Freturn_dictionary = {(0, ';'): 3, (3, return_routine): 1,
-                      (0, Expression): 2, (2, ';'): 3}
+                      (0, Expression): 2, (2, return_value_routine) : 4, (4, ';'): 1}
 
 Freturn.set_transition_dictionary(Freturn_dictionary, 0, 1)
 

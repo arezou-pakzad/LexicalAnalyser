@@ -51,4 +51,5 @@ new_while_scope_routine = Routine('#new_while_scope')
 new_switch_scope_routine = Routine('#new_switch_scope')
 break_routine = Routine('#break')
 continue_routine = Routine('continue')
+return_value_routine = Routine('#return_value')
 

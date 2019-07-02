@@ -153,7 +153,9 @@ class Activation_record:   #first argnums of the symbol_counter are the argument
         if symbol_str not in self.symbol_dict.keys():
             print('here adds correctly, has never seen', symbol_str, 'before')
             DB.write(0, self.DB_index + 4 * self.symbol_counter)
+            DB.index = self.DB_index + 4 * self.symbol_counter + 4
             self.symbol_dict[symbol_str] = (self.DB_index + 4 * self.symbol_counter, self.symbol_counter)
+            print('address:', self.DB_index + 4 * self.symbol_counter)
             self.symbol_counter += 1
         else:
             pass
@@ -172,6 +174,8 @@ class Activation_record:   #first argnums of the symbol_counter are the argument
         if array_name not in self.array_dict.keys():
             address = DB.write_array(size = array_size)  # ye tike ja be araye ekhtesas mide ye jaye hafeze ke malum nist ama mige koja behemoon
             DB.write(address, self.DB_index + 4 * self.symbol_counter)  # ma tooye khube DB_index + 4 * symbol_counter mirim in addressi ke behemoon dadeh ro minevisim
+            DB.index = self.DB_index + 4 * self.symbol_counter + 4
+            print('array: ', array_name, ' address:' , address, ' address addr: ' ,self.DB_index + 4 * self.symbol_counter )
 
             self.array_dict[array_name] = (address, array_size, self.symbol_counter)
             self.symbol_counter += 1
@@ -180,9 +184,9 @@ class Activation_record:   #first argnums of the symbol_counter are the argument
     def assign_array_place(self, array_name, DB):
         if array_name not in self.array_dict.keys():
             DB.write(0, self.DB_index + 4 * self.symbol_counter) #assigns a place for the array's address in DB, what's the address? someone else wil decide later!!!
+            DB.index = self.DB_index + 4 * self.symbol_counter + 4
             self.array_dict[array_name] = (0, -1 , self.symbol_counter)
             self.symbol_counter += 1
-
 
 
     def get_symbol(self, symbol_str):
@@ -195,16 +199,16 @@ class Activation_record:   #first argnums of the symbol_counter are the argument
             return None
         return DB.read(self.array_dict[array_str][0] + 4 * index)
 
-    def get_array_element_address(self,array_str, index):
+    def get_array_element_address(self,array_str, index, DB):
         if array_str not in self.array_dict.keys():
             return None
-        return self.array_dict[array_str][0] + 4 * index
+        return self.array_dict[array_str][0] + 4 * int(index)
 
 
     def get_array(self, array_name):
         if array_name not in self.array_dict.keys():
             return None
-        return self.array_dict[array_name][0]
+        return self.array_dict[array_name][2] * 4 + self.DB_index
 
     def update_array(self, array_str,value ,index, DB):
         if array_str not in self.array_dict.keys():
@@ -236,19 +240,24 @@ def find_the_symbol(activation_record_stack, symbol):  #finds both symbol addres
             print('address of ', symbol , ' : ' , symbol_addr)
             return symbol_addr
 
-    symbol_addr = scope.get_array(symbol)
-    if symbol_addr is not None:
-        return symbol_addr
-
+    for i in range(n):
+        print(i)
+        scope = activation_record_stack.get_item(i)
+        array_addr = scope.get_array(symbol)
+        if array_addr is not None:
+            print('address of ', symbol , ' : ' , array_addr)
+            return array_addr
 
     #TODO print error ID’ is not defined
+    print('error ID’ is not defined')
     return None
 
 def find_the_array_element(activation_record_stack, array_name, index, DB, is_address):
     if is_address:
         index = DB.read(index)
-
-    n = len(activation_record_stack)
+    print('index: ' , index)
+    n = activation_record_stack.get_len()
+    print('n: ' , n)
     for i in range(n):
         scope = activation_record_stack.get_item(i)
         addr = scope.get_array_element_address(array_name, index, DB)
