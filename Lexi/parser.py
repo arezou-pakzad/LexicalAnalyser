@@ -962,7 +962,6 @@ def _main_param_check_not_int():
         return #TODO error
 
 
-
 def _func_param_check_not_void():
     if scope_activation_record_stack.get_item(0).name != 'main':
         print('function has void attrb error')
@@ -1040,11 +1039,13 @@ def _check_main_exists():
 def _check_continue():
     if scope_activation_record_stack.get_item(0).name != 'while':
         print('No \'while\' found for \'continue\'') #TODO: error No ’while’ found for ’continue’.
+        write_semantic_error_file('No \'while\' found for \'continue\'')
 
 
 def _check_break():
     if scope_activation_record_stack.get_item(0).name != 'while' and scope_activation_record_stack.get_item(0).name != 'switch':
         print('No \'while\' or \'switch\'found for \'break\'') #TODO: error No ’while’ or ’switch’ found for ’break’.
+        write_semantic_error_file('No \'while\' or \'switch\'found for \'break\'')
 
 
 def _at(s):
