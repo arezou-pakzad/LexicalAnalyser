@@ -42,5 +42,10 @@ push_previous_string_routine = Routine('#push_pre_string')
 non_void_checker_routine = Routine('#non_void_checker')
 pop_scope_routine = Routine('#pop_scope')
 check_main_exists_routine = Routine('#check_main_exists')
+tmp_save_routine = Routine("#tmp_save")
+jp_switch_routine = Routine("#jp_switch")
+cmp_save_routine = Routine("#cmp_save")
+cmp_save_1_routine = Routine("#cmp_save_1")
+default_routine = Routine("#default_save")
 
 
