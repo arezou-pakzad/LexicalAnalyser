@@ -545,6 +545,7 @@ def _save():
 
 def _while():  # TODO add adress to second line, start the code from the third line, first line : jp to the third line, add activation_record scope to its stack.
     # TODO pop the activation record after while is done!
+
     PB.write(ss.get_item(0), assembly_gen('JPF', ss.get_item(1), PB.index + 1))
     PB.write(PB.index, assembly_gen('JP', ss.get_item(2)))
     PB.increase_index()
@@ -866,6 +867,9 @@ def _default():
     ss.pop(3)
 
 
+def
+
+
 def _main_one_param_check():
     if scope_activation_record_stack.get_item(0).name == 'main':
         ss.pop(1)
@@ -1151,8 +1155,8 @@ SelectionStmt_dictionary = {(0, 'if'): 1, (1, '('): 2,
 
 SelectionStmt.set_transition_dictionary(SelectionStmt_dictionary, 0, 7)
 
-IterationStmt_dictionary = {(0, 'while'): 1, (1, '('): 2, (2, Expression): 3, (3, ')'): 4, (4, Statement): 5}
-IterationStmt.set_transition_dictionary(IterationStmt_dictionary, 0, 5)
+IterationStmt_dictionary = {(0, 'while'): 1, (1, '('): 6, (6, label_routine): 2, (2, Expression): 3, (3, ')'): 7, (7, save_routine): 4, (4, Statement): 5, (5, while_routine): 8}
+IterationStmt.set_transition_dictionary(IterationStmt_dictionary, 0, 8)
 
 ReturnStmt_dictionary = {(0, 'return'): 1, (1, Freturn): 2}
 ReturnStmt.set_transition_dictionary(ReturnStmt_dictionary, 0, 2)
