@@ -59,6 +59,9 @@ class Program_block:
     def increase_index(self):
         self.index += 1
 
+    def decrease_index(self):
+        self.index -= 1
+
     def print_self(self):
         file = 'output.text'
         f = open(file, 'w+')
