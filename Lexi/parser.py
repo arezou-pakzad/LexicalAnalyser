@@ -509,6 +509,18 @@ def code_gen(routine):
     elif action == '#unvoid':
         _unvoid()
 
+    elif action == '#tmp_save':
+        _tmp_save()
+
+    elif action == '#jp_switch':
+        _jp_switch()
+
+    elif action == '#cmp_save':
+        _cmp_save()
+
+    elif action == '#cmp_save_1':
+        _cmp_save_1()
+
 
 
 def _label():
@@ -756,6 +768,44 @@ def _check_main_function():
         if ar.name == 'main':
 
 
+def _tmp_save():
+    t = DB.get_temp()
+    goto_ss.push(t)
+    ss.push(PB.index)
+    PB.increase_index()
+
+def _jp_switch():
+    PB.write(ss.get_item(0), assembly_gen('ASSIGN', _hashtag(PB.index), goto_ss.get_item(0)))
+    ss.pop(1)
+    goto_ss.pop(1)
+
+
+def _cmp_save():
+    t = DB.get_temp()
+    PB.write(PB.index, assembly_gen('EQ', ss.get_item(0), ss.get_item(1), t))
+    PB.increase_index()
+    ss.pop(1)
+    ss.push(t)
+    ss.push(PB.index)
+    PB.increase_index()
+
+
+def _cmp_save_1():
+    PB.write(ss.get_item(2), ('JPF', ss.get_item(3), PB.index))
+    t = DB.get_temp()
+    PB.write(PB.index, assembly_gen('EQ', ss.get_item(0), ss.get_item(4), t))
+    PB.increase_index()
+    PB.write(ss.get_item(1), ('JP', PB.index + 1))
+    ss.pop(4)
+    ss.push(t)
+    ss.push(PB.index)
+    PB.increase_index()
+
+
+def _default():
+    ss.pop(1)
+    PB.write(ss.get_item(0), ('JPF', ss.get_item(1), PB.index))
+    ss.pop(3)
 
 
 def _at(s):
