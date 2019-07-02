@@ -564,7 +564,6 @@ def code_gen(routine):
         _check_continue()
 
 
-
 def _label():
     ss.push(PB.index)
 
@@ -580,6 +579,7 @@ def _while():
     PB.increase_index()
     ss.pop(3)
     PB.write(ss.get_item(0), PB.index)
+    scope_activation_record_stack.pop(1)
     ss.pop(1)
 
 
@@ -955,6 +955,7 @@ def _tmp_save():
 def _jp_switch():
     PB.write(ss.get_item(0), PB.index)
     ss.pop(1)
+    scope_activation_record_stack.pop(1)
 
 
 def _cmp_save():
