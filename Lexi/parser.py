@@ -557,6 +557,12 @@ def code_gen(routine):
     elif action == '#check_main_exists':
         _check_main_exists()
 
+    elif action == '#check_break':
+        _check_break()
+
+    elif action == '#check_continue':
+        _check_continue()
+
 
 
 def _label():
@@ -1005,6 +1011,16 @@ def _check_main_exists():
     print('could not find main')
 
 
+def _check_continue():
+    if scope_activation_record_stack.get_item(0).name != 'while':
+        print('No \'while\' found for \'continue\'') #TODO: error No ’while’ found for ’continue’.
+
+
+def _check_break():
+    if scope_activation_record_stack.get_item(0).name != 'while' and scope_activation_record_stack.get_item(0).name != 'switch':
+        print('No \'while\' or \'switch\'found for \'break\'') #TODO: error No ’while’ or ’switch’ found for ’break’.
+
+
 def _at(s):
     return '@' + str(s)
 
@@ -1248,8 +1264,8 @@ Statement_dictionary = {(0, ExpressionStmt): 1, (0, CompoundStmt): 1, (0, Select
 Statement.set_transition_dictionary(Statement_dictionary, 0, 1)
 ExpressionStmt_dictionary = {  # TODO
     (0, Expression): 1, (1, ';'): 5, (5, expression_end_routine): 2,
-    (0, 'continue'): 7, (7, continue_routine): 3, (3, ';'): 2,
-    (0, 'break'): 6, (6, break_routine): 4, (4, ';'): 2,
+    (0, 'continue'): 7, (7, check_continue_routine): 8, (8, continue_routine): 3, (3, ';'): 2,
+    (0, 'break'): 6, (6, check_break_routine): 9, (9, break_routine): 4, (4, ';'): 2,
     (0, ';'): 2
 }
 

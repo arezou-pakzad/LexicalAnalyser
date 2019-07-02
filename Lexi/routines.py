@@ -52,4 +52,5 @@ new_switch_scope_routine = Routine('#new_switch_scope')
 break_routine = Routine('#break')
 continue_routine = Routine('continue')
 return_value_routine = Routine('#return_value')
-
+check_break_routine = Routine("#check_break")
+check_continue_routine = Routine("#check_continue")
