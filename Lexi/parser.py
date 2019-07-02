@@ -509,7 +509,13 @@ def code_gen(routine):
     elif action == '#unvoid':
         _unvoid()
 
+    elif action == '#void_main_check':
+        _void_main_check()
 
+    elif action == '#main_param_check_not_int':
+        _main_param_check_not_int()
+    elif action == '#func_param_check_not_void':
+        _func_param_check_not_void()
 
 def _label():
     ss.push(PB.index)
@@ -573,20 +579,19 @@ def _push_string():
 def _get_array_with_index():
     id = ss.get_item(1)
     index = ss.get_item(0)
-    array_element_index = find_the_array_element(activation_record_stack=scope_activation_record_stack, array_name=id,
-                                                 index=index, DB=DB, is_address=False)
+    array_element_index = find_the_array_element(activation_record_stack= scope_activation_record_stack, array_name= id,  index=index, DB=DB, is_address=False)
     ss.pop(2)
     ss.push(array_element_index)
 
-def _make_id():
+def _make_id(): #TODO works with scope cause who knows
     id = ss.get_item(1)
-    ss.get_item(0).add_symbol(id, DB)
+    scope_activation_record_stack.get_item(0).add_symbol(id, DB)
     ss.pop(1)
 
 def _make_array():
     array_name = ss.get_item(1)
     num_of_elements = ss.get_item(0)
-    ss.get_item(0).add_array(num_of_elements, array_name, DB)
+    scope_activation_record_stack.get_item(0).add_array(num_of_elements, array_name, DB)
     ss.pop(2)
 
 def _new_scope():
@@ -614,6 +619,7 @@ def _mult():
     ss.push(t)
 
 def _addop():
+
     PB.write(PB.index, assembly_gen('JPF', s1=ss.get_item(1), s2= PB.index + 3))
     PB.increase_index()
     t = DB.get_temp()
@@ -706,10 +712,26 @@ def _call():
     PB.increase_index()
 
 def _void():
+    global seen_void
     seen_void = 1
+    if scope_activation_record_stack.get_item(0).name != 'main':
+        return #TODO return error : illegal type of void
 
 def _unvoid():
+    global seen_void
     seen_void = 0
+    if scope_activation_record_stack.get_item(0).name == 'main':
+        return #Todo error
+
+def _void_main_check():
+    id = current_token_string
+    if seen_void == 1:
+        if id != 'main':
+            return #TODo error
+    elif id == 'main':
+        return  #TODO error
+
+    ss.push(current_token_string)
 
 def _make_function():
     id = ss.get_item(0)
@@ -751,12 +773,18 @@ def _return():
     scope_activation_record_stack.pop(1)
     function_activation_record_stack.pop(1)
 
-def _check_main_function():
-    for ar in all_function:
-        if ar.name == 'main':
+def _main_param_check_not_int():
+    if scope_activation_record_stack.get_item(0).name == 'main':
+        return #TODO error
+
+def _func_param_check_not_void():
+    if scope_activation_record_stack.get_item(0).name != 'main':
+        return #TODO error
 
 
-
+def _main_one_param_check():
+    if scope_activation_record_stack.get_item(0).name == 'main':
+        return #TODO error
 
 def _at(s):
     return '@' + str(s)
@@ -932,7 +960,7 @@ DeclarationList1.set_transition_dictionary(DeclarationList1_dictionary, 0, 2)
 Declaration_dictionary = {(0, TypeSpecifier): 1, (1, FTypeSpecifier2): 2}
 Declaration.set_transition_dictionary(Declaration_dictionary, 0, 2)
 
-FTypeSpecifier2_dictionary = {(0, push_string_routine) : 1,( 1, 'ID'): 2, (2, Fid_4): 3}
+FTypeSpecifier2_dictionary = {(0, void_main_check_routine) : 1,( 1, 'ID'): 2, (2, Fid_4): 3}
 FTypeSpecifier2.set_transition_dictionary(FTypeSpecifier2_dictionary, 0, 3)
 
 Fid_4_dictionary = {(0, Fid_1): 1,
@@ -947,11 +975,12 @@ Fid_1.set_transition_dictionary(Fid_1_dictionary, 0, 1)
 TypeSpecifier_dictionary = {(0, 'int'): 1, (0, 'void'): 1}
 TypeSpecifier.set_transition_dictionary(TypeSpecifier_dictionary, 0, 1)
 
-Params_dictionary = {(0, 'int'): 1, (1, FTypeSpecifier1): 2, (2, ParamList1): 3, (0, 'void'): 4, (4, FParam): 3}
+Params_dictionary = {(0, 'int'): 1, (1, main_param_check_not_int_routine) : 5, (5, FTypeSpecifier1): 2, (2, ParamList1): 3,
+                     (0, 'void'): 4, (4, func_param_check_not_void_routine) : 6 , (6, FParam): 3}
 Params.set_transition_dictionary(Params_dictionary, 0, 3)
 
-FParam_dictionary = {(0, FTypeSpecifier2): 1, (1, ParamList1): 2, (0, 'EPSILON'): 2}
-FParam.set_transition_dictionary(FParam_dictionary, 0, 2)
+FParam_dictionary = {(0, main_one_param_check_routine) : 1, (1 , FTypeSpecifier2): 2, (2, ParamList1): 3, (0, 'EPSILON'): 3}
+FParam.set_transition_dictionary(FParam_dictionary, 0, 3)
 
 ParamList1_dictionary = {
     (0, ','): 1,
