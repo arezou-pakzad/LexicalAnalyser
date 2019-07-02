@@ -1049,7 +1049,7 @@ def _check_continue():
 def _check_break():
     if scope_activation_record_stack.get_item(0).name != 'while' and scope_activation_record_stack.get_item(0).name != 'switch':
         print('No \'while\' or \'switch\'found for \'break\'') #TODO: error No ’while’ or ’switch’ found for ’break’.
-        write_semantic_error_file('No \'while\' or \'switch\'found for \'break\'')
+        write_semantic_error_file('No \'while\' or \'switch\' found for \'break\'')
 
 
 def _at(s):

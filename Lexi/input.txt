@@ -8,4 +8,11 @@ switch (a) {
     case 8: b = 6 ; break;
     default: b = 7; break;
 }
+
+while (a < b) {
+    a = a + 1;
+    continue;
+}
+
+
 }

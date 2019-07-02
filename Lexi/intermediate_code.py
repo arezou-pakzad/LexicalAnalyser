@@ -63,7 +63,7 @@ class Program_block:
         self.index -= 1
 
     def print_self(self):
-        file = 'output.text'
+        file = 'output.txt'
         f = open(file, 'w+')
         for i in range(self.index):
             f.write((str(i) +  '    ' + str(self.program[i]) + '\n'))
