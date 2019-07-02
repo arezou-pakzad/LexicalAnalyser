@@ -571,6 +571,9 @@ def code_gen(routine):
     elif action == '#check_continue':
         _check_continue()
 
+    elif action == '#default':
+        _default()
+
 
 def _label():
     ss.push(PB.index)
@@ -984,7 +987,7 @@ def _jp_switch():
 
 def _cmp_save():
     t = DB.get_temp()
-    PB.write(PB.index, assembly_gen('EQ', ss.get_item(0), ss.get_item(1), t))
+    PB.write(PB.index, assembly_gen('EQ', _hashtag(ss.get_item(0)), ss.get_item(1), t))
     PB.increase_index()
     ss.pop(1)
     ss.push(t)
@@ -993,11 +996,11 @@ def _cmp_save():
 
 
 def _cmp_save_1():
-    PB.write(ss.get_item(2), ('JPF', ss.get_item(3), PB.index))
+    PB.write(ss.get_item(2), assembly_gen('JPF', ss.get_item(3), PB.index))
     t = DB.get_temp()
-    PB.write(PB.index, assembly_gen('EQ', ss.get_item(0), ss.get_item(4), t))
+    PB.write(PB.index, assembly_gen('EQ', _hashtag(ss.get_item(0)), ss.get_item(4), t))
     PB.increase_index()
-    PB.write(ss.get_item(1), ('JP', PB.index + 1))
+    PB.write(ss.get_item(1), assembly_gen('JP', PB.index + 1))
     ss.pop(4)
     ss.push(t)
     ss.push(PB.index)
@@ -1006,17 +1009,18 @@ def _cmp_save_1():
 
 def _default():
     ss.pop(1)
+    PB.decrease_index()
     PB.write(ss.get_item(0), ('JPF', ss.get_item(1), PB.index))
     ss.pop(3)
 
 
 def _break():
-    PB.write(PB.index, assembly_gen('JP', _at(scope_activation_record_stack.get_top_index() + 1)))
+    PB.write(PB.index, assembly_gen('JP', _at(scope_activation_record_stack.get_item(0).PB_index + 1)))
     PB.increase_index()
 
 
 def _continue():
-    PB.write(PB.index, assembly_gen('JP', scope_activation_record_stack.get_top_index()))
+    PB.write(PB.index, assembly_gen('JP', scope_activation_record_stack.get_item(0).PB_index))
 
 
 def _main_one_param_check():
