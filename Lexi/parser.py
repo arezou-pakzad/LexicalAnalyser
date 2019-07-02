@@ -766,6 +766,7 @@ def _return():
 def _check_main_function():
     for ar in all_function:
         if ar.name == 'main':
+            pass
 
 
 def _tmp_save():
