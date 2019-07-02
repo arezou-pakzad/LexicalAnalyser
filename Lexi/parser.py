@@ -342,8 +342,9 @@ def parser(non_terminal, height):
         print('this state:', this_state)
         print('current state and token type: ', (s, current_token_type))
         print('len this state: ', len(this_state))
+
         if isinstance(list(this_state.keys())[0][1], Routine):  # TODO !!!
-            code_gen(Routine)
+            code_gen(list(this_state.keys())[0][1])
             s = non_terminal.transition_dictionary[(s, list(this_state.keys())[0][1])]
             continue
 
@@ -533,6 +534,14 @@ def code_gen(routine):
     elif action == '#push_pre_string':
         _push_pre_string()
 
+    elif action == '#non_void_checker':
+        _non_void_checker()
+
+    elif action == '#pop_scope':
+        _pop_scope()
+
+    elif action == '#check_main_exists':
+        _check_main_exists()
 
 def _label():
     ss.push(PB.index)
@@ -559,6 +568,7 @@ def _output():
 
 
 def _push_pre_string():
+    print('previous token:', previous_token_string)
     ss.push(previous_token_string)
 
 
@@ -571,6 +581,8 @@ def _push_one():
 def _push_zero():
     t = DB.get_temp()
     DB.write(0, t)
+    PB.write(PB.index, assembly_gen('ASSIGN', _hashtag('0'), t))
+    PB.increase_index()
     ss.push(t)
 
 
@@ -587,8 +599,10 @@ def _jp():
 
 
 def _pid():
-    symbol_addr = find_the_symbol(activation_record_stack=scope_activation_record_stack, symbol=ss.get_item(0))
+    print('symbol: ', ss.get_item(0))
+    symbol_addr = find_the_symbol(activation_record_stack= scope_activation_record_stack, symbol= ss.get_item(0))
     ss.pop(1)
+    print('symbol address:' , symbol_addr)
     ss.push(symbol_addr)
 
 
@@ -602,6 +616,7 @@ def _array_element():
 
 
 def _push_string():
+    print('string', current_token_string)
     ss.push(current_token_string)
 
 
@@ -615,7 +630,8 @@ def _get_array_with_index():
 
 
 def _make_id():  # TODO works with scope cause who knows
-    id = ss.get_item(1)
+    id = ss.get_item(0)
+    print('id: ', id)
     scope_activation_record_stack.get_item(0).add_symbol(id, DB)
     ss.pop(1)
 
@@ -623,7 +639,7 @@ def _make_id():  # TODO works with scope cause who knows
 def _make_array():
     array_name = ss.get_item(1)
     num_of_elements = ss.get_item(0)
-    scope_activation_record_stack.get_item(0).add_array(num_of_elements, array_name, DB)
+    scope_activation_record_stack.get_item(0).add_array(int(num_of_elements), array_name, DB)
     ss.pop(2)
 
 
@@ -636,6 +652,7 @@ def _expression_end():
 
 
 def _assignment():
+    print('pb index:',PB.index)
     PB.write(PB.index, assembly_gen('ASSIGN', s1=ss.get_item(0), s2=ss.get_item(1)))
     PB.increase_index()
     ss.pop(1)
@@ -674,25 +691,37 @@ def _relop():
     PB.increase_index()
     PB.write(PB.index, assembly_gen('JP', s1=PB.index + 2))
     PB.increase_index()
-    PB.write(PB.index, assembly_gen('LT', s1=ss.get_item(2), s2=ss.get_item(0), d=t))
+    PB.write(PB.index, assembly_gen('LT', s1 = ss.get_item(2), s2=ss.get_item(0), d = t))
+    PB.increase_index()
     ss.pop(3)
     ss.push(t)
 
 
 def _push_number():
     t = DB.get_temp()
-    DB.write(current_token_string, t)
+    print('number:', previous_token_string)
+    PB.write(PB.index, assembly_gen('ASSIGN', s1= _hashtag(previous_token_string), s2=t))
+    PB.increase_index()
+    DB.write(previous_token_string, t)
     ss.push(t)
 
+def _pop_scope():
+    scope_activation_record_stack.pop(1)
 
 def _push_arg():
     t1 = DB.get_temp()
     t2 = DB.get_temp()
+    print('t1: ', t1 , ' t2: ' , t2)
+    print('ss(top)): ', DB.read(ss.get_item(0)))
+    print('ss(top - 1)):' , DB.read(ss.get_item(1)))
+    PB.write(PB.index, assembly_gen('ASSIGN', s1 = ss.get_item(0), s2= t1))
+    PB.increase_index()
     PB.write(PB.index, assembly_gen('ASSIGN', s1=ss.get_item(0), s2=t1))
     PB.increase_index()
     PB.write(PB.index, assembly_gen('ASSIGN', s1=ss.get_item(1), s2=t2))
     PB.increase_index()
-    PB.write(PB.index, assembly_gen('ADD', s1=t2, s2=_hashtag('1'), d=t2))
+    PB.write(PB.index, assembly_gen('ADD', s1=t2 , s2= _hashtag('1'), d = t2))
+    DB.write(item= DB.read(ss.get_item(1)) + 1, addr= t2)
     ss.pop(2)
     ss.push(t1)
     ss.push(t2)
@@ -700,31 +729,40 @@ def _push_arg():
 
 def _call():
     number_of_args = DB.read(ss.get_item(0))
+    print('number of args', number_of_args)
+
     function_name = ss.get_item(number_of_args + 1)
+    print('function name:', function_name)
     address = -1
     function_AR = None
     for i in range(len(all_function)):
+        print('all_function[i].name', all_function[i].name)
         if all_function[i].name == function_name:
             address = all_function[i].PB_index
+            print('function pb index:', address)
             function_AR = all_function[i]
             break
     if address == -1:
-        # TODO error
+
         if function_name != 'output':
-            # TODO print function not found error
-            pass
+            print('could not find function ', function_name, ' error')
+            #TODO print function not found error
+
         else:
             if number_of_args != 1:
                 pass
+                print('number of args error')
                 # TODO error
             else:
                 _output()
 
     if function_AR.arguments_num != number_of_args:
+        print('number of args error')
         pass
         # TODO error
 
     arguments_names = function_AR.arguments_name
+    print('arguments names:' , arguments_names)
 
     for i in reversed(range(number_of_args)):
         id = arguments_names[i]
@@ -732,52 +770,79 @@ def _call():
 
         if id in function_AR.symbol_dict.keys():
             function_AR.update_symbol(id, value, DB)
+            symbol_adr = function_AR.get_symbol(id)
+            PB.write(PB.index, assembly_gen('ASSIGN',ss.get_item(number_of_args - i), symbol_adr))
+            PB.increase_index()
         else:
             function_AR.update_array_address(id, value, DB)
+            array_addr = function_AR.get_array
+            PB.write(PB.index, assembly_gen('ASSIGN',ss.get_item(number_of_args - i) , array_addr))
+            PB.increase_index()
 
     PB.write(PB.index, assembly_gen('JP', s1=address))
     PB.increase_index()
-    ss.pop(number_of_args + 2)  # one for number_of_args and one for the function name
-    PB.write(address + 1, PB.index + 1)  # second line of a function is its return address
-    PB.increase_index()
+    ss.pop(number_of_args + 2)  #one for number_of_args and one for the function name
+    PB.write(address + 1, PB.index) #second line of a function is its return address
 
 
 def _void():
     global seen_void
     seen_void = 1
+
+    # if scope_activation_record_stack.get_item(0).name != 'main':
+    #     print(scope_activation_record_stack.get_item(0).name)
+    #     print('illegal type of void')
+    #     return #TODO return error : illegal type of void
+
+def _non_void_checker():
+    if seen_void == 1:
+        if scope_activation_record_stack.get_item(0).name != 'main':
+            print(scope_activation_record_stack.get_item(0).name)
+            print('illegal type of void')
+            return #TODO return error : illegal type of void
+    else:
+        if scope_activation_record_stack.get_item(0).name == 'main':
+            print('void main(int) error')
+            return #Todo error
+
     if scope_activation_record_stack.get_item(0).name != 'main':
+        print('illegal type of void')
         return  # TODO return error : illegal type of void
 
 
 def _unvoid():
     global seen_void
     seen_void = 0
-    if scope_activation_record_stack.get_item(0).name == 'main':
-        return  # Todo error
 
 
 def _void_main_check():
-    id = current_token_string
+    id = ss.get_item(0)
+    print('id: ', id)
     if seen_void == 1:
         if id != 'main':
-            return  # TODo error
+            print('void func error')
+            return #TODo error
     elif id == 'main':
-        return  # TODO error
+        print('int main error')
+        return  #TODO error
 
-    ss.push(current_token_string)
+    # ss.push(current_token_string)
 
 
 def _make_function():
     id = ss.get_item(0)
-    if seen_void:
+    if seen_void == 1:
         if id != 'main':
-            # TODO error
+            print('void func error')
+            #TODO error
             return
     else:
         if id == 'main':
-            return  # TODO error
+            print('int main error')
+            return #TODO error
 
-    function_AR = Activation_record(name=id, PB_index=PB.index, DB_index=DB.index)
+    function_AR = Activation_record(name=id, PB_index= PB.index, DB_index= DB.index)
+    print('function name = ' , id, 'start address:', function_AR.PB_index)
     function_activation_record_stack.push(function_AR)
     scope_activation_record_stack.push(function_AR)
     all_function.append(function_AR)
@@ -790,6 +855,7 @@ def _make_function():
 
 def _add_symbol_param():
     id = ss.get_item(0)
+    print('symbol: ', id)
     function_AR = function_activation_record_stack.get_item(0)
     function_AR.add_arg_symbol(id, DB)
     ss.pop(1)
@@ -803,8 +869,11 @@ def _add_array_param():
 
 
 def _return():
-    function_AR = scope_activation_record_stack.get_item(0)
+    function_AR = function_activation_record_stack.get_item(0)
     function_start_address = function_AR.PB_index
+    print('function start address:' , function_start_address)
+    PB.write(PB.index, assembly_gen('JP', s1 = _at(function_start_address + 1)))
+    PB.increase_index()
     PB.write(PB.index, assembly_gen('JP', s1=_at(function_start_address + 1)))
     scope_activation_record_stack.pop(1)
     function_activation_record_stack.pop(1)
@@ -812,19 +881,15 @@ def _return():
 
 def _main_param_check_not_int():
     if scope_activation_record_stack.get_item(0).name == 'main':
-        return  # TODO error
+        print('void main(int) error')
+        return #TODO error
 
-
-def _check_main_function():
-    for ar in all_function:
-        if ar.name == 'main':
-            pass
 
 
 def _func_param_check_not_void():
     if scope_activation_record_stack.get_item(0).name != 'main':
-        return  # TODO error
-
+        print('function has void attrb error')
+        #TODO error
 
 def _tmp_save():
     t = DB.get_temp()
@@ -875,6 +940,17 @@ def _main_one_param_check():
         ss.pop(1)
         return  # TODO error
 
+
+
+def _check_main_exists():
+    for ar in all_function:
+        if ar.name == 'main':
+            print('found main at:' , ar.PB_index)
+            PB.write(0, assembly_gen('JP', ar.PB_index))
+            PB.write(ar.PB_index + 1, PB.index)
+            return
+
+    print('could not find main')
 
 def _at(s):
     return '@' + str(s)
@@ -1037,7 +1113,8 @@ Args = Non_terminal(name='Args', first_set=['EPSILON', 'ID', '+', '-', '(', 'NUM
 ArgList = Non_terminal(name='ArgList', first_set=['ID', '+', '-', '(', 'NUM'], follow_set=[')'])
 ArgList1 = Non_terminal(name='ArgList1', first_set=[',', 'EPSILON'], follow_set=[')'])
 
-program_dictionary = {(0, DeclarationList): 1, (1, '$'): 2}
+
+program_dictionary = {(0, DeclarationList): 1, (1 , check_main_exists_routine ): 2, ( 2, '$'): 3}
 program.set_transition_dictionary(program_dictionary, 0, 2)
 
 DeclarationList_dictionary = {(0, DeclarationList1): 1}
@@ -1049,11 +1126,13 @@ DeclarationList1.set_transition_dictionary(DeclarationList1_dictionary, 0, 2)
 Declaration_dictionary = {(0, TypeSpecifier): 1, (1, FTypeSpecifier2): 2}
 Declaration.set_transition_dictionary(Declaration_dictionary, 0, 2)
 
-FTypeSpecifier2_dictionary = {(0, void_main_check_routine): 1, (1, 'ID'): 2, (2, Fid_4): 3}
+
+FTypeSpecifier2_dictionary = {(0, push_string_routine) : 1, (1 , 'ID') : 2, ( 2, Fid_4): 3}
 FTypeSpecifier2.set_transition_dictionary(FTypeSpecifier2_dictionary, 0, 3)
 
-Fid_4_dictionary = {(0, Fid_1): 1,
-                    (0, '('): 5, (5, make_function_routine): 2, (2, Params): 3, (3, ')'): 4, (4, CompoundStmt): 1}
+Fid_4_dictionary = {(0, Fid_1): 7, (7, non_void_checker_routine) : 1,
+                    (0, '('): 5,(5, void_main_check_routine) : 6 , (6, make_function_routine) : 2, (2, Params): 3, (3, ')'): 4, (4, CompoundStmt): 1}
+
 
 Fid_4.set_transition_dictionary(Fid_4_dictionary, 0, 1)
 
@@ -1100,9 +1179,9 @@ Fid2_dictionary = {(0, 'EPSILON'): 3,
                    (0, '['): 2, (2, ']'): 7, (7, add_array_param_routine): 1}
 Fid2.set_transition_dictionary(Fid2_dictionary, 0, 1)
 
-CompoundStmt_dictionary = {(0, '{'): 1, (1, new_scope_routine): 5, (5, DeclarationList): 2, (2, StatementList): 3,
-                           (3, '}'): 4}
-CompoundStmt.set_transition_dictionary(CompoundStmt_dictionary, 0, 4)
+
+CompoundStmt_dictionary = {(0, '{'): 1, (1, new_scope_routine) : 5,  (5, DeclarationList): 2, (2, StatementList): 3, (3, '}'): 4, (4, pop_scope_routine) : 6}
+CompoundStmt.set_transition_dictionary(CompoundStmt_dictionary, 0, 6)
 
 StatementList_dictionary = {(0, StatementList1): 1}
 StatementList.set_transition_dictionary(StatementList_dictionary, 0, 1)
@@ -1126,14 +1205,15 @@ ExpressionStmt_dictionary = {  # TODO
 ExpressionStmt.set_transition_dictionary(ExpressionStmt_dictionary, 0, 2)
 
 Expression_dictionary = {
-    (0, push_string_routine): 1, (1, 'ID'): 1, (2, FExpr): 3,
-    (0, Term_2): 4, (4, AdditiveExpression1): 5, (4, FAdditiveExpression): 3
+    (0, 'ID') : 1, (1, push_previous_string_routine): 2, (2, FExpr): 3,
+    (0, Term_2): 4, (4, AdditiveExpression1): 5, (5, FAdditiveExpression): 3,
+    (0, push_string_routine): 1, (1, 'ID'): 1, (2, FExpr): 3
 }
 Expression.set_transition_dictionary(Expression_dictionary, 0, 3)
 
 FExpr_dictionary = {
     (0, Fid): 1, (1, FExpr_1): 2,
-    (0, '('): 3, (3, Args): 4, (4, ')'): 5, (5, call_routine): 8, (8, Term1): 6,
+    (0, '('): 3, (3, push_zero_routine) : 9, (9, Args): 4 , (4, ')'): 5 ,(5, call_routine) : 8, (8, Term1): 6,
     (6, AdditiveExpression1): 7, (7, FAdditiveExpression): 2
 }
 
@@ -1185,7 +1265,7 @@ DefaultStmt_dictionary = {(0, 'default'): 4, (4, default_routine): 1, (1, ':'): 
                           (0, 'EPSILON'): 3}
 DefaultStmt.set_transition_dictionary(DefaultStmt_dictionary, 0, 3)
 
-FAdditiveExpression_dictionary = {(0, Relop): 1, (1, relop_routine): 3, (3, AdditiveExpression): 2, (0, 'EPSILON'): 2}
+FAdditiveExpression_dictionary = {(0, Relop): 1, (1, AdditiveExpression) : 3,  (3, relop_routine): 2, (0, 'EPSILON'): 2}
 FAdditiveExpression.set_transition_dictionary(FAdditiveExpression_dictionary, 0, 2)
 
 Relop_dictionary = {(0, '=='): 3, (3, push_one_routine): 1, (0, '<'): 2, (2, push_zero_routine): 1}
@@ -1220,22 +1300,26 @@ SignedFactor_2_dictionary = {(0, Factor_2): 1, (0, '+'): 2, (2, Factor): 1, (0, 
 SignedFactor_2.set_transition_dictionary(SignedFactor_2_dictionary, 0, 1)
 
 Factor_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3,
-                     (0, 'ID'): 4, (4, push_previous_string_routine): 5, (5, Fid_3): 3,
-                     (0, 'NUM'): 5, (5, push_previous_string_routine): 3}
+                     (0, 'ID') : 4, (4, push_previous_string_routine): 6, (6, Fid_3): 3,
+                     (0, 'NUM'): 5, (5, push_number_routine) : 3}
 Factor.set_transition_dictionary(Factor_dictionary, 0, 3)
 
-Factor_2_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3,
-                       (0, push_string_routine): 4, (4, 'NUM'): 3}
+
+Factor_2_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'NUM'): 4, (4, push_number_routine) : 3}
 Factor_2.set_transition_dictionary(Factor_2_dictionary, 0, 3)
 
-Factor_2_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'NUM'): 3}
-Factor_2.set_transition_dictionary(Factor_2_dictionary, 0, 3)
+Fid_3_dictionary = {(0, Fid): 1, (0, '('): 2,(2, push_zero_routine) : 5,  (5, Args): 3, (3, ')'): 4, (4, call_routine) : 1}
+Fid_3.set_transition_dictionary(Fid_3_dictionary, 0, 1)
+
+Args_dictionary = {
+    (0, ArgList): 1, (0, 'EPSILON'): 1}
+Args.set_transition_dictionary(Args_dictionary, 0, 1)
+
+
 
 Fid_3_dictionary = {(0, Fid): 1, (0, '('): 2, (2, Args): 3, (3, ')'): 4, (4, call_routine): 1}
 Fid_3.set_transition_dictionary(Fid_3_dictionary, 0, 1)
 
-Args_dictionary = {(0, ArgList): 1, (0, 'EPSILON'): 1, (1, push_zero_routine): 2}
-Args.set_transition_dictionary(Args_dictionary, 0, 2)
 
 ArgList_dictionary = {(0, Expression): 1, (1, push_arg_routine): 2, (2, ArgList1): 3}
 ArgList.set_transition_dictionary(ArgList_dictionary, 0, 3)
@@ -1244,10 +1328,12 @@ ArgList1_dictionary = {(0, ','): 1, (1, Expression): 2, (2, push_arg_routine): 3
                        (0, 'EPSILON'): 4}
 ArgList1.set_transition_dictionary(ArgList1_dictionary, 0, 4)
 
+
 get_char()
 get_new_token()
 parser.running = True
 parser(program, height=0)
+print('**************************************************')
 PB.print_self()
 output_file.close()
 lexical_error_file.close()

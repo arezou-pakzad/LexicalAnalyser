@@ -37,6 +37,7 @@ class Stack:
 
     def get_item(self, index):
         top = len(self.stack) - 1
+
         return self.stack[top - index]
 
     def get_top_index(self):
@@ -49,7 +50,7 @@ class Stack:
 class Program_block:
     def __init__(self):
         self.program = ['' for i in range(10000)]
-        self.index = 0
+        self.index = 1
 
     def write(self, index, statement):
         self.program[index] = statement
@@ -57,6 +58,9 @@ class Program_block:
     def increase_index(self):
         self.index += 1
 
+    def print_self(self):
+        for i in range(self.index):
+            print(i, '                  ', self.program[i])
 
 class Data_block:
     def __init__(self):
@@ -73,14 +77,11 @@ class Data_block:
         self.index += 4
         return self.index - 4
 
-
     def get_index(self):
         return self.index
 
-
     def write(self, item, addr):
         self.memory[addr] = item
-
 
     def write_array(self, array, size):
         addr = self.write(array[0])
@@ -113,6 +114,8 @@ class Data_block:
         return addr
 
 
+
+
 class Activation_record:   #first argnums of the symbol_counter are the arguments
     def __init__(self, name, PB_index, DB_index):
         self.name = name
@@ -132,7 +135,10 @@ class Activation_record:   #first argnums of the symbol_counter are the argument
         self.arguments_name.append(argument_name)
         self.add_symbol(argument_name,DB)
 
-
+    def is_item_int(self, item_name):
+        if item_name in self.symbol_dict.keys():
+            return True
+        return False
 
 
     def add_arg_array(self, array_name, DB): #TODO
@@ -145,11 +151,13 @@ class Activation_record:   #first argnums of the symbol_counter are the argument
 
     def add_symbol(self, symbol_str, DB):
         if symbol_str not in self.symbol_dict.keys():
+            print('here adds correctly, has never seen', symbol_str, 'before')
             DB.write(0, self.DB_index + 4 * self.symbol_counter)
-            self.symbol_dict[symbol_str] = (self.DB_index + self.symbol_counter, self.symbol_counter)
+            self.symbol_dict[symbol_str] = (self.DB_index + 4 * self.symbol_counter, self.symbol_counter)
             self.symbol_counter += 1
         else:
             pass
+            print('has already seen' , symbol_str)
             #TODO ERROR
 
 
@@ -217,23 +225,23 @@ class Activation_record:   #first argnums of the symbol_counter are the argument
 
 
 
-
-
-
 def find_the_symbol(activation_record_stack, symbol):  #finds both symbol address and array adress
-    n = len(activation_record_stack)
+    n = activation_record_stack.get_len()
+    print('n: ', n)
     for i in range(n):
+        print(i)
         scope = activation_record_stack.get_item(i)
         symbol_addr = scope.get_symbol(symbol)
         if symbol_addr is not None:
+            print('address of ', symbol , ' : ' , symbol_addr)
             return symbol_addr
 
-        symbol_addr = scope.get_array_element_address()
-        if symbol_addr is not None:
-            return symbol_addr
+    symbol_addr = scope.get_array(symbol)
+    if symbol_addr is not None:
+        return symbol_addr
 
 
-    #TODO print error
+    #TODO print error ID’ is not defined
     return None
 
 def find_the_array_element(activation_record_stack, array_name, index, DB, is_address):
@@ -247,7 +255,7 @@ def find_the_array_element(activation_record_stack, array_name, index, DB, is_ad
         if addr is not None:
             return addr
 
-    #TODO print error
+    #TODO print error ID’ is not defined
     return None
 
 
