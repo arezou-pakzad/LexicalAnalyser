@@ -1431,6 +1431,7 @@ ArgList1_dictionary = {(0, ','): 1, (1, Expression): 2, (2, push_arg_routine): 3
                        (0, 'EPSILON'): 4}
 ArgList1.set_transition_dictionary(ArgList1_dictionary, 0, 4)
 
+
 get_char()
 get_new_token()
 parser.running = True
