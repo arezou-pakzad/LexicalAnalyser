@@ -494,7 +494,6 @@ def code_gen(routine):
     elif action == '#push_arg':
         _push_arg()
 
-
     elif action == '#call':
         _call()
 
@@ -1262,7 +1261,8 @@ SelectionStmt_dictionary = {(0, 'if'): 1, (1, '('): 2,
 
 SelectionStmt.set_transition_dictionary(SelectionStmt_dictionary, 0, 7)
 
-IterationStmt_dictionary = {(0, 'while'): 9, (9, new_while_scope_routine): 10, (10, tmp_save_routine): 1, (1, '('): 6, (6, label_routine): 2, (2, Expression): 3, (3, ')'): 7,
+IterationStmt_dictionary = {(0, 'while'): 9, (9, new_while_scope_routine): 10, (10, tmp_save_routine): 1, (1, '('): 6,
+                            (6, label_routine): 2, (2, Expression): 3, (3, ')'): 7,
                             (7, save_routine): 4, (4, Statement): 5, (5, while_routine): 8}
 IterationStmt.set_transition_dictionary(IterationStmt_dictionary, 0, 8)
 
@@ -1273,7 +1273,8 @@ Freturn_dictionary = {(0, ';'): 3, (3, return_routine): 1,
 
 Freturn.set_transition_dictionary(Freturn_dictionary, 0, 1)
 
-SwitchStmt_dictionary = {(0, 'switch'): 9, (9, new_switch_scope_routine): 1, (1, '('): 9, (9, tmp_save_routine): 2, (2, Expression): 3,
+SwitchStmt_dictionary = {(0, 'switch'): 9, (9, new_switch_scope_routine): 1, (1, '('): 9, (9, tmp_save_routine): 2,
+                         (2, Expression): 3,
                          (3, ')'): 4, (4, '{'): 5, (5, CaseStmts): 6,
                          (6, DefaultStmt): 9, (9, jp_switch_routine): 7, (7, '}'): 8}
 SwitchStmt.set_transition_dictionary(SwitchStmt_dictionary, 0, 8)
