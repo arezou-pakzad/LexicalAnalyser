@@ -39,5 +39,10 @@ main_one_param_check_routine = Routine('#main_one_param_check')
 void_routine = Routine('#void')
 unvoid_routine = Routine('#unvoid')
 push_previous_string_routine = Routine('#push_pre_string')
+tmp_save_routine = Routine("#tmp_save")
+jp_switch_routine = Routine("#jp_switch")
+cmp_save_routine = Routine("#cmp_save")
+cmp_save_1_routine = Routine("#cmp_save_1")
+default_routine = Routine("#default_save")
 
 

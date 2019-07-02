@@ -842,6 +842,7 @@ def _default():
     PB.write(ss.get_item(0), ('JPF', ss.get_item(1), PB.index))
     ss.pop(3)
 
+
 def _main_one_param_check():
     if scope_activation_record_stack.get_item(0).name == 'main':
         ss.pop(1)
@@ -1134,21 +1135,23 @@ Freturn_dictionary = {(0, ';'): 3, (3, return_routine) : 1,
 
 Freturn.set_transition_dictionary(Freturn_dictionary, 0, 1)
 
-SwitchStmt_dictionary = {(0, 'switch'): 1, (1, '('): 2, (2, Expression): 3,
+SwitchStmt_dictionary = {(0, 'switch'): 1, (1, '('): 9, (9, tmp_save_routine): 2, (2, Expression): 3,
                          (3, ')'): 4, (4, '{'): 5, (5, CaseStmts): 6,
-                         (6, DefaultStmt): 7, (7, '}'): 8}
+                         (6, DefaultStmt): 9, (9, jp_routine): 7, (7, '}'): 8}
 SwitchStmt.set_transition_dictionary(SwitchStmt_dictionary, 0, 8)
 
-CaseStmts_dictionary = {(0, CaseStmts1): 1}
-CaseStmts.set_transition_dictionary(CaseStmts_dictionary, 0, 1)
+CaseStmts_dictionary = {(0, 'case'): 1, (1, push_string_routine): 2, (2, 'num'): 3, (3, cmp_save_routine): 4,
+                        (4, ":"): 5, (5, StatementList): 6, (6, save_routine): 7, (7, CaseStmts1): 8, (0, 'EPSILON'): 8}
+CaseStmts.set_transition_dictionary(CaseStmts_dictionary, 0, 8)
 
 CaseStmts1_dictionary = {(0, CaseStmt): 1, (1, CaseStmts1): 2, (0, 'EPSILON'): 2}
 CaseStmts1.set_transition_dictionary(CaseStmts1_dictionary, 0, 2)
 
-CaseStmt_dictionary = {(0, 'case'): 1, (1, 'NUM'): 2, (2, ':'): 3, (3, StatementList): 4}
-CaseStmt.set_transition_dictionary(CaseStmt_dictionary, 0, 4)
+CaseStmt_dictionary = {(0, 'case'): 5, (5, push_string_routine): 1, (1, 'NUM'): 6, (6, cmp_save_1_routine): 2,
+                       (2, ':'): 3, (3, StatementList): 4, (4, save_routine): 7}
+CaseStmt.set_transition_dictionary(CaseStmt_dictionary, 0, 7)
 
-DefaultStmt_dictionary = {(0, 'default'): 1, (1, ':'): 2, (2, StatementList): 3, (0, 'EPSILON'): 3}
+DefaultStmt_dictionary = {(0, 'default'): 4, (4, default_routine): 1, (1, ':'): 2, (2, StatementList): 3, (0, 'EPSILON'): 3}
 DefaultStmt.set_transition_dictionary(DefaultStmt_dictionary, 0, 3)
 
 FAdditiveExpression_dictionary = {(0, Relop): 1, (1, relop_routine) : 3,  (3, AdditiveExpression): 2, (0, 'EPSILON'): 2}
