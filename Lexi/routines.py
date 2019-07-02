@@ -47,5 +47,8 @@ jp_switch_routine = Routine("#jp_switch")
 cmp_save_routine = Routine("#cmp_save")
 cmp_save_1_routine = Routine("#cmp_save_1")
 default_routine = Routine("#default_save")
-
+new_while_scope_routine = Routine('#new_while_scope')
+new_switch_scope_routine = Routine('#new_switch_scope')
+break_routine = Routine('#break')
+continue_routine = Routine('continue')
 
