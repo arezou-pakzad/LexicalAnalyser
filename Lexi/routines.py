@@ -1,6 +1,9 @@
 class Routine:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, func):
+        self.func = func
+
+
+
 
 save_routine = Routine('#save')
 label_routine = Routine('#label')
@@ -29,3 +32,12 @@ make_function_routine = Routine('#make_function')
 add_symbol_param_routine = Routine('#add_symbol_param')
 add_array_param_routine = Routine('#add_array_param')
 return_routine = Routine('#return')
+void_main_check_routine = Routine('#void_main_check')
+main_param_check_not_int_routine = Routine('#main_param_check_not_int')
+func_param_check_not_void_routine = Routine('#func_param_check_not_void')
+main_one_param_check_routine = Routine('#main_one_param_check')
+void_routine = Routine('#void')
+unvoid_routine = Routine('#unvoid')
+push_previous_string_routine = Routine('#push_pre_string')
+
+
