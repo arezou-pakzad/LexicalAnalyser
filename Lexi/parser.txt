@@ -233,3 +233,12 @@ program
 | | | | | | | | }
 | | | | declaration_list1
 | | | | | EPSILON
+| | | | | | | | | | | | Statement
+| | | | | | | | | | | | | ExpressionStmt
+| | | | | | | | | | | | | | continue
+| | | | | | | | | | | | | | ;
+| | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | EPSILON
+| | | | | | | }
+| | | declaration_list1
+| | | | EPSILON

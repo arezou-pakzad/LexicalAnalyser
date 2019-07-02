@@ -437,6 +437,7 @@ first_scope = Activation_record(name='first scope', PB_index=0,
 scope_activation_record_stack.push(first_scope)
 all_function = []
 seen_void = 0  # -1 unknow, 1  seen, 0 unseen
+new_scope_name = 'new scope'
 
 
 def code_gen(routine):
@@ -585,6 +586,7 @@ def _save():
 
 
 def _while():
+    global new_scope_name
     PB.write(ss.get_item(0), assembly_gen('JPF', ss.get_item(1), PB.index + 1))
     PB.write(PB.index, assembly_gen('JP', ss.get_item(2)))
     PB.increase_index()
@@ -592,6 +594,7 @@ def _while():
     PB.write(ss.get_item(0), PB.index)
     scope_activation_record_stack.pop(1)
     ss.pop(1)
+    new_scope_name = 'new_scope'
 
 
 def _output():
@@ -683,11 +686,12 @@ def _make_array():
 
 
 def _new_scope():
-    scope_activation_record_stack.push(Activation_record(name='new scope', PB_index=PB.index, DB_index=DB.get_index()))
+    scope_activation_record_stack.push(Activation_record(name=new_scope_name , PB_index=PB.index, DB_index=DB.get_index()))
 
 
 def _new_while_scope():
-    scope_activation_record_stack.push(Activation_record(name='while', PB_index=PB.index, DB_index=DB.get_index()))
+    global new_scope_name
+    new_scope_name = 'while'
 
 
 def _new_switch_scope():
@@ -1048,6 +1052,7 @@ def _check_continue():
 
 def _check_break():
     if scope_activation_record_stack.get_item(0).name != 'while' and scope_activation_record_stack.get_item(0).name != 'switch':
+        print(scope_activation_record_stack.get_item(0).name)
         print('No \'while\' or \'switch\'found for \'break\'') #TODO: error No ’while’ or ’switch’ found for ’break’.
         write_semantic_error_file('No \'while\' or \'switch\' found for \'break\'')
 
@@ -1421,6 +1426,7 @@ ArgList.set_transition_dictionary(ArgList_dictionary, 0, 3)
 ArgList1_dictionary = {(0, ','): 1, (1, Expression): 2, (2, push_arg_routine): 3, (3, ArgList1): 4,
                        (0, 'EPSILON'): 4}
 ArgList1.set_transition_dictionary(ArgList1_dictionary, 0, 4)
+
 
 get_char()
 get_new_token()

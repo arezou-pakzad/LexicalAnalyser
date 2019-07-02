@@ -11,4 +11,6 @@ a = f(a);
 else{
 a = 4;
 }
+
+continue;
 }
