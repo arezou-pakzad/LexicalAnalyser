@@ -44,7 +44,7 @@ alphabet = [chr(i) for i in range(65, 91)] + [chr(i) for i in range(97, 123)]
 keywords = ['if', 'else', 'void', 'int', 'while', 'break', 'continue', 'switch', 'default', 'case', 'return', 'int']
 comments = ['/', '*']
 all_letters = symbols + whitespace + digit + alphabet + keywords + comments
-
+previous_token_string = ''
 current_token_type = current_token_string = ''
 
 
@@ -150,10 +150,11 @@ def comment():
 
 
 def get_token_one_by_one():
-    global state, end_ind, start_ind
+    global state, end_ind, start_ind, previous_token_string
     # get_char()
     error_flag = False
     token_string = token_type = ''
+    previous_token_string = current_token_string
     while current_char is not None and not error_flag:
         error_flag = False
         skip_whitespace()
@@ -325,9 +326,10 @@ def get_new_token():
 
 
 def parser(non_terminal, height):
+
     global current_token_type, current_token_string
 
-    print('function: ', non_terminal.name)
+    print('Non_terminal: ', non_terminal.name)
     error_flag = False
     write_to_parser_file(height=height, leaf=non_terminal.name)
     s = non_terminal.initial_state
@@ -340,9 +342,10 @@ def parser(non_terminal, height):
         print('this state:', this_state)
         print('current state and token type: ', (s, current_token_type))
         print('len this state: ', len(this_state))
-
-        if isinstance(s, Routine):
+        if isinstance(list(this_state.keys())[0][1], Routine):#TODO !!!
             code_gen(Routine)
+            s = non_terminal.transition_dictionary[(s,list(this_state.keys())[0][1] )]
+            continue
 
         if len(this_state) == 1:
             terminal_edge = list(this_state.keys())[0][1]
@@ -350,7 +353,6 @@ def parser(non_terminal, height):
                 if current_token_type != '$':
                     write_parser_error('Syntax Error! Missing ' + str(terminal_edge))
                     print('error #LINE_NUM : Syntax Error! Missing #TERMINAL_NAME')
-                    print('state: ', s, ' terminal edge: ', terminal_edge, ' token:', current_token_type)
                     current_token_type = terminal_edge
 
                 else:
@@ -359,7 +361,6 @@ def parser(non_terminal, height):
                     parser.running = False
 
         if (s, current_token_type) in this_state:  # .items added
-            print('found the terminal edge')
             s = non_terminal.transition_dictionary[(s, current_token_type)]
             print('next state: ', s)
             write_to_parser_file(height + 1, current_token_type)
@@ -371,12 +372,10 @@ def parser(non_terminal, height):
 
         elif len(this_state) > 0:
             for key, value in this_state.items():
-                print(isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set))
                 if isinstance(key[1], Non_terminal) and (current_token_type in key[1].first_set or
                                                          (('EPSILON' in key[
                                                              1].first_set or error_flag) and current_token_type in key[
                                                               1].follow_set)):
-                    print(current_token_type, 'hereeeeeeeeee')
                     if error_flag and 'EPSILON' not in key[1].first_set and current_token_type not in key[1].first_set:
                         print('Syntax Error! Missing #NON_TERMINAL_DESCRIPTION')
                         write_parser_error('Syntax Error! Missing ' + key[1].name)
@@ -394,7 +393,6 @@ def parser(non_terminal, height):
                         return False
                     break
         if not flag and (s, 'EPSILON') in this_state.keys():  # what is this?
-            print('Epsilon')
             flag = True
             write_to_parser_file(height + 1, 'EPSILON')
             s = non_terminal.transition_dictionary[(s, 'EPSILON')]
@@ -404,7 +402,6 @@ def parser(non_terminal, height):
         if not flag:
             if error_flag:
                 for key in this_state.keys():
-                    print('key[1]', key[1])
                     write_parser_error('Syntax Error! Missing ' + str(key[1].name))
                     print('Syntax Error! Missing ' + str(key[1].name))
                     get_new_token()
@@ -432,7 +429,9 @@ all_function = []
 seen_void = 0   #-1 unknow, 1  seen, 0 unseen
 
 def code_gen(routine):
-    action = routine.name
+
+    action = routine.func
+    print('routine:' , action)
     if action == '#save':
         _save()
     elif action == '#label':
@@ -526,10 +525,12 @@ def code_gen(routine):
 
     elif action == '#main_param_check_not_int':
         _main_param_check_not_int()
-        
+
     elif action == '#func_param_check_not_void':
         _func_param_check_not_void()
 
+    elif action == '#push_pre_string':
+        _push_pre_string()
 def _label():
     ss.push(PB.index)
 
@@ -552,6 +553,8 @@ def _output():
     PB.increase_index()
     ss.pop(2)
 
+def _push_pre_string():
+    ss.push(previous_token_string)
 
 def _push_one():
     t = DB.get_temp()
@@ -841,6 +844,7 @@ def _default():
 
 def _main_one_param_check():
     if scope_activation_record_stack.get_item(0).name == 'main':
+        ss.pop(1)
         return #TODO error
 
 def _at(s):
@@ -1029,14 +1033,14 @@ Fid_1_dictionary = {(0, ';'): 5, (5, make_id_routine) : 1,
                     (0, '['): 2, (2, push_string_routine) : 6, (6, 'NUM'): 3, (3, make_array_routine) : 7,  (7, ']'): 4, (4, ';'): 1}
 Fid_1.set_transition_dictionary(Fid_1_dictionary, 0, 1)
 
-TypeSpecifier_dictionary = {(0, 'int'): 1, (0, 'void'): 1}
-TypeSpecifier.set_transition_dictionary(TypeSpecifier_dictionary, 0, 1)
+TypeSpecifier_dictionary = {(0, 'int'): 1, (1, unvoid_routine) : 2, (0, 'void'): 3, (3, void_routine) : 2}
+TypeSpecifier.set_transition_dictionary(TypeSpecifier_dictionary, 0, 2)
 
 Params_dictionary = {(0, 'int'): 1, (1, main_param_check_not_int_routine) : 5, (5, FTypeSpecifier1): 2, (2, ParamList1): 3,
                      (0, 'void'): 4, (4, func_param_check_not_void_routine) : 6 , (6, FParam): 3}
 Params.set_transition_dictionary(Params_dictionary, 0, 3)
 
-FParam_dictionary = {(0, main_one_param_check_routine) : 1, (1 , FTypeSpecifier2): 2, (2, ParamList1): 3, (0, 'EPSILON'): 3}
+FParam_dictionary = {(0,FTypeSpecifier2) : 1, (1 ,  main_one_param_check_routine): 2, (2, ParamList1): 3, (0, 'EPSILON'): 3}
 FParam.set_transition_dictionary(FParam_dictionary, 0, 3)
 
 ParamList1_dictionary = {
@@ -1060,8 +1064,9 @@ FTypeSpecifier1_dictionary = {
 }
 FTypeSpecifier1.set_transition_dictionary(FTypeSpecifier1_dictionary, 0, 3)
 
-Fid2_dictionary = {(0, add_symbol_param_routine) : 3,
-                   (3, 'EPSILON'): 1, (0, '['): 2, (2, ']'): 7, (7, add_array_param_routine) : 1}
+Fid2_dictionary = {(0, 'EPSILON') : 3,
+                   (3, add_symbol_param_routine): 1,
+                   (0, '['): 2, (2, ']'): 7, (7, add_array_param_routine) : 1}
 Fid2.set_transition_dictionary(Fid2_dictionary, 0, 1)
 
 CompoundStmt_dictionary = {(0, '{'): 1, (1, new_scope_routine) : 5,  (5, DeclarationList): 2, (2, StatementList): 3, (3, '}'): 4}
@@ -1178,8 +1183,8 @@ SignedFactor_2_dictionary = {(0, Factor_2): 1, (0, '+'): 2, (2, Factor): 1, (0, 
 SignedFactor_2.set_transition_dictionary(SignedFactor_2_dictionary, 0, 1)
 
 Factor_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3,
-                     (0, push_string_routine) : 4, (4, 'ID'): 5, (5, Fid_3): 3,
-                     (0, 'NUM'): 3}
+                     (0, 'ID') : 4, (4, push_previous_string_routine): 5, (5, Fid_3): 3,
+                     (0, 'NUM'): 5, (5, push_previous_string_routine) : 3}
 Factor.set_transition_dictionary(Factor_dictionary, 0, 3)
 
 
@@ -1191,7 +1196,7 @@ Factor_2.set_transition_dictionary(Factor_2_dictionary, 0, 3)
 Factor_2_dictionary = {(0, '('): 1, (1, Expression): 2, (2, ')'): 3, (0, 'NUM'): 3}
 Factor_2.set_transition_dictionary(Factor_2_dictionary, 0, 3)
 
-Fid_3_dictionary = {(0, Fid): 1, (0, '('): 2, (2, Args): 3, (3, ')'): 4, (4, _call()) : 1}
+Fid_3_dictionary = {(0, Fid): 1, (0, '('): 2, (2, Args): 3, (3, ')'): 4, (4, call_routine) : 1}
 Fid_3.set_transition_dictionary(Fid_3_dictionary, 0, 1)
 
 Args_dictionary = {(0, ArgList): 1, (0, 'EPSILON'): 1, (1, push_zero_routine) : 2}
@@ -1208,7 +1213,7 @@ get_char()
 get_new_token()
 parser.running = True
 parser(program, height=0)
-
+PB.print_self()
 output_file.close()
 lexical_error_file.close()
 parser_error_file.close()
