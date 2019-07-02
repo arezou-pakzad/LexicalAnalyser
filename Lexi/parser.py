@@ -428,7 +428,8 @@ scope_activation_record_stack = Stack()
 function_activatior = {}
 first_scope = Activation_record(name = 'first scope', PB_index=0, DB_index=0) #the first scope that has eveeeerything in it
 scope_activation_record_stack.push(first_scope)
-
+all_function = []
+seen_void = 0   #-1 unknow, 1  seen, 0 unseen
 
 def code_gen(routine):
     action = routine.name
@@ -502,6 +503,11 @@ def code_gen(routine):
     elif action == '#return':
         _return()
 
+    elif action == '#void':
+        _void()
+
+    elif action == '#unvoid':
+        _unvoid()
 
 
 
@@ -525,7 +531,7 @@ def _while(): #TODO add adress to second line, start the code from the third lin
 def _output():
     PB.write(PB.index, assembly_gen('PRINT', ss.get_item(0)))
     PB.increase_index()
-    ss.pop(1)
+    ss.pop(2)
 
 
 def _push_one():
@@ -655,18 +661,29 @@ def _push_arg():
 
 
 def _call():
+
     number_of_args = DB.read(ss.get_item(0))
     function_name = ss.get_item(number_of_args + 1)
     address = -1
     function_AR = None
-    for i in range(function_activation_record_stack.get_len()):
-        if function_activation_record_stack[i].name == function_name:
-            address = function_activation_record_stack[i].PB_index
-            function_AR = function_activation_record_stack[i]
+    for i in range(len(all_function)):
+        if all_function[i].name == function_name:
+            address = all_function[i].PB_index
+            function_AR = all_function[i]
             break
     if address == -1:
         #TODO error
-        pass
+        if function_name != 'output':
+            #TODO print function not found error
+            pass
+        else:
+            if number_of_args != 1:
+                pass
+                # TODO error
+            else:
+                _output()
+
+
     if function_AR.arguments_num != number_of_args:
         pass
         #TODO error
@@ -685,15 +702,29 @@ def _call():
     PB.write(PB.index, assembly_gen('JP', s1= address))
     PB.increase_index()
     ss.pop(number_of_args + 2)  #one for number_of_args and one for the function name
-    PB.write(address, PB.index + 1) #second line of a function is its return address
+    PB.write(address + 1, PB.index + 1) #second line of a function is its return address
     PB.increase_index()
 
+def _void():
+    seen_void = 1
+
+def _unvoid():
+    seen_void = 0
 
 def _make_function():
     id = ss.get_item(0)
+    if seen_void:
+        if id != 'main':
+            #TODO error
+            return
+    else:
+        if id == 'main':
+            return #TODO error
+
     function_AR = Activation_record(name=id, PB_index= PB.index, DB_index= DB.index)
     function_activation_record_stack.push(function_AR)
     scope_activation_record_stack.push(function_AR)
+    all_function.append(function_AR)
     PB.write(PB.index, assembly_gen('JP', PB.index + 2))
     #PB[i + 1] = return_address
     PB.increase_index()
@@ -716,11 +747,13 @@ def _add_array_param():
 def _return():
     function_AR = scope_activation_record_stack.get_item(0)
     function_start_address = function_AR.PB_index
-    PB.write(PB.index, assembly_gen('JP', s1= function_start_address + 1))
+    PB.write(PB.index, assembly_gen('JP', s1 = _at(function_start_address + 1)))
     scope_activation_record_stack.pop(1)
+    function_activation_record_stack.pop(1)
 
-
-
+def _check_main_function():
+    for ar in all_function:
+        if ar.name == 'main':
 
 
 
