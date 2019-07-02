@@ -24,9 +24,33 @@ program
 | | | | | | | | | | | ID
 | | | | | | | | | | | Fid_4
 | | | | | | | | | | | | Fid_1
+| | | | | | | | | | | | | [
+| | | | | | | | | | | | | NUM
+| | | | | | | | | | | | | ]
 | | | | | | | | | | | | | ;
 | | | | | | | | | declaration_list1
-| | | | | | | | | | EPSILON
+| | | | | | | | | | declatation
+| | | | | | | | | | | TypeSpecifier
+| | | | | | | | | | | | int
+| | | | | | | | | | | FTypeSpecifier2
+| | | | | | | | | | | | ID
+| | | | | | | | | | | | Fid_4
+| | | | | | | | | | | | | Fid_1
+| | | | | | | | | | | | | | [
+| | | | | | | | | | | | | | NUM
+| | | | | | | | | | | | | | ]
+| | | | | | | | | | | | | | ;
+| | | | | | | | | | declaration_list1
+| | | | | | | | | | | declatation
+| | | | | | | | | | | | TypeSpecifier
+| | | | | | | | | | | | | int
+| | | | | | | | | | | | FTypeSpecifier2
+| | | | | | | | | | | | | ID
+| | | | | | | | | | | | | Fid_4
+| | | | | | | | | | | | | | Fid_1
+| | | | | | | | | | | | | | | ;
+| | | | | | | | | | | declaration_list1
+| | | | | | | | | | | | EPSILON
 | | | | | | | StatementList
 | | | | | | | | StatementList1
 | | | | | | | | | EPSILON
