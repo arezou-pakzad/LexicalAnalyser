@@ -558,6 +558,7 @@ def code_gen(routine):
         _check_main_exists()
 
 
+
 def _label():
     ss.push(PB.index)
 
