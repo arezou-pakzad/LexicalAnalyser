@@ -512,8 +512,21 @@ def code_gen(routine):
     elif action == '#void_main_check':
         _void_main_check()
 
+    elif action == '#tmp_save':
+        _tmp_save()
+
+    elif action == '#jp_switch':
+        _jp_switch()
+
+    elif action == '#cmp_save':
+        _cmp_save()
+
+    elif action == '#cmp_save_1':
+        _cmp_save_1()
+
     elif action == '#main_param_check_not_int':
         _main_param_check_not_int()
+        
     elif action == '#func_param_check_not_void':
         _func_param_check_not_void()
 
@@ -773,14 +786,58 @@ def _return():
     scope_activation_record_stack.pop(1)
     function_activation_record_stack.pop(1)
 
+
 def _main_param_check_not_int():
     if scope_activation_record_stack.get_item(0).name == 'main':
         return #TODO error
+
+def _check_main_function():
+    for ar in all_function:
+        if ar.name == 'main':
+            pass
 
 def _func_param_check_not_void():
     if scope_activation_record_stack.get_item(0).name != 'main':
         return #TODO error
 
+def _tmp_save():
+    t = DB.get_temp()
+    goto_ss.push(t)
+    ss.push(PB.index)
+    PB.increase_index()
+
+def _jp_switch():
+    PB.write(ss.get_item(0), assembly_gen('ASSIGN', _hashtag(PB.index), goto_ss.get_item(0)))
+    ss.pop(1)
+    goto_ss.pop(1)
+
+
+def _cmp_save():
+    t = DB.get_temp()
+    PB.write(PB.index, assembly_gen('EQ', ss.get_item(0), ss.get_item(1), t))
+    PB.increase_index()
+    ss.pop(1)
+    ss.push(t)
+    ss.push(PB.index)
+    PB.increase_index()
+
+
+def _cmp_save_1():
+    PB.write(ss.get_item(2), ('JPF', ss.get_item(3), PB.index))
+    t = DB.get_temp()
+    PB.write(PB.index, assembly_gen('EQ', ss.get_item(0), ss.get_item(4), t))
+    PB.increase_index()
+    PB.write(ss.get_item(1), ('JP', PB.index + 1))
+    ss.pop(4)
+    ss.push(t)
+    ss.push(PB.index)
+    PB.increase_index()
+
+
+def _default():
+    ss.pop(1)
+    PB.write(ss.get_item(0), ('JPF', ss.get_item(1), PB.index))
+    ss.pop(3)
 
 def _main_one_param_check():
     if scope_activation_record_stack.get_item(0).name == 'main':
