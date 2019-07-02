@@ -14,5 +14,6 @@ while (a < b) {
     continue;
 }
 
+continue;
 
 }
