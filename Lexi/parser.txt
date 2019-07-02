@@ -4,13 +4,13 @@ program
 | | | declatation
 | | | | TypeSpecifier
 | | | | | void
-| | | | TypeSpecifier_function
+| | | | FTypeSpecifier2
 | | | | | ID
-| | | | | ID_Function
+| | | | | Fid_4
 | | | | | | (
 | | | | | | params
 | | | | | | | void
-| | | | | | | void_Params
+| | | | | | | FParam
 | | | | | | | | EPSILON
 | | | | | | )
 | | | | | | CompoundStmt
@@ -20,19 +20,19 @@ program
 | | | | | | | | | declatation
 | | | | | | | | | | TypeSpecifier
 | | | | | | | | | | | int
-| | | | | | | | | | TypeSpecifier_function
+| | | | | | | | | | FTypeSpecifier2
 | | | | | | | | | | | ID
-| | | | | | | | | | | ID_Function
-| | | | | | | | | | | | ID_Array_define
+| | | | | | | | | | | Fid_4
+| | | | | | | | | | | | Fid_1
 | | | | | | | | | | | | | ;
 | | | | | | | | | declaration_list1
 | | | | | | | | | | declatation
 | | | | | | | | | | | TypeSpecifier
 | | | | | | | | | | | | int
-| | | | | | | | | | | TypeSpecifier_function
+| | | | | | | | | | | FTypeSpecifier2
 | | | | | | | | | | | | ID
-| | | | | | | | | | | | ID_Function
-| | | | | | | | | | | | | ID_Array_define
+| | | | | | | | | | | | Fid_4
+| | | | | | | | | | | | | Fid_1
 | | | | | | | | | | | | | | ;
 | | | | | | | | | | declaration_list1
 | | | | | | | | | | | EPSILON
@@ -42,96 +42,172 @@ program
 | | | | | | | | | | ExpressionStmt
 | | | | | | | | | | | Expression
 | | | | | | | | | | | | ID
-| | | | | | | | | | | | Expression_id_start
-| | | | | | | | | | | | | ID_array
+| | | | | | | | | | | | FExpr
+| | | | | | | | | | | | | FID
 | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | Expression_id_start_1
+| | | | | | | | | | | | | FExpr_1
 | | | | | | | | | | | | | | =
 | | | | | | | | | | | | | | Expression
 | | | | | | | | | | | | | | | Term2
 | | | | | | | | | | | | | | | | SignedFactor2
-| | | | | | | | | | | | | | | | | Factor_no_id
+| | | | | | | | | | | | | | | | | Factor_2
 | | | | | | | | | | | | | | | | | | NUM
 | | | | | | | | | | | | | | | | term1
 | | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | Expression_addop_op_start
+| | | | | | | | | | | | | | | AdditiveExpression1
 | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | Expression_relop
+| | | | | | | | | | | | | | | FAdditiveExpression
 | | | | | | | | | | | | | | | | EPSILON
 | | | | | | | | | | | ;
 | | | | | | | | | StatementList1
 | | | | | | | | | | Statement
-| | | | | | | | | | | IterationStmt
-| | | | | | | | | | | | while
+| | | | | | | | | | | SwitchStmt
+| | | | | | | | | | | | switch
 | | | | | | | | | | | | (
 | | | | | | | | | | | | Expression
 | | | | | | | | | | | | | ID
-| | | | | | | | | | | | | Expression_id_start
-| | | | | | | | | | | | | | ID_array
+| | | | | | | | | | | | | FExpr
+| | | | | | | | | | | | | | FID
 | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | Expression_id_start_1
+| | | | | | | | | | | | | | FExpr_1
 | | | | | | | | | | | | | | | term1
 | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | Expression_addop_op_start
+| | | | | | | | | | | | | | | AdditiveExpression1
 | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | Expression_relop
-| | | | | | | | | | | | | | | | Relop
-| | | | | | | | | | | | | | | | | <
-| | | | | | | | | | | | | | | | Expression_addop
-| | | | | | | | | | | | | | | | | Term
-| | | | | | | | | | | | | | | | | | SignedFactor
-| | | | | | | | | | | | | | | | | | | Factor
-| | | | | | | | | | | | | | | | | | | | ID
-| | | | | | | | | | | | | | | | | | | | ID_array_3
-| | | | | | | | | | | | | | | | | | | | | ID_array
-| | | | | | | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | | | | term1
-| | | | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | | | Expression_addop_op_start
-| | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | FAdditiveExpression
+| | | | | | | | | | | | | | | | EPSILON
 | | | | | | | | | | | | )
-| | | | | | | | | | | | Statement
-| | | | | | | | | | | | | CompoundStmt
-| | | | | | | | | | | | | | {
-| | | | | | | | | | | | | | declaration_list
-| | | | | | | | | | | | | | | declaration_list1
-| | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | {
+| | | | | | | | | | | | CaseStmts
+| | | | | | | | | | | | | case
+| | | | | | | | | | | | | num
+| | | | | | | | | | | | | :
+| | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | ExpressionStmt
+| | | | | | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | | | | | ID
+| | | | | | | | | | | | | | | | | | FExpr
+| | | | | | | | | | | | | | | | | | | FID
+| | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | FExpr_1
+| | | | | | | | | | | | | | | | | | | | =
+| | | | | | | | | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | | | | | | | | Term2
+| | | | | | | | | | | | | | | | | | | | | | SignedFactor2
+| | | | | | | | | | | | | | | | | | | | | | | Factor_2
+| | | | | | | | | | | | | | | | | | | | | | | | NUM
+| | | | | | | | | | | | | | | | | | | | | | term1
+| | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | AdditiveExpression1
+| | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | FAdditiveExpression
+| | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | ;
 | | | | | | | | | | | | | | | StatementList1
 | | | | | | | | | | | | | | | | Statement
 | | | | | | | | | | | | | | | | | ExpressionStmt
-| | | | | | | | | | | | | | | | | | Expression
-| | | | | | | | | | | | | | | | | | | ID
-| | | | | | | | | | | | | | | | | | | Expression_id_start
-| | | | | | | | | | | | | | | | | | | | ID_array
-| | | | | | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | | | | | | Expression_id_start_1
-| | | | | | | | | | | | | | | | | | | | | =
-| | | | | | | | | | | | | | | | | | | | | Expression
-| | | | | | | | | | | | | | | | | | | | | | ID
-| | | | | | | | | | | | | | | | | | | | | | Expression_id_start
-| | | | | | | | | | | | | | | | | | | | | | | ID_array
-| | | | | | | | | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | | | | | | | | | Expression_id_start_1
-| | | | | | | | | | | | | | | | | | | | | | | | term1
-| | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | | | | | | | | | | Expression_addop_op_start
-| | | | | | | | | | | | | | | | | | | | | | | | | Addop
-| | | | | | | | | | | | | | | | | | | | | | | | | | +
-| | | | | | | | | | | | | | | | | | | | | | | | | Term
-| | | | | | | | | | | | | | | | | | | | | | | | | | SignedFactor
-| | | | | | | | | | | | | | | | | | | | | | | | | | | Factor
-| | | | | | | | | | | | | | | | | | | | | | | | | | | | NUM
-| | | | | | | | | | | | | | | | | | | | | | | | | | term1
-| | | | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | | | | | | | | | | | Expression_addop_op_start
-| | | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | | | | | | | | | | | Expression_relop
-| | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | break
 | | | | | | | | | | | | | | | | | | ;
 | | | | | | | | | | | | | | | | StatementList1
 | | | | | | | | | | | | | | | | | EPSILON
-| | | | | | | | | | | | | | }
+| | | | | | | | | | | | | CaseStmts1
+| | | | | | | | | | | | | | CaseStmt
+| | | | | | | | | | | | | | | case
+| | | | | | | | | | | | | | | NUM
+| | | | | | | | | | | | | | | :
+| | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | ExpressionStmt
+| | | | | | | | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | | | | | | | ID
+| | | | | | | | | | | | | | | | | | | | FExpr
+| | | | | | | | | | | | | | | | | | | | | FID
+| | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | FExpr_1
+| | | | | | | | | | | | | | | | | | | | | | =
+| | | | | | | | | | | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | | | | | | | | | | Term2
+| | | | | | | | | | | | | | | | | | | | | | | | SignedFactor2
+| | | | | | | | | | | | | | | | | | | | | | | | | Factor_2
+| | | | | | | | | | | | | | | | | | | | | | | | | | NUM
+| | | | | | | | | | | | | | | | | | | | | | | | term1
+| | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | | | AdditiveExpression1
+| | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | | | FAdditiveExpression
+| | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | ;
+| | | | | | | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | ExpressionStmt
+| | | | | | | | | | | | | | | | | | | | break
+| | | | | | | | | | | | | | | | | | | | ;
+| | | | | | | | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | CaseStmts1
+| | | | | | | | | | | | | | | CaseStmt
+| | | | | | | | | | | | | | | | case
+| | | | | | | | | | | | | | | | NUM
+| | | | | | | | | | | | | | | | :
+| | | | | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | | | | ExpressionStmt
+| | | | | | | | | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | | | | | | | | ID
+| | | | | | | | | | | | | | | | | | | | | FExpr
+| | | | | | | | | | | | | | | | | | | | | | FID
+| | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | | FExpr_1
+| | | | | | | | | | | | | | | | | | | | | | | =
+| | | | | | | | | | | | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | | | | | | | | | | | Term2
+| | | | | | | | | | | | | | | | | | | | | | | | | SignedFactor2
+| | | | | | | | | | | | | | | | | | | | | | | | | | Factor_2
+| | | | | | | | | | | | | | | | | | | | | | | | | | | NUM
+| | | | | | | | | | | | | | | | | | | | | | | | | term1
+| | | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | | | | AdditiveExpression1
+| | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | | | | FAdditiveExpression
+| | | | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | ;
+| | | | | | | | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | CaseStmts1
+| | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | DefaultStmt
+| | | | | | | | | | | | | default
+| | | | | | | | | | | | | :
+| | | | | | | | | | | | | StatementList
+| | | | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | | | Statement
+| | | | | | | | | | | | | | | | ExpressionStmt
+| | | | | | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | | | | | ID
+| | | | | | | | | | | | | | | | | | FExpr
+| | | | | | | | | | | | | | | | | | | FID
+| | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | FExpr_1
+| | | | | | | | | | | | | | | | | | | | =
+| | | | | | | | | | | | | | | | | | | | Expression
+| | | | | | | | | | | | | | | | | | | | | Term2
+| | | | | | | | | | | | | | | | | | | | | | SignedFactor2
+| | | | | | | | | | | | | | | | | | | | | | | Factor_2
+| | | | | | | | | | | | | | | | | | | | | | | | NUM
+| | | | | | | | | | | | | | | | | | | | | | term1
+| | | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | AdditiveExpression1
+| | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | | | | | FAdditiveExpression
+| | | | | | | | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | | | | | | ;
+| | | | | | | | | | | | | | | StatementList1
+| | | | | | | | | | | | | | | | EPSILON
+| | | | | | | | | | | | }
 | | | | | | | | | | StatementList1
 | | | | | | | | | | | EPSILON
 | | | | | | | }
